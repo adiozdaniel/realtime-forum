@@ -102,3 +102,8 @@ function toggleDarkMode() {
 function handleSearch(e) { 
     const searchTerm = e.target.value.toLowerCase(); const filteredPosts = SAMPLE_POSTS.filter(post => post.title.toLowerCase().includes(searchTerm) || post.excerpt.toLowerCase().includes(searchTerm) ); renderPosts(filteredPosts); 
 } 
+
+// Handle like button click 
+function handleLike(e) { 
+   const button = e.currentTarget; const likesCount = button.querySelector('.likes-count'); const currentLikes = parseInt(likesCount.textContent); likesCount.textContent = currentLikes + 1; button.classList.add('text-blue-600'); 
+} 
