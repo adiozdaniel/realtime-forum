@@ -82,3 +82,18 @@ function renderPosts(posts = SAMPLE_POSTS) {
 function attachPostEventListeners() { 
     document.querySelectorAll('.like-button').forEach(button => { button.addEventListener('click', handleLike); }); 
 }
+
+ // Toggle mobile menu 
+ function toggleMobileMenu() { 
+    const isVisible = sidebar.style.display === 'block'; sidebar.style.display = isVisible ? 'none' : 'block'; 
+} 
+
+// Handle window resize 
+function handleResize() { 
+    if (window.innerWidth >= 1024) { sidebar.style.display = 'block'; } else { sidebar.style.display = 'none'; } 
+}
+
+// Toggle dark mode 
+function toggleDarkMode() { 
+    document.body.classList.toggle('dark-mode'); localStorage.setItem('darkMode', document.body.classList.contains('dark-mode')); 
+}
