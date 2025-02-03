@@ -107,3 +107,18 @@ function handleSearch(e) {
 function handleLike(e) { 
    const button = e.currentTarget; const likesCount = button.querySelector('.likes-count'); const currentLikes = parseInt(likesCount.textContent); likesCount.textContent = currentLikes + 1; button.classList.add('text-blue-600'); 
 } 
+
+// Initialize function 
+function init() {
+    // Initial render 
+    renderPosts(); 
+    // Event listeners 
+    menuToggleBtn?.addEventListener('click', toggleMobileMenu); darkModeToggle?.addEventListener('click', toggleDarkMode); window.addEventListener('resize', handleResize); searchInput?.addEventListener('input', handleSearch); 
+    // Check for saved dark mode preference 
+    const savedDarkMode = localStorage.getItem('darkMode') === 'true'; if (savedDarkMode) { document.body.classList.add('dark-mode'); } 
+    // Initial resize check 
+    handleResize(); 
+} 
+
+// Start the application 
+document.addEventListener('DOMContentLoaded', init);
