@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Modern Forum</title>
+    <link rel="stylesheet" href="styles.css">
+    <link
+    rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"
+  />
+</head>
+
+<body>
+    <div class="app">
+        <header class="header">
+            <div class="header-container">
+                <div class="header-left"> <button class="menu-button" id="menuToggle"> <i class="fa fa-bars" aria-hidden="true"></i>
+                    </button>
+                    <h1 class="logo">Forum</h1>
+                    <div class="search-container"> <i class="fa fa-search" aria-hidden="true"></i>
+                        <input type="text"
+                            placeholder="Search discussions..."> </div>
+                </div>
+                <div class="header-right">
+                    <button class="icon-button"> <i class="fa fa-moon" aria-hidden="true"></i>
+                    </button> 
+                    <button class="icon-button"> <i class="fa fa-bell" aria-hidden="true"></i>
+                    </button> 
+                    <button class="sign-in-button">Sign In</button> 
+                </div>
+            </div>
+        </header>
+        <div class="main-container">
+            <aside class="sidebar" id="sidebar">
+                <nav>
+                    <ul class="category-list">
+                        <li> <button class="category-button"> <i class="fa fa-hashtag" aria-hidden="true"></i>
+                            <span>All Posts</span>
+                            </button> </li>
+                        <li> <button class="category-button"> <i class="fa fa-newspaper" aria-hidden="true"></i>
+                            <span>Latest</span>
+                            </button> </li>
+                        <li> <button class="category-button"> <i class="fa fa-star" aria-hidden="true"></i>
+                            <span>Popular</span> </button>
+                        </li>
+                        <li> <button class="category-button"> <i class="fa fa-users" aria-hidden="true"></i>
+                            <span>Communities</span>
+                            </button> </li>
+                        <li> <button class="category-button"> <i class="fa fa-comments" aria-hidden="true"></i>
+
+                                <span>Discussions</span> </button> </li>
+                        <li> <button class="category-button"> <i class="fa fa-bookmark" aria-hidden="true"></i>
+                            <span>Bookmarks</span>
+                            </button> </li>
+                    </ul>
+                </nav>
+            </aside>
+            <main class="main-content">
+                <h2 class="section-title">Recent Discussions</h2>
+                <div class="posts-container" id="postsContainer"> 
+                    <!-- Posts will be inserted here by JavaScript -->
+                </div>
+            </main>
+        </div>
+    </div>
+    <script src="script.js"></script>
+</body>
+
+</html>
