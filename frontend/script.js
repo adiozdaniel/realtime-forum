@@ -97,3 +97,8 @@ function handleResize() {
 function toggleDarkMode() { 
     document.body.classList.toggle('dark-mode'); localStorage.setItem('darkMode', document.body.classList.contains('dark-mode')); 
 }
+
+// Search functionality 
+function handleSearch(e) { 
+    const searchTerm = e.target.value.toLowerCase(); const filteredPosts = SAMPLE_POSTS.filter(post => post.title.toLowerCase().includes(searchTerm) || post.excerpt.toLowerCase().includes(searchTerm) ); renderPosts(filteredPosts); 
+} 
