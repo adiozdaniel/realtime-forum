@@ -1,14 +1,22 @@
 package main
 
 import (
+	"database/sql"
 	"encoding/json"
 	"fmt"
 	"log"
 	"net/http"
 	"os"
+
+	_ "github.com/mattn/go-sqlite3" 
 )
 
+var db *sql.DB
+
 func main() {
+
+	initDB() // Initialize SQLite database connection
+
 	// Create server
 	mux := http.NewServeMux()
 
@@ -16,7 +24,7 @@ func main() {
 	mux.HandleFunc("/api/auth/register", registerHandler)
 	mux.HandleFunc("/api/auth/login", loginHandler)
 	mux.HandleFunc("/api/posts", postsHandler)
-	
+
 	// Start server
 	port := os.Getenv("PORT")
 	if port == "" {
@@ -26,6 +34,28 @@ func main() {
 	err := http.ListenAndServe(":"+port, nil)
 	if err != nil {
 		log.Fatal("Server failed:", err)
+	}
+}
+
+// Initialize database connection to SQLite
+func initDB() {
+	var err error
+	// Open the SQLite database (use a file path or :memory: for in-memory DB)
+	db, err = sql.Open("sqlite3", "./forum.db") // SQLite database file
+	if err != nil {
+		log.Fatal("Failed to connect to database:", err)
+	}
+
+	// Optional: Create tables if they don't exist
+	_, err = db.Exec(`
+		CREATE TABLE IF NOT EXISTS users (
+			id INTEGER PRIMARY KEY AUTOINCREMENT,
+			username TEXT NOT NULL,
+			password TEXT NOT NULL
+		);
+	`)
+	if err != nil {
+		log.Fatal("Failed to create table:", err)
 	}
 }
 
@@ -46,8 +76,8 @@ func registerHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Save to database
-	_, err := db.Exec("INSERT INTO users (username, password) VALUES ($1, $2)", req.Username, req.Password)
+	// Save to database (use ? as placeholders for SQLite)
+	_, err := db.Exec("INSERT INTO users (username, password) VALUES (?, ?)", req.Username, req.Password)
 	if err != nil {
 		http.Error(w, "Failed to register user", http.StatusInternalServerError)
 		return
