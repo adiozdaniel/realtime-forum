@@ -6,30 +6,24 @@ import (
 	"os"
 
 	"forum/handlers"
-	"forum/middlewares"
+	"forum/routes"
 )
 
 func main() {
 	handlers.InitDB() // Initialize SQLite database connection
-
-	// Create server
 	mux := http.NewServeMux()
 
-	// Routes
-	mux.HandleFunc("/api/auth/register", handlers.RegisterHandler)
-	mux.HandleFunc("/api/auth/login", handlers.LoginHandler)
-	mux.HandleFunc("/api/posts", handlers.PostsHandler)
-
-	// CORS middleware
-	handler := middlewares.CorsMiddleware(mux)
+	// Register Routes
+	h := routes.RegisterRoutes(mux)
 
 	// Start server
 	port := os.Getenv("PORT")
 	if port == "" {
-		port = "8080"
+		port = "4000"
 	}
+
 	log.Printf("Server starting @http://localhost:%s", port)
-	err := http.ListenAndServe(":"+port, handler)
+	err := http.ListenAndServe(":"+port, h)
 	if err != nil {
 		log.Fatal("Server failed:", err)
 	}
