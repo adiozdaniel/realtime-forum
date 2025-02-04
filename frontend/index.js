@@ -8,6 +8,7 @@ const searchInput = document.querySelector('#searchInput');
 // Sample Data 
 const SAMPLE_POSTS = [ 
     { 
+        postId: "01",
         title: "Getting Started with Go and Angular", 
         author: "Jane Cooper", 
         category: "Tutorial", 
@@ -17,6 +18,7 @@ const SAMPLE_POSTS = [
         timeAgo: "2h ago" 
     }, 
     { 
+        postId: "02",
         title: "Best Practices for API Design", 
         author: "John Smith", 
         category: "Discussion", 
@@ -27,6 +29,7 @@ const SAMPLE_POSTS = [
 
     }, 
     { 
+        postId: "03",
         title: "Web Performance Optimization Tips", 
         author: "Alice Johnson", 
         category: "Guide", 
