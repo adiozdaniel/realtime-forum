@@ -3,14 +3,14 @@ const SAMPLE_COMMENTS = {
     "01": [
         {
             id: 1,
-            author: "Shayo victor",
+            author: "walter otieno",
             content: "Great tutorial! The step-by-step approach really helped me understand the concepts.",
             timeAgo: "1h ago",
             likes: 5
         },
         {
             id: 2,
-            author: "victor shayo",
+            author: "martin shikuku",
             content: "Would love to see a follow-up tutorial on authentication with Go ",
             timeAgo: "45m ago",
             likes: 3
@@ -28,7 +28,7 @@ const SAMPLE_COMMENTS = {
     "03": [
         {
             id: 4,
-            author: "kanyo kanyo",
+            author: "grace neema",
             content: "The section about lazy loading really improved my site's performance. Thanks!",
             timeAgo: "30m ago",
             likes: 4
