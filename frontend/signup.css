@@ -1,0 +1,65 @@
+/* Password Strength Indicator */
+.password-strength {
+    margin-top: 0.5rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+.strength-bars {
+    display: flex;
+    gap: 0.25rem;
+    flex: 1;
+}
+.bar {
+    height: 4px;
+    flex: 1;
+    background-color: var(--gray-200);
+    border-radius: 2px;
+    transition: background-color 0.2s;
+}
+.bar.weak {
+    background-color: #ef4444;
+}
+.bar.medium {
+    background-color: #f59e0b;
+}
+.bar.strong {
+    background-color: #10b981;
+}
+.strength-text {
+    font-size: 0.75rem;
+    color: var(--gray-600);
+    min-width: 100px;
+}
+/* Checkbox styles */
+.checkbox-label {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.5rem;
+    color: var(--gray-600);
+    font-size: 0.875rem;
+    cursor: pointer;
+}
+.checkbox-label input[type="checkbox"] {
+    width: 1rem;
+    height: 1rem;
+    margin-top: 0.125rem;
+    cursor: pointer;
+}
+.link {
+    color: var(--primary-color);
+    text-decoration: none;
+}
+.link:hover {
+    text-decoration: underline;
+}
+/* Dark mode additions */
+.dark-mode .strength-text {
+    color: #999;
+}
+.dark-mode .bar {
+    background-color: #333;
+}
+.dark-mode .checkbox-label {
+    color: #999;
+}
