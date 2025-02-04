@@ -58,7 +58,6 @@ function createCommentHTML(comment) {
         </div>`;
 }
 
-// Load comments for a post
 function loadComments(postId) {
     const commentsSection = document.querySelector(`#comments-${postId}`);
     if (!commentsSection) return;
