@@ -42,6 +42,9 @@ const SAMPLE_POSTS = [
     }
 ];
 
+// Import comment functions
+import { loadComments, handleCommentSubmit } from './comment.js'; // Adjust the path as necessary
+
 // Post Template
 function createPostHTML(post) {
     return `
@@ -91,22 +94,10 @@ function toggleComments(e) {
     const commentsSection = document.querySelector(`#comments-${postId}`);
     
     if (commentsSection.classList.contains('hidden')) {
-        loadComments(postId);
+        loadComments(postId); // Load comments when showing
     }
     
     commentsSection.classList.toggle('hidden');
-}
-
-// Load comments for a post
-function loadComments(postId) {
-    const commentsSection = document.querySelector(`#comments-${postId}`);
-    if (!commentsSection) return;
-
-    const commentsContainer = commentsSection.querySelector('.comments-container');
-    const comments = SAMPLE_COMMENTS[postId] || [];
-    
-    commentsContainer.innerHTML = comments.map(comment => createCommentHTML(comment)).join('');
-    lucide.createIcons();
 }
 
 // Render all posts
@@ -124,6 +115,18 @@ function attachPostEventListeners() {
     document.querySelectorAll('.comment-toggle').forEach(button => {
         button.addEventListener('click', toggleComments);
     });
+    document.querySelectorAll('.comment-form').forEach(form => {
+        form.addEventListener('submit', handleCommentSubmit); // Use the imported function
+    });
+}
+
+// Handle like button click
+function handleLike(e) {
+    const button = e.currentTarget;
+    const likesCount = button.querySelector('.likes-count');
+    const currentLikes = parseInt(likesCount.textContent);
+    likesCount.textContent = currentLikes + 1;
+    button.classList.add('text-blue-600');
 }
 
 // Toggle mobile menu
@@ -145,15 +148,6 @@ function handleResize() {
 function toggleDarkMode() {
     document.body.classList.toggle('dark-mode');
     localStorage.setItem('darkMode', document.body.classList.contains('dark-mode'));
-}
-
-// Handle like button click
-function handleLike(e) {
-    const button = e.currentTarget;
-    const likesCount = button.querySelector('.likes-count');
-    const currentLikes = parseInt(likesCount.textContent);
-    likesCount.textContent = currentLikes + 1;
-    button.classList.add('text-blue-600');
 }
 
 // Search functionality
