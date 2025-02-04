@@ -10,12 +10,14 @@
     --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
     --transition: all 0.2s ease-in-out;
 }
+
 /* Reset & Base Styles */
 * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
 }
+
 body {
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
     background-color: var(--white);
@@ -26,13 +28,16 @@ body {
 a {
     text-decoration: none;
 }
+
 /* Layout */
 .app {
     min-height: 100vh;
 }
+
 .main-container {
     display: flex;
 }
+
 /* Header Styles */
 .header {
     position: sticky;
@@ -42,6 +47,7 @@ a {
     border-bottom: 1px solid var(--gray-200);
     z-index: 50;
 }
+
 .header-container {
     max-width: 1280px;
     margin: 0 auto;
@@ -51,15 +57,18 @@ a {
     align-items: center;
     justify-content: space-between;
 }
+
 .header-left {
     display: flex;
     align-items: center;
     gap: 1rem;
 }
+
 .logo {
     font-size: 1.25rem;
     font-weight: 600;
 }
+
 .search-container {
     display: none;
     align-items: center;
@@ -68,6 +77,7 @@ a {
     padding: 0.5rem 0.75rem;
     border-radius: 0.5rem;
 }
+
 .search-container input {
     background: transparent;
     border: none;
@@ -75,11 +85,13 @@ a {
     width: 16rem;
     color: var(--gray-700);
 }
+
 .header-right {
     display: flex;
     align-items: center;
     gap: 0.5rem;
 }
+
 /* Button Styles */
 .menu-button {
     padding: 0.5rem;
@@ -89,6 +101,7 @@ a {
     cursor: pointer;
     display: block;
 }
+
 .icon-button {
     padding: 0.5rem;
     border-radius: 0.5rem;
@@ -97,9 +110,11 @@ a {
     cursor: pointer;
     color: var(--gray-600);
 }
+
 .icon-button:hover {
     background-color: var(--gray-100);
 }
+
 .sign-in-button {
     text-decoration: none;
     margin-left: 0.5rem;
@@ -111,9 +126,11 @@ a {
     cursor: pointer;
     transition: var(--transition);
 }
+
 .sign-in-button:hover {
     background-color: var(--primary-hover);
 }
+
 /* Sidebar Styles */
 .sidebar {
     display: none;
@@ -124,12 +141,14 @@ a {
     border-right: 1px solid var(--gray-200);
     padding: 1rem;
 }
+
 .category-list {
     list-style: none;
     display: flex;
     flex-direction: column;
     gap: 0.5rem;
 }
+
 .category-button {
     width: 100%;
     display: flex;
@@ -143,9 +162,11 @@ a {
     transition: var(--transition);
     color: var(--gray-600);
 }
+
 .category-button:hover {
     background-color: var(--gray-100);
 }
+
 /* Main Content Styles */
 .main-content {
     flex: 1;
@@ -153,12 +174,14 @@ a {
     margin: 0 auto;
     padding: 1.5rem 1rem;
 }
+
 .section-title {
     font-size: 1.5rem;
     font-weight: 600;
     margin-bottom: 1.5rem;
     color: var(--gray-700);
 }
+
 /* Post Card Styles */
 .post-card {
     padding: 1rem;
@@ -168,9 +191,11 @@ a {
     transition: box-shadow 0.2s;
     background-color: var(--white);
 }
+
 .post-card:hover {
     box-shadow: var(--shadow-sm);
 }
+
 .post-category {
     display: inline-block;
     padding: 0.25rem 0.5rem;
@@ -179,27 +204,32 @@ a {
     font-size: 0.75rem;
     color: var(--gray-600);
 }
+
 .post-title {
     margin-top: 0.5rem;
     font-size: 1.125rem;
     font-weight: 500;
     color: var(--gray-700);
 }
+
 .post-excerpt {
     margin-top: 0.25rem;
     color: var(--gray-600);
     font-size: 0.875rem;
 }
+
 .post-footer {
     margin-top: 1rem;
     display: flex;
     justify-content: space-between;
     align-items: center;
 }
+
 .post-actions {
     display: flex;
     gap: 1rem;
 }
+
 .post-action-button {
     display: flex;
     align-items: center;
@@ -211,9 +241,11 @@ a {
     cursor: pointer;
     transition: var(--transition);
 }
+
 .post-action-button:hover {
     color: var(--primary-color);
 }
+
 .post-meta {
     display: flex;
     align-items: center;
@@ -221,38 +253,122 @@ a {
     color: var(--gray-600);
     font-size: 0.875rem;
 }
+
+/* Footer Styles */
+.footer {
+    background-color: var(--white);
+    border-top: 1px solid var(--gray-200);
+    padding: 2rem 0;
+}
+
+.footer-container {
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: 0 1rem;
+}
+
+.footer-content {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 2rem;
+    margin-bottom: 2rem;
+}
+
+.footer-section h3 {
+    color: var(--gray-700);
+    font-size: 1rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+}
+
+.footer-links {
+    list-style: none;
+}
+
+.footer-link {
+    color: var(--gray-600);
+    font-size: 0.875rem;
+    line-height: 2;
+    transition: var(--transition);
+}
+
+.footer-link:hover {
+    color: var(--primary-color);
+}
+
+.footer-social {
+    display: flex;
+    gap: 1rem;
+    margin-top: 1rem;
+}
+
+.social-link {
+    color: var(--gray-600);
+    transition: var(--transition);
+}
+
+.social-link:hover {
+    color: var(--primary-color);
+}
+
+.footer-bottom {
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--gray-200);
+    text-align: center;
+    color: var(--gray-600);
+    font-size: 0.875rem;
+}
+
 /* Dark Mode Styles */
 .dark-mode {
     background-color: #1a1a1a;
     color: #e5e5e5;
 }
+
 .dark-mode .header,
 .dark-mode .sidebar,
-.dark-mode .post-card {
+.dark-mode .post-card,
+.dark-mode .footer {
     background-color: #242424;
     border-color: #333;
 }
+
 .dark-mode .search-container {
     background-color: #333;
 }
+
 .dark-mode .search-container input {
     color: #e5e5e5;
 }
+
 .dark-mode .post-category {
     background-color: #333;
 }
+
 .dark-mode .post-excerpt,
 .dark-mode .post-meta,
 .dark-mode .post-action-button {
     color: #999;
 }
+
 .dark-mode .icon-button:hover,
 .dark-mode .category-button:hover {
     background-color: #333;
 }
+
 .dark-mode .post-card:hover {
     box-shadow: 0 1px 2px rgba(255, 255, 255, 0.05);
 }
+
+.dark-mode .footer-link,
+.dark-mode .social-link {
+    color: #999;
+}
+
+.dark-mode .footer-bottom {
+    border-color: #333;
+}
+
 /* Responsive Styles */
 @media (min-width: 768px) {
     .search-container {
@@ -262,25 +378,29 @@ a {
         display: none;
     }
 }
+
 @media (min-width: 1024px) {
     .sidebar {
         display: block;
     }
 }
+
 /* Utility Classes */
-.space-y-4 > * + * {
-    margin-top: 1rem;
-}
-.flex {
-    display: flex;
-}
-.items-center {
-    align-items: center;
-}
-.gap-4 {
-    gap: 1rem;
-}
 .hidden {
     display: none;
 }
 
+.text-blue-600 {
+    color: var(--primary-color);
+}
+
+/* Comments Integration */
+.post-card .comments-section {
+    margin-top: 1rem;
+    border-top: 1px solid var(--gray-200);
+    padding-top: 1rem;
+}
+
+.dark-mode .post-card .comments-section {
+    border-color: #333;
+}
