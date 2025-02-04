@@ -1,0 +1,27 @@
+
+{{define "base" }}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Modern Forum</title>
+    <link rel="stylesheet" href="index.css">
+    <link rel="stylesheet" href="footer.css">
+    <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+
+<body>
+    <div class="app">
+        {{block "header" .}}
+        <div class="main-container">
+           {{block "sidebar" .}}
+            {{block "content" .}}
+        </div>
+       {{ block "footer" .}}
+    </div>
+    <script src="index.js"></script>
+</body>
+</html>
+{{end}}
