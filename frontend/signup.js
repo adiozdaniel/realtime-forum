@@ -26,6 +26,17 @@ document.addEventListener('DOMContentLoaded', function() {
         lucide.createIcons(); 
     }); 
 
+     // Check password match
+     function checkPasswordsMatch() { 
+        if (confirmPasswordInput.value && passwordInput.value !== confirmPasswordInput.value) { 
+            showError(confirmPasswordInput, 'Passwords do not match'); 
+            return false; 
+        } else { 
+            removeError(confirmPasswordInput); 
+            return true; 
+        } 
+    } 
+
     // Password strength checker 
     function checkPasswordStrength(password) { 
         let strength = 0; 
@@ -77,13 +88,13 @@ document.addEventListener('DOMContentLoaded', function() {
     passwordInput.addEventListener('input', () => { 
         removeError(passwordInput); 
         checkPasswordStrength(passwordInput.value); 
+        if (confirmPasswordInput.value) { 
+            checkPasswordsMatch(); 
+        } 
     }); 
 
     confirmPasswordInput.addEventListener('input', () => { 
-        removeError(confirmPasswordInput); 
-        if (confirmPasswordInput.value && confirmPasswordInput.value !== passwordInput.value) { 
-            showError(confirmPasswordInput, 'Passwords do not match'); 
-        } 
+       checkPasswordsMatch();
     }); 
 
     // Form submission 
@@ -111,6 +122,11 @@ document.addEventListener('DOMContentLoaded', function() {
             isValid = false; 
         } 
 
+         // Validate password confirmation 
+         if (!checkPasswordsMatch()) { 
+            isValid = false; 
+        } 
+
         // Validate password confirmation 
         if (passwordInput.value !== confirmPasswordInput.value) { 
             showError(confirmPasswordInput, 'Passwords do not match'); 
@@ -129,7 +145,7 @@ document.addEventListener('DOMContentLoaded', function() {
         submitButton.disabled = true; 
         spinner.classList.remove('hidden'); 
         submitButton.querySelector('span').textContent = 'Creating account...'; 
-        
+
         try { 
             // Simulate API call 
             await new Promise(resolve => setTimeout(resolve, 1500)); 
