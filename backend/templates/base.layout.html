@@ -7,9 +7,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Modern Forum</title>
-    <link rel="stylesheet" href="index.css">
-    <link rel="stylesheet" href="footer.css">
+
+    <!-- Styling -->
+    <link rel="stylesheet" href="/static/css/index.css">
+    <link rel="stylesheet" href="/static/css/footer.css">
+
+    <!-- scripts -->
     <script src="https://unpkg.com/lucide@latest"></script>
+    <!-- <script src="/static/scripts/createposts.js"></script> -->
 </head>
 
 <body>
@@ -17,11 +22,13 @@
         {{block "header" .}} {{end}}
         <div class="main-container">
            {{block "sidebar" .}} {{end}}
-            {{block "content" .}}{{end}}
+            {{block "content" .}} {{end}}
+            {{ block "homescript" .}} {{end}}
+            {{ block "loginscript" .}} {{end}}
+            {{ block "signupscript" .}} {{end}}
         </div>
        {{ block "footer" .}}{{end}}
     </div>
-    <script src="index.js"></script>
 </body>
 </html>
 {{end}}

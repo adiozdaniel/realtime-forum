@@ -15,7 +15,7 @@ func newTemplateCache() *TemplateCache {
 	return &TemplateCache{Pages: make(map[string]*template.Template)}
 }
 
-func (t *TemplateCache) getProjectRoute(paths ...string) string {
+func (t *TemplateCache) GetProjectRoute(paths ...string) string {
 	cwd, _ := os.Getwd()
 	allPaths := append([]string{cwd}, paths...)
 
@@ -23,7 +23,7 @@ func (t *TemplateCache) getProjectRoute(paths ...string) string {
 }
 
 func (t *TemplateCache) CreateTemplatesCache() error {
-	tmpDir := t.getProjectRoute("templates", "*.page.html")
+	tmpDir := t.GetProjectRoute("templates", "*.page.html")
 
 	pages, err := filepath.Glob(tmpDir)
 	if err != nil {
@@ -38,7 +38,7 @@ func (t *TemplateCache) CreateTemplatesCache() error {
 			return fmt.Errorf("internal server error: parsing page")
 		}
 
-		layoutsPath := t.getProjectRoute("templates", "*.layout.html")
+		layoutsPath := t.GetProjectRoute("templates", "*.layout.html")
 
 		matches, err := filepath.Glob(layoutsPath)
 		if err != nil {
