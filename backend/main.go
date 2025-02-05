@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"os"
 
+	"forum/forumapp"
 	"forum/handlers"
 	"forum/routes"
 )
@@ -15,6 +16,10 @@ func main() {
 
 	// Register Routes
 	h := routes.RegisterRoutes(mux)
+	_, err := forumapp.ForumInit();
+	if err != nil {
+		log.Fatal(err)
+	}
 
 	// Start server
 	port := os.Getenv("PORT")
@@ -23,7 +28,7 @@ func main() {
 	}
 
 	log.Printf("Server starting @http://localhost:%s", port)
-	err := http.ListenAndServe(":"+port, h)
+	err = http.ListenAndServe(":"+port, h)
 	if err != nil {
 		log.Fatal("Server failed:", err)
 	}

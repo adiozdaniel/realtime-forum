@@ -14,12 +14,12 @@
 
 <body>
     <div class="app">
-        {{block "header" .}}
+        {{block "header" .}} {{end}}
         <div class="main-container">
-           {{block "sidebar" .}}
-            {{block "content" .}}
+           {{block "sidebar" .}} {{end}}
+            {{block "content" .}}{{end}}
         </div>
-       {{ block "footer" .}}
+       {{ block "footer" .}}{{end}}
     </div>
     <script src="index.js"></script>
 </body>
