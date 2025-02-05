@@ -6,16 +6,22 @@ import (
 	"forum/forumapp"
 )
 
-var t forumapp.TemplateCache
+type Repo struct {
+	app *forumapp.ForumApp
+}
+
+func NewRepo(app *forumapp.ForumApp) *Repo {
+	return &Repo{app}
+}
 
 // HomePage handler
-func HomePageHandler(w http.ResponseWriter, r *http.Request) {
+func(h *Repo) HomePageHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodGet {
 		http.Error(w, "Oops, didn't understand what you are looking for", http.StatusForbidden)
 		return
 	}
 
-	tmpl, err := t.GetPage("home.page.html")
+	tmpl, err := h.app.Tmpls.GetPage("home.page.html")
 	if err != nil {
 		http.Error(w, "Oops, something went wrong!", http.StatusInternalServerError)
 		return
