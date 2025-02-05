@@ -25,7 +25,12 @@
         {{block "header" .}} {{end}}
         <div class="main-container">
            {{block "sidebar" .}} {{end}}
-            {{block "content" .}} {{end}}
+
+           <!-- Page Content -->
+           <main class="main-content">
+             {{block "content" .}} {{end}}
+           </main>
+           
             {{ block "homescript" .}} {{end}}
             {{ block "loginscript" .}} {{end}}
             {{ block "signupscript" .}} {{end}}
