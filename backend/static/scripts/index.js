@@ -1,7 +1,6 @@
 // DOM Elements 
 const menuToggleBtn = document.querySelector('#menuToggle'); 
 const sidebar = document.querySelector('#sidebar'); 
-const darkModeToggle = document.querySelector('#darkModeToggle'); 
 const postsContainer = document.querySelector('#postsContainer'); 
 const searchInput = document.querySelector('#searchInput'); 
 
@@ -98,11 +97,6 @@ function handleResize() {
     if (window.innerWidth >= 1024) { sidebar.style.display = 'block'; } else { sidebar.style.display = 'none'; } 
 }
 
-// Toggle dark mode 
-function toggleDarkMode() { 
-    document.body.classList.toggle('dark-mode'); localStorage.setItem('darkMode', document.body.classList.contains('dark-mode')); 
-}
-
 // Search functionality 
 function handleSearch(e) { 
     const searchTerm = e.target.value.toLowerCase(); const filteredPosts = SAMPLE_POSTS.filter(post => post.title.toLowerCase().includes(searchTerm) || post.excerpt.toLowerCase().includes(searchTerm) ); renderPosts(filteredPosts); 
@@ -119,9 +113,7 @@ function init() {
     // Initial render 
     renderPosts(); 
     // Event listeners 
-    menuToggleBtn?.addEventListener('click', toggleMobileMenu); darkModeToggle?.addEventListener('click', toggleDarkMode); window.addEventListener('resize', handleResize); searchInput?.addEventListener('input', handleSearch); 
-    // Check for saved dark mode preference 
-    const savedDarkMode = localStorage.getItem('darkMode') === 'true'; if (savedDarkMode) { document.body.classList.add('dark-mode'); } 
+    menuToggleBtn?.addEventListener('click', toggleMobileMenu);
     // Initial resize check 
     handleResize(); 
 } 

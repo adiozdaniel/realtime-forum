@@ -10,7 +10,7 @@
             </div>
         </div>
         <div class="header-right">
-            <button class="icon-button"> <i data-lucide="moon"></i>
+            <button class="icon-button" id="darkModeToggle"> <i data-lucide="moon"></i>
             </button>
             <button class="icon-button"> <i data-lucide="bell"></i>
             </button>
@@ -19,3 +19,7 @@
     </div>
 </header>
 {{end}}
+
+{{define "headerjs"}}
+<script src="/static/scripts/header.js"></script>
+{{end }}
