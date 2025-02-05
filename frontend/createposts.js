@@ -90,13 +90,17 @@ document.addEventListener('DOMContentLoaded', () => {
     videoLink.addEventListener('input', (e) => { 
         const url = e.target.value.trim(); 
         if (isValidVideoUrl(url)) { 
-            videoPreview.textContent = url; 
+            const embedUrl = getEmbedUrl(url);
+        
+        if (embedUrl) {
+            videoPreview.innerHTML = `<iframe width="100%" height="250" src="${embedUrl}" frameborder="0" allowfullscreen></iframe>`;
             videoPreviewContainer.classList.remove('hidden'); 
             mediaPreview.classList.remove('hidden'); 
             
             // Clear image if exists 
             imageUpload.value = ''; 
             imagePreviewContainer.classList.add('hidden'); 
+        }
         } else { 
             videoPreviewContainer.classList.add('hidden'); 
         } 
@@ -163,4 +167,23 @@ document.addEventListener('DOMContentLoaded', () => {
         // Basic validation for YouTube and Vimeo URLs 
         return /^(https?:\/\/)?(www\.)?(youtube\.com|youtu\.be|vimeo\.com)\/.+/.test(url); 
     } 
+
+    function getEmbedUrl(url) {
+        const youtubeRegex = /(?:youtube\.com\/(?:watch\?v=|embed\/|shorts\/)|youtu\.be\/|youtube\.com\/live\/)([a-zA-Z0-9_-]+)/;
+        const vimeoRegex = /vimeo\.com\/(\d+)/;
+    
+        let match = url.match(youtubeRegex);
+        if (match) {
+            return `https://www.youtube.com/embed/${match[1]}`;
+        }
+    
+        match = url.match(vimeoRegex);
+        if (match) {
+            return `https://player.vimeo.com/video/${match[1]}`;
+        }
+    
+        return null; // Invalid video link
+    }
+    
+    
 });
