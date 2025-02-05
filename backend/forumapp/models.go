@@ -12,4 +12,3 @@ type ForumApp struct {
 type TemplateCache struct {
 	Pages map[string]*template.HTML
 }
-
