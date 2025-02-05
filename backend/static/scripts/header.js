@@ -3,10 +3,6 @@ const darkModeToggle = document.querySelector('#darkModeToggle');
 
 lucide.createIcons();
 
-// Handle window resize 
-function handleResize() { 
-    if (window.innerWidth >= 1024) { sidebar.style.display = 'block'; } else { sidebar.style.display = 'none'; } 
-}
 
 // Toggle dark mode 
 function toggleDarkMode() { 
@@ -18,11 +14,10 @@ function toggleDarkMode() {
 function init() {
     lucide.createIcons();
     // Event listeners 
-    darkModeToggle?.addEventListener('click', toggleDarkMode); window.addEventListener('resize', handleResize); searchInput?.addEventListener('input', handleSearch); 
+    darkModeToggle?.addEventListener('click', toggleDarkMode); 
     // Check for saved dark mode preference 
-    const savedDarkMode = localStorage.getItem('darkMode') === 'true'; if (savedDarkMode) { document.body.classList.add('dark-mode'); } 
-    // Initial resize check 
-    handleResize(); 
+    const savedDarkMode = localStorage.getItem('darkMode') === 'true'; 
+    if (savedDarkMode) { document.body.classList.add('dark-mode'); } 
 } 
 
 // Start the application 
