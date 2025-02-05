@@ -47,7 +47,7 @@ function createCommentHTML(comment) {
             <p class="comment-content">${comment.content}</p>
             <div class="comment-actions">
                 <span class="comment-action">
-                    <i data-lucide="heart"></i>
+                    <i data-lucide="thumbs-up"></i>
                     <span class="likes-count">${comment.likes}</span>
                 </span>
                 <span class="comment-action">
