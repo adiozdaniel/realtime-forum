@@ -67,3 +67,12 @@ func (app *ForumApp) createTemplatesCache() error {
 
 	return nil
 }
+
+func (app *ForumApp) GetPage(name string) (*template.Template, error) {
+	tpl, ok := app.Tmpls.Pages[name]
+	if !ok {
+		return nil, fmt.Errorf("%s is missing", name)
+	}
+
+	return tpl, nil
+}
