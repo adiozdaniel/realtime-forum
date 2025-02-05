@@ -11,6 +11,9 @@
     <!-- Styling -->
     <link rel="stylesheet" href="/static/css/index.css">
     <link rel="stylesheet" href="/static/css/footer.css">
+    <link rel="stylesheet" href="/static/css/createpost.css">
+    <link rel="stylesheet" href="/static/css/login.css">
+    <link rel="stylesheet" href="/static/css/signup.css">
 
     <!-- scripts -->
     <script src="https://unpkg.com/lucide@latest"></script>
@@ -23,7 +26,12 @@
         {{ block "headerjs" .}} {{end}}
         <div class="main-container">
            {{block "sidebar" .}} {{end}}
-            {{block "content" .}} {{end}}
+
+           <!-- Page Content -->
+           <main class="main-content">
+             {{block "content" .}} {{end}}
+           </main>
+           
             {{ block "homescript" .}} {{end}}
             {{ block "loginscript" .}} {{end}}
             {{ block "signupscript" .}} {{end}}
