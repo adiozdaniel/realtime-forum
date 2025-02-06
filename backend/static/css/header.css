@@ -1,0 +1,81 @@
+/* Header Styles */
+.header {
+    position: sticky;
+    top: 0;
+    width: 100%;
+    background-color: var(--white);
+    border-bottom: 1px solid var(--gray-200);
+    z-index: 50;
+}
+.header-container {
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: 0 1rem;
+    height: 4rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+.header-left {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+.logo {
+    font-size: 1.25rem;
+    font-weight: 600;
+}
+.search-container {
+    display: block;
+    align-items: center;
+    gap: 0.5rem;
+    background-color: var(--gray-100);
+    padding: 0.5rem 0.75rem;
+    border-radius: 0.5rem;
+}
+.search-container input {
+    background: transparent;
+    border: none;
+    outline: none;
+    width: 16rem;
+    color: var(--gray-700);
+}
+.header-right {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+/* Button Styles */
+.menu-button {
+    padding: 0.5rem;
+    border-radius: 0.5rem;
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    display: block;
+}
+.icon-button {
+    padding: 0.5rem;
+    border-radius: 0.5rem;
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    color: var(--gray-600);
+}
+.icon-button:hover {
+    background-color: var(--gray-100);
+}
+.sign-in-button {
+    text-decoration: none;
+    margin-left: 0.5rem;
+    padding: 0.5rem 1rem;
+    background-color: var(--primary-color);
+    color: var(--white);
+    border: none;
+    border-radius: 0.5rem;
+    cursor: pointer;
+    transition: var(--transition);
+}
+.sign-in-button:hover {
+    background-color: var(--primary-hover);
+}
