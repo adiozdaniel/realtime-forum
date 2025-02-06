@@ -51,11 +51,18 @@ func (f *ForumApp) InitDB() error {
 		return fmt.Errorf("failed to connect to database: %v", err)
 	}
 
+	// Check if the database is accessible
+	err = f.Db.Ping()
+	if err != nil {
+		return fmt.Errorf("failed to ping database: %v", err)
+	}
+
 	// Optional: Create tables if they don't exist
 	_, err = f.Db.Exec(`
 		CREATE TABLE IF NOT EXISTS users (
 			id INTEGER PRIMARY KEY AUTOINCREMENT,
 			username TEXT NOT NULL,
+			email TEXT NOT NULL UNIQUE,
 			password TEXT NOT NULL
 		);
 	`)
