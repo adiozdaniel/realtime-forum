@@ -127,3 +127,92 @@
 .dark-mode .comments-title {
     color: #e5e5e5;
 }
+
+.replies-container {
+    margin-left: 2rem;
+    margin-top: 1rem;
+}
+
+.reply {
+    padding: 0.75rem;
+    border-left: 2px solid var(--gray-200);
+    margin-bottom: 0.75rem;
+}
+
+.reply-form {
+    margin-top: 1rem;
+    margin-left: 2rem;
+    padding: 1rem;
+    border-left: 2px solid var(--gray-200);
+}
+
+.reply-input {
+    width: 100%;
+    padding: 0.75rem;
+    border: 1px solid var(--gray-200);
+    border-radius: 0.5rem;
+    resize: vertical;
+    min-height: 60px;
+    font-family: inherit;
+}
+
+.reply-form-actions {
+    display: flex;
+    gap: 0.5rem;
+    justify-content: flex-end;
+    margin-top: 0.5rem;
+}
+
+.reply-submit {
+    padding: 0.5rem 1rem;
+    background-color: var(--primary-color);
+    color: var(--white);
+    border: none;
+    border-radius: 0.5rem;
+    cursor: pointer;
+    transition: var(--transition);
+    font-weight: 500;
+}
+
+.reply-cancel {
+    padding: 0.5rem 1rem;
+    background-color: var(--gray-200);
+    color: var(--gray-700);
+    border: none;
+    border-radius: 0.5rem;
+    cursor: pointer;
+    transition: var(--transition);
+    font-weight: 500;
+}
+
+.reply-submit:hover {
+    background-color: var(--primary-hover);
+}
+
+.reply-cancel:hover {
+    background-color: var(--gray-300);
+}
+
+/* Dark mode styles */
+.dark-mode .reply {
+    border-left-color: #333;
+}
+
+.dark-mode .reply-form {
+    border-left-color: #333;
+}
+
+.dark-mode .reply-input {
+    background-color: #242424;
+    border-color: #333;
+    color: #e5e5e5;
+}
+
+.dark-mode .reply-cancel {
+    background-color: #333;
+    color: #e5e5e5;
+}
+
+.dark-mode .reply-cancel:hover {
+    background-color: #404040;
+}
