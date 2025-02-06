@@ -27,7 +27,11 @@ func (h *Repo) HomePageHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err = tmpl.Execute(w, nil)
+	data := map[string]interface{} {
+		"Page": "home",
+	}
+
+	err = tmpl.Execute(w, data)
 	if err != nil {
 		http.Error(w, "Oops, something went wrong while rendering the page!", http.StatusInternalServerError)
 	}
@@ -45,6 +49,9 @@ func (h *Repo) LoginPage(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Oops, something went wrong!", http.StatusInternalServerError)
 		return
 	}
+	// data := map[string]interface{} {
+	// 	"isAuthPage": true,
+	// }
 
 	err = tmpl.Execute(w, nil)
 	if err != nil {
@@ -64,6 +71,10 @@ func (h *Repo) SignUpPage(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Oops, something went wrong!", http.StatusInternalServerError)
 		return
 	}
+
+	// data := map[string]interface{} {
+	// 	"isAuthPage": true,
+	// }
 
 	err = tmpl.Execute(w, nil)
 	if err != nil {
