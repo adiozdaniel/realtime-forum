@@ -43,7 +43,7 @@ const SAMPLE_POSTS = [
 ];
 
 // Import comment functions
-import { loadComments, handleCommentSubmit } from './comment.js'; // Adjust the path as necessary
+import { loadComments, handleCommentSubmit } from './comment.js';
 
 // Post Template
 function createPostHTML(post) {
@@ -94,7 +94,7 @@ function toggleComments(e) {
     const commentsSection = document.querySelector(`#comments-${postId}`);
     
     if (commentsSection.classList.contains('hidden')) {
-        loadComments(postId); // Load comments when showing
+        loadComments(postId);
     }
     
     commentsSection.classList.toggle('hidden');
@@ -116,7 +116,7 @@ function attachPostEventListeners() {
         button.addEventListener('click', toggleComments);
     });
     document.querySelectorAll('.comment-form').forEach(form => {
-        form.addEventListener('submit', handleCommentSubmit); // Use the imported function
+        form.addEventListener('submit', handleCommentSubmit);
     });
 }
 
