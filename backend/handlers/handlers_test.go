@@ -7,6 +7,12 @@ import (
 )
 
 func TestRegisterHandler(t *testing.T) {
+	r := httptest.NewRequest(http.MethodGet, "/api/auth/register", nil)
+	w := httptest.NewRecorder()
+	LoginHandler(w, r)
+	if w.Code != http.StatusMethodNotAllowed {
+		t.Errorf("expected %d got %d", http.StatusMethodNotAllowed, w.Code)
+	}
 }
 
 func TestLoginHandler(t *testing.T) {
