@@ -1,4 +1,4 @@
-import { SAMPLE_POSTS } from "./index.js";
+import { renderPosts, SAMPLE_POSTS } from "./index.js";
 const sidebar = document.querySelector('#sidebar'); 
 const allCategoriesBtn = document.querySelector('#allCategories');
 const categoryDropdown = document.querySelector('#categoryDropdown')
