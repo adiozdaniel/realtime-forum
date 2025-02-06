@@ -5,7 +5,7 @@
             <button class="menu-button" id="menuToggle"> <i data-lucide="menu"></i>
             </button>
             <h1 class="logo">Forum</h1>
-            <div class="search-container"> <i data-lucide="search"></i>
+            <div class="search-container" id="searchInput"> <i data-lucide="search"></i>
                 <input type="text" placeholder="Search discussions...">
             </div>
         </div>
@@ -21,5 +21,5 @@
 {{end}}
 
 {{define "headerjs"}}
-<script src="/static/scripts/header.js"></script>
+<script src="/static/scripts/header.js" type="module"></script>
 {{end }}

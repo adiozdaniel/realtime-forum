@@ -1,6 +1,5 @@
 // DOM Elements 
 const postsContainer = document.querySelector('#postsContainer'); 
-const searchInput = document.querySelector('#searchInput'); 
 
 // Sample Data 
 const SAMPLE_POSTS = [ 
@@ -75,7 +74,8 @@ function createPostHTML(post) {
     
 // Render all posts 
 function renderPosts(posts = SAMPLE_POSTS) { 
-    postsContainer.innerHTML = posts.map(post => createPostHTML(post)).join(''); attachPostEventListeners(); 
+    postsContainer.innerHTML = posts.map(post => createPostHTML(post)).join(''); 
+    attachPostEventListeners(); 
 }
 
 // Attach event listeners to post buttons 
@@ -84,16 +84,6 @@ function attachPostEventListeners() {
         button.addEventListener('click', handleLike); 
     }); 
 }
-
-// Search functionality 
-function handleSearch(e) { 
-    const searchTerm = e.target.value.toLowerCase(); 
-    const filteredPosts = SAMPLE_POSTS.filter(post => 
-        post.title.toLowerCase().includes(searchTerm) || 
-        post.excerpt.toLowerCase().includes(searchTerm) 
-    ); 
-    renderPosts(filteredPosts); 
-} 
 
 // Handle like button click 
 function handleLike(e) { 
@@ -112,3 +102,5 @@ function init() {
 
 // Start the application 
 document.addEventListener('DOMContentLoaded', init);
+
+export { renderPosts, SAMPLE_POSTS };
