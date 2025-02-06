@@ -14,8 +14,6 @@ function handleResize() {
 
 // Initialize function 
 function init() {
-    lucide.createIcons();
-
     // Event listeners 
     menuToggleBtn?.addEventListener('click', toggleMobileMenu);
     // Initial resize check 

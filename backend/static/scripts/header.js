@@ -1,9 +1,6 @@
 // DOM Elements 
 const darkModeToggle = document.querySelector('#darkModeToggle'); 
 
-lucide.createIcons();
-
-
 // Toggle dark mode 
 function toggleDarkMode() { 
     document.body.classList.toggle('dark-mode'); localStorage.setItem('darkMode', document.body.classList.contains('dark-mode')); 
@@ -12,7 +9,6 @@ function toggleDarkMode() {
 
 // Initialize function 
 function init() {
-    lucide.createIcons();
     // Event listeners 
     darkModeToggle?.addEventListener('click', toggleDarkMode); 
     // Check for saved dark mode preference 
