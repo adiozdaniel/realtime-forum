@@ -1,6 +1,7 @@
 package server
 
 import (
+	"context"
 	"log"
 	"net/http"
 
@@ -10,10 +11,11 @@ import (
 )
 
 type Server struct {
-	app  *forumapp.ForumApp
-	repo *handlers.Repo
+	app    *forumapp.ForumApp
+	repo   *handlers.Repo
 	routes *routes.Routes
-	port string
+	server *http.Server
+	port   string
 }
 
 func NewServer(port string) *Server {
@@ -21,14 +23,14 @@ func NewServer(port string) *Server {
 	repo := handlers.NewRepo(app)
 	routes := routes.NewRoutes(app, repo)
 	return &Server{
-		app:  app,
-		repo: repo,
+		app:    app,
+		repo:   repo,
 		routes: routes,
-		port: port,
+		port:   port,
 	}
 }
 
-func (s *Server) Start() {
+func (s *Server) Start(ctx context.Context) {
 	mux := http.NewServeMux()
 
 	// Register Routes
@@ -38,9 +40,25 @@ func (s *Server) Start() {
 		log.Fatal(err)
 	}
 
+	s.server = &http.Server{
+		Addr:    ":" + s.port,
+		Handler: h,
+	}
+
+	go func() {
+		<-ctx.Done()
+		log.Println("Server shutting down...")
+		if err := s.server.Shutdown(context.Background()); err != nil {
+			log.Printf("Error shutting down server: %v\n", err)
+		}
+
+		log.Println("Server successuly shutdown!")
+		return
+	}()
+
 	log.Printf("Server starting @http://localhost:%s", s.port)
-	err = http.ListenAndServe(":"+s.port, h)
-	if err != nil {
+	err = s.server.ListenAndServe()
+	if err != nil && err != http.ErrServerClosed{
 		log.Fatal("Server failed:", err)
 	}
 }
