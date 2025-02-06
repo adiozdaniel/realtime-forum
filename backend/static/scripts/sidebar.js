@@ -1,24 +1,23 @@
 const sidebar = document.querySelector('#sidebar'); 
-const menuToggleBtn = document.querySelector('#menuToggle'); 
-
-// Toggle mobile menu 
-function toggleMobileMenu() { 
-    const isVisible = sidebar.style.display === 'block'; sidebar.style.display = isVisible ? 'none' : 'block'; 
-}
 
 // Handle window resize 
 function handleResize() { 
-    if (window.innerWidth >= 1024) { sidebar.style.display = 'block'; } else { sidebar.style.display = 'none'; } 
+    if (window.innerWidth >= 768) { 
+        sidebar.classList.add('visible'); 
+        sidebar.classList.remove('hidden'); 
+    } else { 
+        sidebar.classList.add('hidden'); 
+        sidebar.classList.remove('visible'); 
+    }
 }
-
 
 // Initialize function 
 function init() {
-    // Event listeners 
-    menuToggleBtn?.addEventListener('click', toggleMobileMenu);
     // Initial resize check 
     handleResize(); 
 }
 
 // Start the application 
 document.addEventListener('DOMContentLoaded', init);
+
+export { handleResize, sidebar};

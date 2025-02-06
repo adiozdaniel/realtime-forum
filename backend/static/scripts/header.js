@@ -1,7 +1,15 @@
 import  {renderPosts, SAMPLE_POSTS} from "./index.js";
+import {  sidebar } from "./sidebar.js";
 // DOM Elements 
+const menuToggleBtn = document.querySelector('#menuToggle');
 const searchInput = document.querySelector('#searchInput'); 
 const darkModeToggle = document.querySelector('#darkModeToggle'); 
+
+// Toggle mobile menu
+function toggleMobileMenu() {
+    const isVisible = sidebar.style.display === 'block';
+    sidebar.style.display = isVisible ? 'none' : 'block';
+}
 
 // Search functionality 
 function handleSearch(e) { 
@@ -20,7 +28,9 @@ function toggleDarkMode() {
 
 // Initialize function 
 function init() {
+    // handleResize();
     // Event listeners 
+    menuToggleBtn?.addEventListener('click', toggleMobileMenu);
     searchInput?.addEventListener('input', handleSearch); 
     darkModeToggle?.addEventListener('click', toggleDarkMode); 
     // Check for saved dark mode preference 
