@@ -29,7 +29,6 @@ func NewServer(port string) *Server {
 }
 
 func (s *Server) Start() {
-	handlers.InitDB() // Initialize SQLite database connection
 	mux := http.NewServeMux()
 
 	// Register Routes

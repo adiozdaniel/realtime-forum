@@ -26,9 +26,9 @@ func (r *Routes) RegisterRoutes(mux *http.ServeMux) http.Handler {
 	fs := r.app.Tmpls.GetProjectRoute("/static")
 	mux.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir(fs))))
 
-	mux.HandleFunc("/api/auth/register", handlers.RegisterHandler)
-	mux.HandleFunc("/api/auth/login", handlers.LoginHandler)
-	mux.HandleFunc("/api/posts", handlers.PostsHandler)
+	mux.HandleFunc("/api/auth/register", r.repo.RegisterHandler)
+	mux.HandleFunc("/api/auth/login", r.repo.LoginHandler)
+	mux.HandleFunc("/api/posts", r.repo.PostsHandler)
 	mux.HandleFunc("/", r.repo.HomePageHandler)
 	mux.HandleFunc("/auth", r.repo.LoginPage)
 	mux.HandleFunc("/auth-sign-up", r.repo.SignUpPage)
