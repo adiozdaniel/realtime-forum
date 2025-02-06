@@ -34,7 +34,7 @@ func NewServer(port string) *Server {
 	}
 }
 
-func (s *Server) Start(ctx context.Context) {
+func(s *Server) runServer() error {
 	mux := http.NewServeMux()
 
 	// Register Routes
@@ -45,6 +45,12 @@ func (s *Server) Start(ctx context.Context) {
 		Handler: h,
 	}
 
+	return nil
+}
+
+func (s *Server) Start(ctx context.Context) {
+	s.runServer()
+	
 	go func() {
 		<-ctx.Done()
 		log.Println("Server shutting down...")
