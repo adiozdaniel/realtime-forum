@@ -19,7 +19,11 @@ type Server struct {
 }
 
 func NewServer(port string) *Server {
-	app, _ := forumapp.ForumInit()
+	app, err := forumapp.ForumInit()
+	if err != nil {
+		log.Fatal(err)
+	}
+
 	repo := handlers.NewRepo(app)
 	routes := routes.NewRoutes(app, repo)
 	return &Server{
@@ -35,10 +39,6 @@ func (s *Server) Start(ctx context.Context) {
 
 	// Register Routes
 	h := s.routes.RegisterRoutes(mux)
-	_, err := forumapp.ForumInit()
-	if err != nil {
-		log.Fatal(err)
-	}
 
 	s.server = &http.Server{
 		Addr:    ":" + s.port,
@@ -57,7 +57,7 @@ func (s *Server) Start(ctx context.Context) {
 	}()
 
 	log.Printf("Server starting @http://localhost:%s", s.port)
-	err = s.server.ListenAndServe()
+	err := s.server.ListenAndServe()
 	if err != nil && err != http.ErrServerClosed{
 		log.Fatal("Server failed:", err)
 	}
