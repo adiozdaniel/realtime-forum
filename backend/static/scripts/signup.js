@@ -1,7 +1,3 @@
-document.addEventListener('DOMContentLoaded', function() { 
-    // Initialize Lucide icons 
-    lucide.createIcons(); 
-
     // DOM Elements 
     const form = document.getElementById('signupForm'); 
     const usernameInput = document.getElementById('username'); 
@@ -15,6 +11,10 @@ document.addEventListener('DOMContentLoaded', function() {
     const submitButton = form.querySelector('button[type="submit"]'); 
     const spinner = submitButton.querySelector('.spinner'); 
 
+document.addEventListener('DOMContentLoaded', function() { 
+    // Initialize Lucide icons 
+    lucide.createIcons(); 
+
     // Password visibility toggle 
     passwordToggle.addEventListener('click', () => { 
         const type = passwordInput.type === 'password' ? 'text' : 'password'; 
@@ -22,8 +22,9 @@ document.addEventListener('DOMContentLoaded', function() {
         confirmPasswordInput.type = type; 
         // Update icon 
         const icon = passwordToggle.querySelector('i'); 
-        icon.setAttribute('data-lucide', type === 'password' ? 'eye' : 'eye-off'); 
-        lucide.createIcons(); 
+        if (icon != null) {
+            icon.setAttribute('data-lucide', type === 'password' ? 'eye' : 'eye-off'); 
+        }
     }); 
 
      // Check password match

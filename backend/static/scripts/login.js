@@ -13,8 +13,9 @@ document.addEventListener('DOMContentLoaded', function() {
         const type = passwordInput.type === 'password' ? 'text' : 'password'; passwordInput.type = type; 
         // Update icon 
         const icon = passwordToggle.querySelector('i'); 
-        icon.setAttribute('data-lucide', type === 'password' ? 'eye' : 'eye-off'); 
-        lucide.createIcons(); 
+        if (icon != null) {
+            icon.setAttribute('data-lucide', type === 'password' ? 'eye' : 'eye-off'); 
+        }
     }); 
 
     // Form validation 
@@ -84,4 +85,5 @@ document.addEventListener('DOMContentLoaded', function() {
         
     // Clear errors on input 
     emailInput.addEventListener('input', () => removeError(emailInput)); 
-    passwordInput.addEventListener('input', () => removeError(passwordInput)); });
+    passwordInput.addEventListener('input', () => removeError(passwordInput)); 
+});
