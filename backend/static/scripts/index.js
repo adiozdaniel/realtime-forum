@@ -103,23 +103,6 @@ function init() {
     // Initial render 
     renderPosts(); 
 
-    // Event listeners 
-    menuToggleBtn?.addEventListener('click', toggleMobileMenu); 
-    darkModeToggle?.addEventListener('click', toggleDarkMode); 
-    window.addEventListener('resize', handleResize); 
-    searchInput?.addEventListener('input', handleSearch); 
-
-    // categories dropdown
-    createCategoryDropdown();
-
-    // Check for saved dark mode preference 
-    const savedDarkMode = localStorage.getItem('darkMode') === 'true'; 
-    if (savedDarkMode) { 
-        document.body.classList.add('dark-mode'); 
-    }
-
-    // Initial resize check 
-    handleResize(); 
 } 
 
 // Start the application 
