@@ -146,6 +146,15 @@ a {
 .category-button:hover {
     background-color: var(--gray-100);
 }
+
+.category-dropdown {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    margin-left: 15%;
+    margin-top: 5%;
+}
+
 /* Main Content Styles */
 .main-content {
     flex: 1;

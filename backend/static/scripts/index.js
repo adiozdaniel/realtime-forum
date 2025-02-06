@@ -1,6 +1,8 @@
 // DOM Elements 
 const menuToggleBtn = document.querySelector('#menuToggle'); 
 const sidebar = document.querySelector('#sidebar'); 
+const allCategoriesBtn = document.querySelector('#allCategories');
+const categoryDropdown = document.querySelector('#categoryDropdown')
 const darkModeToggle = document.querySelector('#darkModeToggle'); 
 const postsContainer = document.querySelector('#postsContainer'); 
 const searchInput = document.querySelector('#searchInput'); 
@@ -85,43 +87,142 @@ function renderPosts(posts = SAMPLE_POSTS) {
 
 // Attach event listeners to post buttons 
 function attachPostEventListeners() { 
-    document.querySelectorAll('.like-button').forEach(button => { button.addEventListener('click', handleLike); }); 
+    document.querySelectorAll('.like-button').forEach(button => { 
+        button.addEventListener('click', handleLike); }); 
 }
 
- // Toggle mobile menu 
- function toggleMobileMenu() { 
+// Toggle mobile menu 
+function toggleMobileMenu() { 
     const isVisible = sidebar.style.display === 'block'; sidebar.style.display = isVisible ? 'none' : 'block'; 
 } 
 
 // Handle window resize 
 function handleResize() { 
-    if (window.innerWidth >= 1024) { sidebar.style.display = 'block'; } else { sidebar.style.display = 'none'; } 
+    if (window.innerWidth >= 1024) { sidebar.style.display = 'block'; 
+
+    } else { 
+        sidebar.style.display = 'none'; 
+    } 
 }
 
 // Toggle dark mode 
 function toggleDarkMode() { 
-    document.body.classList.toggle('dark-mode'); localStorage.setItem('darkMode', document.body.classList.contains('dark-mode')); 
+    document.body.classList.toggle('dark-mode'); 
+    localStorage.setItem('darkMode', document.body.classList.contains('dark-mode')); 
 }
 
 // Search functionality 
 function handleSearch(e) { 
-    const searchTerm = e.target.value.toLowerCase(); const filteredPosts = SAMPLE_POSTS.filter(post => post.title.toLowerCase().includes(searchTerm) || post.excerpt.toLowerCase().includes(searchTerm) ); renderPosts(filteredPosts); 
+    const searchTerm = e.target.value.toLowerCase(); 
+    const filteredPosts = SAMPLE_POSTS.filter(post => 
+        post.title.toLowerCase().includes(searchTerm) || 
+        post.excerpt.toLowerCase().includes(searchTerm) ); 
+        renderPosts(filteredPosts); 
 } 
+
+// // Category Dropdown Handling
+// function createCategoryDropdown() {
+//     const existingDropdown = document.querySelector('#categoryDropdown');
+//     if (existingDropdown) return; // Prevent duplicate dropdowns
+
+//     const categories = [...new Set(SAMPLE_POSTS.map(post => post.category))]; // Extract unique categories
+
+//     const dropdown = document.createElement('div');
+//     dropdown.classList.add('category-dropdown');
+//     dropdown.classList.add('hidden');
+//     // dropdown.style.display = 'none'; // Initially hidden
+
+//     categories.forEach(category => {
+//         const label = document.createElement('label');
+//         label.innerHTML = `<input type="checkbox" value="${category}" class="category-checkbox"> ${category}`;
+//         dropdown.appendChild(label);
+//     });
+
+//     allCategories.parentElement.appendChild(dropdown); // Append dropdown to the parent of #allCategories
+// }
+
+function createCategoryDropdown() { 
+    const categories = [...new Set(SAMPLE_POSTS.map(post => post.category))]; 
+    categoryDropdown.innerHTML = categories.map(
+        category => ` <label> <input type="checkbox" class="category-checkbox" value="${category}"> ${category} </label> `).join(''); 
+        
+        // Add "All Categories" option 
+        const allCategoriesLabel = document.createElement('label'); 
+        allCategoriesLabel.innerHTML = ` <input type="checkbox" class="category-checkbox" value="all" checked> All Posts `; 
+        categoryDropdown.insertBefore(allCategoriesLabel, categoryDropdown.firstChild); 
+} 
+
+// Toggle dropdown 
+allCategoriesBtn.addEventListener('click', (e) => { 
+    e.stopPropagation(); 
+    categoryDropdown.classList.toggle('hidden'); 
+}); 
+
+// Close dropdown when clicking outside 
+document.addEventListener('click', (e) => { 
+    if (!categoryDropdown.contains(e.target) && e.target !== allCategoriesBtn) { 
+        categoryDropdown.classList.add('hidden'); 
+    } 
+}); 
+
+// Handle category selection 
+categoryDropdown.addEventListener('change', (e) => { 
+    if (e.target.classList.contains('category-checkbox')) { 
+        const checkbox = e.target; 
+        const checkboxes = document.querySelectorAll('.category-checkbox'); 
+        if (checkbox.value === 'all') { 
+            // If "All Categories" is selected, uncheck others 
+            checkboxes.forEach(cb => { 
+                if (cb !== checkbox) cb.checked = false; 
+                }); 
+        } else { 
+            // If a specific category is selected, uncheck "All Categories" 
+            const allCategoriesCheckbox = document.querySelector('.category-checkbox[value="all"]'); 
+            allCategoriesCheckbox.checked = false; 
+        } 
+        filterPosts(); 
+    } 
+});
+
+// Filter posts based on selected categories 
+function filterPosts() { 
+    const selectedCategories = Array.from(document.querySelectorAll('.category-checkbox:checked')) 
+    .map(checkbox => checkbox.value); 
+    const isAllSelected = selectedCategories.includes('all'); 
+    const filteredPosts = isAllSelected ? SAMPLE_POSTS : SAMPLE_POSTS.filter(post => selectedCategories.includes(post.category)); 
+    renderPosts(filteredPosts); 
+}
 
 // Handle like button click 
 function handleLike(e) { 
-   const button = e.currentTarget; const likesCount = button.querySelector('.likes-count'); const currentLikes = parseInt(likesCount.textContent); likesCount.textContent = currentLikes + 1; button.classList.add('text-blue-600'); 
+   const button = e.currentTarget; const likesCount = button.querySelector('.likes-count'); 
+   const currentLikes = parseInt(likesCount.textContent); 
+   likesCount.textContent = currentLikes + 1; 
+   button.classList.add('text-blue-600'); 
 } 
 
 // Initialize function 
 function init() {
     lucide.createIcons();
+
     // Initial render 
     renderPosts(); 
+
     // Event listeners 
-    menuToggleBtn?.addEventListener('click', toggleMobileMenu); darkModeToggle?.addEventListener('click', toggleDarkMode); window.addEventListener('resize', handleResize); searchInput?.addEventListener('input', handleSearch); 
+    menuToggleBtn?.addEventListener('click', toggleMobileMenu); 
+    darkModeToggle?.addEventListener('click', toggleDarkMode); 
+    window.addEventListener('resize', handleResize); 
+    searchInput?.addEventListener('input', handleSearch); 
+
+    // categories dropdown
+    createCategoryDropdown();
+
     // Check for saved dark mode preference 
-    const savedDarkMode = localStorage.getItem('darkMode') === 'true'; if (savedDarkMode) { document.body.classList.add('dark-mode'); } 
+    const savedDarkMode = localStorage.getItem('darkMode') === 'true'; 
+    if (savedDarkMode) { 
+        document.body.classList.add('dark-mode'); 
+    }
+
     // Initial resize check 
     handleResize(); 
 } 
