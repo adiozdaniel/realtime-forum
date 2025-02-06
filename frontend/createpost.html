@@ -6,77 +6,44 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Forum</title>
     <link rel="stylesheet" href="createpost.css">
+
     <script src="https://unpkg.com/lucide@latest"></script>
 </head>
 
 <body>
     <div class="container">
         <div class="header">
-            <h1>Forum</h1> <button id="createPostBtn" class="create-post-btn"> <i data-lucide="plus-circle"></i> Create
-                Post </button>
-        </div> <!-- Create Post Modal -->
-        <div id="createPostModal" class="hidden">
-            <div class="modal-content">
-                <h2>Create a New Post</h2>
-                <form id="createPostForm">
-                    <div class="form-group"> <label>Title</label> <input type="text" id="postTitle" required> </div>
-                    <div class="form-group"> <label>Author</label> <input type="text" id="postAuthor" required> </div>
-                    <div class="form-group"> <label>Category</label> <select id="postCategory" required>
-                            <option value="">Select a category</option>
-                            <option value="Tutorial">Tutorial</option>
-                            <option value="Discussion">Discussion</option>
-                            <option value="Guide">Guide</option>
-                            <option value="Question">Question</option>
-                        </select> </div>
-                    <div class="form-group"> <label>Content</label> <textarea id="postContent" rows="4"
-                            required></textarea> </div>
-                    <div class="form-group"> <label>Add Media</label>
-                        <div class="media-options">
-                            <div class="image-upload"> 
-                                <label for="imageUpload" class="upload-btn"> <i data-lucide="image"></i> Upload Image </label> 
-                                <input type="file"
-                                    id="imageUpload" 
-                                    accept=".jpg,.jpeg,.png,.gif,image/jpeg,image/png,image/gif" 
-                                    class="hidden"
-                                > 
-                                <div class="upload-info"> 
-                                    <small>Accepted formats: JPEG, PNG, GIF (max 20MB)</small> 
-                                    <div id="uploadError" class="upload-error hidden"></div> 
-                                </div>
-                            </div>
-                            <div class="video-upload"> 
-                                <input 
-                                    type="url" 
-                                    id="videoLink"
-                                    placeholder="Paste video URL (YouTube/Vimeo)"
-                                > 
-                            </div>
-                        </div>
-                    </div>
-                    <div id="mediaPreview" class="media-preview hidden">
-                        <div id="imagePreviewContainer" class="image-preview-container hidden"> 
-                            <img id="imagePreview"
-                                src="" 
-                                alt="Preview"
-                                > 
-                                <button 
-                                type="button" 
-                                id="removeImage" 
-                                class="remove-media"
-                                > 
-                                <i data-lucide="x"></i> 
-                            </button> 
-                        </div>
-                        <div id="videoPreviewContainer" class="video-preview-container hidden">
-                            <div id="videoPreview"></div> <button type="button" id="removeVideo" class="remove-media">
-                                <i data-lucide="x"></i> </button>
-                        </div>
-                    </div>
-                    <div class="form-actions"> <button type="button" id="cancelPost"
-                            class="cancel-button">Cancel</button> <button type="submit" class="submit-button">Create
-                            Post</button> </div>
-                </form>
-            </div>
+            <h1>Forum</h1> 
+            <button id="createPostBtn" class="create-post-btn"> 
+                <!-- <svg xmlns="http://www.w3.org/2000/svg"
+                    width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                    stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <line x1="12" y1="8" x2="12" y2="16"></line>
+                    <line x1="8" y1="12" x2="16" y2="12"></line>
+                </svg>  -->
+                <i data-lucide="plus"></i>
+                Create Post </button>
+        </div>
+    </div>
+    <div id="modal" class="modal">
+        <div class="modal-content">
+            <h2>Create a New Post</h2>
+            <form id="postForm">
+                <div class="form-group"> <label>Title</label> <input type="text" id="title" required> </div>
+                <div class="form-group"> <label>Author</label> <input type="text" id="author" required> </div>
+                <div class="form-group"> <label>Category</label> <select id="category" required>
+                        <option value="">Select a category</option>
+                        <option value="Tutorial">Tutorial</option>
+                        <option value="Discussion">Discussion</option>
+                        <option value="Guide">Guide</option>
+                        <option value="Question">Question</option>
+                    </select> </div>
+                <div class="form-group"> <label>Excerpt</label> <textarea id="excerpt" rows="4" required></textarea>
+                </div>
+                <div class="form-actions"> <button type="button" id="cancelBtn" class="cancel-btn">Cancel</button>
+                    <button type="submit" class="submit-btn">Create Post</button> </div>
+            </form>
         </div>
     </div>
     <script src="createposts.js"></script>
