@@ -19,4 +19,10 @@ func TestLoginHandler(t *testing.T) {
 }
 
 func TestPostsHandler(t *testing.T) {
+	r := httptest.NewRequest(http.MethodGet, "/api/auth/posts", nil)
+	w := httptest.NewRecorder()
+	LoginHandler(w, r)
+	if w.Code != http.StatusMethodNotAllowed {
+		t.Errorf("expected %d got %d", http.StatusMethodNotAllowed, w.Code)
+	}
 }
