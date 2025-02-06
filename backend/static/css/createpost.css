@@ -84,17 +84,17 @@ h1 {
     gap: 0.5rem;
     margin-top: 1.5rem;
 }
-.cancel-btn {
+.cancel-button {
     padding: 0.5rem 1rem;
     border: 1px solid #d1d5db;
     border-radius: 0.5rem;
     background-color: white;
     cursor: pointer;
 }
-.cancel-btn:hover {
+.cancel-button:hover {
     background-color: #f3f4f6;
 }
-.submit-btn {
+.submit-button {
     padding: 0.5rem 1rem;
     background-color: #2563eb;
     color: white;
@@ -102,6 +102,108 @@ h1 {
     border-radius: 0.5rem;
     cursor: pointer;
 }
-.submit-btn:hover {
+.submit-button:hover {
     background-color: #1d4ed8;
+}
+
+/* Add these new styles to your existing CSS */
+.media-options {
+    display: flex;
+    gap: 16px;
+    margin-bottom: 16px;
+}
+.upload-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 16px;
+    background-color: #f3f4f6;
+    border: 1px solid #e5e7eb;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+.upload-btn:hover {
+    background-color: #e5e7eb;
+}
+.video-upload {
+    flex: 1;
+}
+.video-upload input {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #e5e7eb;
+    border-radius: 6px;
+}
+.hidden {
+    display: none !important;
+}
+.media-preview {
+    margin: 16px 0;
+    position: relative;
+}
+.image-preview-container {
+    position: relative;
+    max-width: 300px;
+    border-radius: 8px;
+    overflow: hidden;
+}
+.image-preview-container img {
+    width: 100%;
+    height: auto;
+    display: block;
+}
+.video-preview-container {
+    position: relative;
+    max-width: 100%;
+}
+.video-preview {
+    background: #f3f4f6;
+    padding: 12px;
+    border-radius: 6px;
+    word-break: break-all;
+}
+.remove-media {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    background: rgba(0, 0, 0, 0.5);
+    color: white;
+    border: none;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+.remove-media:hover {
+    background: rgba(0, 0, 0, 0.7);
+}
+/* Form styling improvements */
+.form-group {
+    margin-bottom: 16px;
+}
+.form-group label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 500;
+}
+input, select, textarea {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #e5e7eb;
+    border-radius: 6px;
+    font-size: 14px;
+}
+textarea {
+    resize: vertical;
+    min-height: 100px;
+}
+
+.upload-error {
+    color: red;
+    font-size: 0.8rem;
 }
