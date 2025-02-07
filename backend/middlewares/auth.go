@@ -2,8 +2,9 @@ package middlewares
 
 import (
 	"context"
-	"forum/forumapp"
 	"net/http"
+
+	"forum/forumapp"
 )
 
 type contextKey string
@@ -24,8 +25,8 @@ func (a *AuthContext) SetUserIDInContext(ctx context.Context, userID string) con
 }
 
 // GetUserIDFromContext retrieves the user ID from the request context
-func (a *AuthContext) GetUserIDFromContext(ctx context.Context) (int, bool) {
-	userID, ok := ctx.Value(userIDKey).(int)
+func (a *AuthContext) GetUserIDFromContext(ctx context.Context) (string, bool) {
+	userID, ok := ctx.Value(userIDKey).(string)
 	return userID, ok
 }
 
