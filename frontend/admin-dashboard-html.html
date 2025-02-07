@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard</title>
+    <link rel="stylesheet" href="admin-dashboard-css.css">
+    <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+<body>
+    <div class="app">
+        <header class="header">
+            <div class="header-container">
+                <div class="header-left">
+                    <button class="menu-button" id="menuToggle">
+                        <i data-lucide="menu"></i>
+                    </button>
+                    <h1 class="logo">Forum</h1>
+                </div>
+                <div class="header-right">
+                    <div class="header-icons">
+                        <button class="icon-button" id="darkModeToggle">
+                            <i data-lucide="moon"></i>
+                        </button>
+                        <button class="icon-button">
+                            <i data-lucide="bell"></i>
+                        </button>
+                        <a href="login.html" class="sign-out-button">Sign out</a>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <div class="main-container">
+            <aside class="sidebar">
+                <nav>
+                    <ul class="category-list">
+                        <li><button class="category-button" onclick="switchSection('dashboard')">
+                            <i data-lucide="layout-dashboard"></i>
+                            <span>Dashboard</span>
+                        </button></li>
+                        <li><button class="category-button" onclick="switchSection('moderation')">
+                            <i data-lucide="shield"></i>
+                            <span>Moderation</span>
+                        </button></li>
+                        <li><button class="category-button" onclick="switchSection('users')">
+                            <i data-lucide="users"></i>
+                            <span>Users</span>
+                        </button></li>
+                        <li><button class="category-button" onclick="switchSection('categories')">
+                            <i data-lucide="folder"></i>
+                            <span>Categories</span>
+                        </button></li>
+                    </ul>
+                </nav>
+            </aside>
+
+            <div class="main-content">
+                <div id="dashboard-section" class="section">
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <div class="stat-icon">
+                                <i data-lucide="users"></i>
+                            </div>
+                            <div class="stat-info">
+                                <h3>Active Users</h3>
+                                <p>3,235</p>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon">
+                                <i data-lucide="message-square"></i>
+                            </div>
+                            <div class="stat-info">
+                                <h3>Posts</h3>
+                                <p>1,234</p>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon">
+                                <i data-lucide="thumbs-up"></i>
+                            </div>
+                            <div class="stat-info">
+                                <h3>Comments</h3>
+                                <p>1,234</p>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon">
+                                <i data-lucide="shield"></i>
+                            </div>
+                            <div class="stat-info">
+                                <h3>Moderators</h3>
+                                <p>12</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="recent-discussions">
+                        <h2 class="section-title">Recent Discussions</h2>
+                        <div id="recentDiscussionsContainer"></div>
+                    </div>
+                </div>
+
+                <div id="moderation-section" class="section hidden">
+                    <h2 class="section-title">Reports</h2>
+                    <div id="reports-container">
+                        <!-- Reports will be inserted here by JavaScript -->
+                    </div>
+                    <button class="category-btn">View all reports</button>
+                </div>
+
+                <div id="users-section" class="section hidden">
+                    <h2 class="section-title">Users</h2>
+                    <div class="user-search-container">
+                        <input type="text" id="user-search-input" placeholder="Search users">
+                    </div>
+                    <div class="table-container">
+                        <table class="user-table">
+                            <thead>
+                                <tr>
+                                    <th>User</th>
+                                    <th>Joined</th>
+                                    <th>Last Active</th>
+                                    <th>Posts</th>
+                                    <th>Likes</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="user-list">
+                                <!-- Users will be inserted here by JavaScript -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div id="categories-section" class="section hidden">
+                    <h2 class="section-title">Categories</h2>
+                    <div id="categories-container">
+                        <!-- Categories will be inserted here by JavaScript -->
+                    </div>
+                    <div class="category-input-container">
+                        <div class="search-container">
+                            <input type="text" id="new-category-input" placeholder="New category name">
+                        </div>
+                        <button class="category-btn" id="add-category-btn">
+                            Add category
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <footer class="footer">
+            <div class="footer-container">
+                <div class="footer-content">
+                    <div class="footer-section">
+                        <h3>Company</h3>
+                        <ul class="footer-links">
+                            <li><a href="#" class="footer-link">About</a></li>
+                            <li><a href="#" class="footer-link">Careers</a></li>
+                            <li><a href="#" class="footer-link">Press</a></li>
+                            <li><a href="#" class="footer-link">Blog</a></li>
+                        </ul>
+                    </div>
+                    <div class="footer-section">
+                        <h3>Resources</h3>
+                        <ul class="footer-links">
+                            <li><a href="#" class="footer-link">Documentation</a></li>
+                            <li><a href="#" class="footer-link">Help Center</a></li>
+                            <li><a href="#" class="footer-link">Guidelines</a></li>
+                            <li><a href="#" class="footer-link">FAQ</a></li>
+                        </ul>
+                    </div>
+                    <div class="footer-section">
+                        <h3>Legal</h3>
+                        <ul class="footer-links">
+                            <li><a href="#" class="footer-link">Privacy Policy</a></li>
+                            <li><a href="#" class="footer-link">Terms of Service</a></li>
+                            <li><a href="#" class="footer-link">Cookie Policy</a></li>
+                            <li><a href="#" class="footer-link">Security</a></li>
+                        </ul>
+                    </div>
+                    <div class="footer-section">
+                        <h3>Connect</h3>
+                        <ul class="footer-links">
+                            <li><a href="#" class="footer-link">Contact Us</a></li>
+                            <li><a href="#" class="footer-link">Partner Program</a></li>
+                            <li><a href="#" class="footer-link">Community</a></li>
+                        </ul>
+                        <div class="footer-social"> <a href="#" class="social-link" aria-label="Twitter"> <i
+                                    data-lucide="twitter"></i> </a> <a href="#" class="social-link" aria-label="GitHub">
+                                <i data-lucide="github"></i> </a> <a href="#" class="social-link" aria-label="LinkedIn">
+                                <i data-lucide="linkedin"></i> </a> <a href="#" class="social-link"
+                                aria-label="Discord"> <i data-lucide="message-circle"></i> </a> </div>
+                    </div>
+                </div>
+                <div class="footer-bottom">
+                    <p>&copy; 2024 Forum. All rights reserved.</p>
+                </div>
+            </div>
+        </footer>
+    </div>
+    <script src="admin-dashboard-js.js"></script>
+</body>
+</html>
