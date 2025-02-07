@@ -71,6 +71,8 @@ document.addEventListener('DOMContentLoaded', function () {
             password: passwordInput.value,
         };
 
+        let result;
+
         try {
             const response = await fetch('/api/auth/login', {
                 method: 'POST',
@@ -80,19 +82,25 @@ document.addEventListener('DOMContentLoaded', function () {
                 },
             });
 
-            const result = await response.json();
+            result = await response.json();
             console.log('Server Response:', result); // Log the response
 
             if (!response.ok) {
                 throw new Error(result.message || 'Login failed');
             }
 
-            // Redirect on success
-            // window.location.href = '/';
+           // Redirect on success
+            window.location.href = '/';
         } catch (error) {
             console.error('Login Error:', error.message);
-            showError(emailInput, 'Invalid email or password');
-            showError(passwordInput, 'Invalid email or password');
+
+            if (result.message === "user does not exist") {
+                showError(emailInput, result.message);
+                return;
+            }
+            
+            showError(emailInput, result.message);
+            showError(passwordInput, result.message);
         } finally {
             submitButton.disabled = false;
             spinner.classList.add('hidden');
