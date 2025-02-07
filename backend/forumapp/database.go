@@ -3,11 +3,19 @@ package forumapp
 import (
 	"database/sql"
 	"fmt"
+	"log"
+
+	_ "github.com/mattn/go-sqlite3"
 )
 
-// DataConfig represents the database configuration
+// DataConfig manages the database connection
 type DataConfig struct {
 	Db *sql.DB
+}
+
+// TableManager handles table creation
+type TableManager struct {
+	db *sql.DB
 }
 
 // NewDb initializes the database connection
@@ -15,32 +23,91 @@ func NewDb() *DataConfig {
 	return &DataConfig{}
 }
 
-// Initialize database connection to SQLite
-func (d *DataConfig) InitDB() error {
+// InitDB initializes the database connection and tables
+func (d *DataConfig) InitDB(dbPath string) error {
 	var err error
-	// Open the SQLite database (use a file path or :memory: for in-memory DB)
-	d.Db, err = sql.Open("sqlite3", "./forum.db") // SQLite database file
+
+	// Open the SQLite database
+	d.Db, err = sql.Open("sqlite3", dbPath)
 	if err != nil {
 		return fmt.Errorf("failed to connect to database: %v", err)
 	}
 
 	// Check if the database is accessible
-	err = d.Db.Ping()
-	if err != nil {
+	if err = d.Db.Ping(); err != nil {
 		return fmt.Errorf("failed to ping database: %v", err)
 	}
 
-	// Optional: Create tables if they don't exist
-	_, err = d.Db.Exec(`
-		CREATE TABLE IF NOT EXISTS users (
-			user_id TEXT PRIMARY KEY,
-			username TEXT NOT NULL,
-			email TEXT NOT NULL UNIQUE,
-			password TEXT NOT NULL
-		);
-	`)
-	if err != nil {
-		return fmt.Errorf("failed to create table: %v", err)
+	// Enable foreign keys
+	if _, err = d.Db.Exec("PRAGMA foreign_keys = ON"); err != nil {
+		return fmt.Errorf("failed to enable foreign keys: %v", err)
+	}
+
+	// Create tables using TableManager
+	tm := NewTableManager(d.Db)
+	if err = tm.CreateTables(); err != nil {
+		return fmt.Errorf("failed to create tables: %v", err)
+	}
+
+	log.Println("Database initialized successfully")
+	return nil
+}
+
+// NewTableManager initializes a TableManager instance
+func NewTableManager(db *sql.DB) *TableManager {
+	return &TableManager{db: db}
+}
+
+// CreateTables creates the necessary tables
+func (tm *TableManager) CreateTables() error {
+	tables := map[string]string{
+		"users": `
+			CREATE TABLE IF NOT EXISTS users (
+				user_id TEXT PRIMARY KEY,
+				email TEXT UNIQUE NOT NULL,
+				password TEXT NOT NULL,
+				first_name TEXT,
+				last_name TEXT,
+				image TEXT,
+				role TEXT,
+				created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+				updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
+			);`,
+		"posts": `
+			CREATE TABLE IF NOT EXISTS posts (
+				post_id TEXT PRIMARY KEY,
+				user_id TEXT NOT NULL,
+				post_title TEXT NOT NULL,
+				post_content TEXT NOT NULL,
+				post_image TEXT,
+				post_video TEXT,
+				post_category TEXT NOT NULL,
+				post_likes INTEGER DEFAULT 0,
+				post_dislikes INTEGER DEFAULT 0,
+				created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+				updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+				FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE
+			);`,
+		"comments": `
+			CREATE TABLE IF NOT EXISTS comments (
+				comment_id TEXT PRIMARY KEY,
+				post_id TEXT NOT NULL,
+				user_id TEXT NOT NULL,
+				parent_comment_id TEXT,
+				comment TEXT NOT NULL,
+				created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+				updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+				FOREIGN KEY (post_id) REFERENCES posts(post_id) ON DELETE CASCADE,
+				FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE,
+				FOREIGN KEY (parent_comment_id) REFERENCES comments(comment_id) ON DELETE CASCADE
+			);`,
+	}
+
+	for name, query := range tables {
+		if _, err := tm.db.Exec(query); err != nil {
+			return fmt.Errorf("failed to create %s table: %v", name, err)
+		}
+		log.Printf("Table %s created or already exists\n", name)
 	}
 
 	return nil

@@ -12,14 +12,16 @@ import (
 type ForumApp struct {
 	Tmpls    *TemplateCache
 	Db       *DataConfig
+	dbPath   string
 	Sessions sync.Map
 	Errors   error
 }
 
 func newForumApp() *ForumApp {
 	return &ForumApp{
-		Tmpls: newTemplateCache(),
-		Db:    NewDb(),
+		Tmpls:  newTemplateCache(),
+		Db:     NewDb(),
+		dbPath: "./forum.db",
 	}
 }
 
@@ -33,6 +35,11 @@ func ForumInit() (*ForumApp, error) {
 	once.Do(func() {
 		instance = newForumApp()
 	})
+
+	err = instance.Db.InitDB(instance.dbPath)
+	if err != nil {
+		return nil, err
+	}
 
 	err = instance.Tmpls.CreateTemplatesCache()
 	if err != nil {
