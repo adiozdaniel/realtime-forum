@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"bytes"
 	"html/template"
 	"net/http"
 	"net/http/httptest"
@@ -11,22 +12,41 @@ import (
 )
 
 func TestRegisterHandler(t *testing.T) {
-	// Template cache
-	r := make(map[string]*template.Template)
-	r["home.page.html"] = template.New("home.page.html")
-	tmplcach := &forumapp.TemplateCache{Pages: r}
+	t.Run("method", func(t *testing.T) {
+		// Template cache
+		r := make(map[string]*template.Template)
+		r["home.page.html"] = template.New("home.page.html")
+		tmplcach := &forumapp.TemplateCache{Pages: r}
 
-	fapp := &forumapp.ForumApp{}
-	fapp.Tmpls = tmplcach
-	jsonres := &response.JSONRes{}
+		fapp := &forumapp.ForumApp{}
+		fapp.Tmpls = tmplcach
+		jsonres := &response.JSONRes{}
 
-	h := &Repo{app: fapp, res: jsonres}
-	req := httptest.NewRequest(http.MethodPost, "/api/auth/register", nil)
-	w := httptest.NewRecorder()
-	h.RegisterHandler(w, req)
-	if req.Method != http.MethodPost {
-		t.Errorf("expected %d got %d", http.StatusMethodNotAllowed, w.Code)
-	}
+		h := &Repo{app: fapp, res: jsonres}
+		req := httptest.NewRequest(http.MethodPost, "/api/auth/register", nil)
+		w := httptest.NewRecorder()
+		h.RegisterHandler(w, req)
+		if req.Method != http.MethodPost {
+			t.Errorf("expected %d got %d", http.StatusMethodNotAllowed, w.Code)
+		}
+	})
+	t.Run("data", func(t *testing.T) {
+		r := make(map[string]*template.Template)
+		r["home.page.html"] = template.New("home.page.html")
+		tmplcach := &forumapp.TemplateCache{Pages: r}
+
+		fapp := &forumapp.ForumApp{}
+		fapp.Tmpls = tmplcach
+		jsonres := &response.JSONRes{}
+		incomplete := []byte(`{"username": "John Doe"}`)
+		h := &Repo{app: fapp, res: jsonres}
+		req := httptest.NewRequest(http.MethodPost, "/api/auth/register", bytes.NewBuffer(incomplete))
+		w := httptest.NewRecorder()
+		h.RegisterHandler(w, req)
+		if w.Code != http.StatusBadRequest {
+			t.Errorf("expected %d got %d", http.StatusBadRequest, w.Code)
+		}
+	})
 }
 
 func TestLoginHandler(t *testing.T) {
