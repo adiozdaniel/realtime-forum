@@ -111,11 +111,9 @@ func (h *Repo) LoginHandler(w http.ResponseWriter, r *http.Request) {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
-	var (
-		userID         int
-		username       string
-		hashedPassword string
-	)
+	var username, hashedPassword string
+
+	userID, _ := h.app.GenerateUUID()
 	err := h.app.Db.QueryRowContext(ctx, "SELECT id, username, password FROM users WHERE email = ?", req.Email).Scan(&userID, &username, &hashedPassword)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {

@@ -11,10 +11,10 @@ import (
 )
 
 type ForumApp struct {
-	Tmpls  *TemplateCache
-	Db     *sql.DB
-	Store  sync.Map
-	Errors error
+	Tmpls    *TemplateCache
+	Db       *sql.DB
+	Sessions sync.Map
+	Errors   error
 }
 
 func newForumApp() *ForumApp {
@@ -63,7 +63,7 @@ func (f *ForumApp) InitDB() error {
 	// Optional: Create tables if they don't exist
 	_, err = f.Db.Exec(`
 		CREATE TABLE IF NOT EXISTS users (
-			id INTEGER PRIMARY KEY AUTOINCREMENT,
+			id TEXT PRIMARY KEY,
 			username TEXT NOT NULL,
 			email TEXT NOT NULL UNIQUE,
 			password TEXT NOT NULL
@@ -76,8 +76,8 @@ func (f *ForumApp) InitDB() error {
 	return nil
 }
 
-func (f *ForumApp) GenerateToken(userID int) (http.Cookie, error) {
-	token, err := f.generateSecureToken()
+func (f *ForumApp) GenerateToken(userID string) (http.Cookie, error) {
+	token, err := f.GenerateUUID()
 	if err != nil {
 		return http.Cookie{}, err
 	}
@@ -94,13 +94,13 @@ func (f *ForumApp) GenerateToken(userID int) (http.Cookie, error) {
 	}
 
 	// Store the token in the map
-	f.Store.Store(userID, cookie)
+	f.Sessions.Store(userID, cookie)
 	return *cookie, nil
 }
 
-// generateSecureToken creates a cryptographically secure random token
-func (f *ForumApp) generateSecureToken() (string, error) {
-	b := make([]byte, 16) // 16 bytes = 128 bits, similar to a UUID
+// generateUUID creates a cryptographically secure random token
+func (f *ForumApp) GenerateUUID() (string, error) {
+	b := make([]byte, 16)
 	_, err := rand.Read(b)
 	if err != nil {
 		return "", err
