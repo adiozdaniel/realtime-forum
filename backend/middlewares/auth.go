@@ -19,7 +19,7 @@ func NewAuthContext(app *forumapp.ForumApp) *AuthContext {
 }
 
 // SetUserIDInContext adds the user ID to the request context
-func (a *AuthContext) SetUserIDInContext(ctx context.Context, userID int) context.Context {
+func (a *AuthContext) SetUserIDInContext(ctx context.Context, userID string) context.Context {
 	return context.WithValue(ctx, userIDKey, userID)
 }
 
@@ -40,12 +40,12 @@ func (a *AuthContext) AuthMiddleware(next http.Handler) http.Handler {
 		}
 
 		// Verify session in global store
-		var userID int
+		var userID string
 		found := false
 
 		a.app.Sessions.Range(func(key, value interface{}) bool {
 			if token, ok := value.(*http.Cookie); ok && token.Value == cookie.Value {
-				userID, _ = key.(int) // Ensure userID is int
+				userID, _ = key.(string)
 				found = true
 				return false // Stop iteration
 			}

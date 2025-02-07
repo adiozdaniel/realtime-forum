@@ -73,11 +73,7 @@ func (h *Repo) RegisterHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Generate a token (e.g., JWT)
-	token, err := h.app.GenerateToken(userID)
-	if err != nil {
-		h.res.SetError(w, err, http.StatusInternalServerError)
-		return
-	}
+	token := h.app.GenerateToken(userID)
 
 	// Set the session cookie
 	http.SetCookie(w, &token)
@@ -170,13 +166,10 @@ func (h *Repo) LoginHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Generate a token (e.g., JWT)
-	token, err := h.app.GenerateToken(userID)
-	if err != nil {
-		h.res.SetError(w, err, http.StatusInternalServerError)
-		return
-	}
+	token := h.app.GenerateToken(userID)
 
 	// Set the session cookie
+	h.app.Sessions.Store(userID, token)
 	http.SetCookie(w, &token)
 
 	// Respond with success and token
@@ -193,6 +186,47 @@ func (h *Repo) LoginHandler(w http.ResponseWriter, r *http.Request) {
 		h.res.SetError(w, err, http.StatusInternalServerError)
 		return
 	}
+}
+
+// LogoutHandler handles user logout.
+func (h *Repo) LogoutHandler(w http.ResponseWriter, r *http.Request) {
+    if r.Method != http.MethodPost {
+        h.res.SetError(w, errors.New("method not allowed"), http.StatusMethodNotAllowed)
+        return
+    }
+
+    // Get the session token from the cookie
+    cookie, err := r.Cookie("session_token")
+    if err != nil {
+        if errors.Is(err, http.ErrNoCookie) {
+            h.res.SetError(w, errors.New("no session found"), http.StatusUnauthorized)
+            return
+        }
+        h.res.SetError(w, err, http.StatusBadRequest)
+        return
+    }
+
+    sessionToken := cookie.Value
+
+    h.app.Sessions.Delete(sessionToken)
+
+    // Clear the session cookie by setting an expired cookie
+    http.SetCookie(w, &http.Cookie{
+        Name:    "session_token",
+        Value:   "",
+        Expires: time.Now().Add(-1 * time.Hour),
+        Path:    "/",
+    })
+
+    // Respond with success
+    h.res.Err = false
+    h.res.Message = "Logout successful"
+
+    err = h.res.WriteJSON(w, *h.res, http.StatusOK)
+    if err != nil {
+        h.res.SetError(w, err, http.StatusInternalServerError)
+        return
+    }
 }
 
 // Posts handler (dummy implementation)

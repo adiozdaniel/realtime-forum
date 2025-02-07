@@ -30,6 +30,11 @@ type LoginResponse struct {
 	Token   string `json:"token,omitempty"`
 }
 
+// LogoutRequest represents the request body for logout
+type LogoutRequest struct {
+	UserId string `json:"user_id"`
+}
+
 type Repo struct {
 	app *forumapp.ForumApp
 	res *response.JSONRes

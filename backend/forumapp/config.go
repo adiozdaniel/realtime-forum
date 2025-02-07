@@ -76,16 +76,11 @@ func (f *ForumApp) InitDB() error {
 	return nil
 }
 
-func (f *ForumApp) GenerateToken(userID string) (http.Cookie, error) {
-	token, err := f.GenerateUUID()
-	if err != nil {
-		return http.Cookie{}, err
-	}
-
+func (f *ForumApp) GenerateToken(userID string) http.Cookie {
 	// Store the token in a session cookie
 	cookie := &http.Cookie{
 		Name:     "session_token",
-		Value:    token,
+		Value:    userID,
 		Path:     "/",
 		HttpOnly: true,             // Prevent JavaScript access
 		Secure:   f.IsProduction(), // Secure in production
@@ -95,7 +90,7 @@ func (f *ForumApp) GenerateToken(userID string) (http.Cookie, error) {
 
 	// Store the token in the map
 	f.Sessions.Store(userID, cookie)
-	return *cookie, nil
+	return *cookie
 }
 
 // generateUUID creates a cryptographically secure random token
