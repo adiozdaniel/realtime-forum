@@ -4,16 +4,16 @@ import (
 	"net/http"
 
 	"forum/forumapp"
-	"forum/handlers"
 	"forum/middlewares"
+	"forum/repositories"
 )
 
 type Routes struct {
 	app  *forumapp.ForumApp
-	repo *handlers.Repo
+	repo *repositories.Repo
 }
 
-func NewRoutes(app *forumapp.ForumApp, repo *handlers.Repo) *Routes {
+func NewRoutes(app *forumapp.ForumApp, repo *repositories.Repo) *Routes {
 	return &Routes{
 		app:  app,
 		repo: repo,
