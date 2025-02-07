@@ -30,6 +30,7 @@ func (h *Repo) HomePageHandler(w http.ResponseWriter, r *http.Request) {
 	err = tmpl.Execute(w, nil)
 	if err != nil {
 		http.Error(w, "Oops, something went wrong while rendering the page!", http.StatusInternalServerError)
+		return
 	}
 }
 
@@ -70,4 +71,3 @@ func (h *Repo) SignUpPage(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Oops, something went wrong while rendering the page!", http.StatusInternalServerError)
 	}
 }
-
