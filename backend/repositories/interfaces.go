@@ -1,5 +1,9 @@
 package repositories
 
+/*
+	These interfaces define the methods for interacting with the database.
+*/
+
 // UserRepo defines database operations for users
 type UserRepo interface {
 	CreateUser(user *User) error
