@@ -1,6 +1,4 @@
 // DOM Elements 
-const menuToggleBtn = document.querySelector('#menuToggle'); 
-const sidebar = document.querySelector('#sidebar'); 
 const postsContainer = document.querySelector('#postsContainer'); 
 const searchInput = document.querySelector('#searchInput'); 
 
@@ -87,16 +85,6 @@ function attachPostEventListeners() {
     document.querySelectorAll('.like-button').forEach(button => { button.addEventListener('click', handleLike); }); 
 }
 
- // Toggle mobile menu 
- function toggleMobileMenu() { 
-    const isVisible = sidebar.style.display === 'block'; sidebar.style.display = isVisible ? 'none' : 'block'; 
-} 
-
-// Handle window resize 
-function handleResize() { 
-    if (window.innerWidth >= 1024) { sidebar.style.display = 'block'; } else { sidebar.style.display = 'none'; } 
-}
-
 // Search functionality 
 function handleSearch(e) { 
     const searchTerm = e.target.value.toLowerCase(); const filteredPosts = SAMPLE_POSTS.filter(post => post.title.toLowerCase().includes(searchTerm) || post.excerpt.toLowerCase().includes(searchTerm) ); renderPosts(filteredPosts); 
@@ -112,10 +100,6 @@ function init() {
     lucide.createIcons();
     // Initial render 
     renderPosts(); 
-    // Event listeners 
-    menuToggleBtn?.addEventListener('click', toggleMobileMenu);
-    // Initial resize check 
-    handleResize(); 
 } 
 
 // Start the application 

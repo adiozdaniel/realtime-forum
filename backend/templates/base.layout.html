@@ -25,7 +25,9 @@
         {{block "header" .}} {{end}}
         {{ block "headerjs" .}} {{end}}
         <div class="main-container">
-           {{block "sidebar" .}} {{end}}
+           {{ if eq .Page "home"}}
+                {{block "sidebar" .}} {{end}}
+           {{ end }}
 
            <!-- Page Content -->
            <main class="main-content">

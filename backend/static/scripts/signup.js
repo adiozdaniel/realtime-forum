@@ -22,8 +22,11 @@ document.addEventListener('DOMContentLoaded', function() {
         confirmPasswordInput.type = type; 
         // Update icon 
         const icon = passwordToggle.querySelector('i'); 
-        icon.setAttribute('data-lucide', type === 'password' ? 'eye' : 'eye-off'); 
-        lucide.createIcons(); 
+
+        if (icon) {
+            icon.setAttribute('data-lucide', type === 'password' ? 'eye' : 'eye-off'); 
+            lucide.createIcons(icon); 
+        }
     }); 
 
      // Check password match
@@ -98,64 +101,96 @@ document.addEventListener('DOMContentLoaded', function() {
     }); 
 
     // Form submission 
-    form.addEventListener('submit', async (e) => { 
-        e.preventDefault(); let isValid = true; 
-
-        // Clear previous errors 
-        [usernameInput, emailInput, passwordInput, confirmPasswordInput].forEach(removeError); 
-
-        // Validate username 
-        if (usernameInput.value.length < 3) { 
-            showError(usernameInput, 'Username must be at least 3 characters'); 
-            isValid = false; 
-        } 
-
-        // Validate email 
-        if (!validateEmail(emailInput.value)) { 
-            showError(emailInput, 'Please enter a valid email address'); 
-            isValid = false; 
-        } 
-
-        // Validate password 
-        const passwordStrength = checkPasswordStrength(passwordInput.value); if (passwordStrength < 3) { 
-            showError(passwordInput, 'Password is too weak'); 
-            isValid = false; 
-        } 
-
-         // Validate password confirmation 
-         if (!checkPasswordsMatch()) { 
-            isValid = false; 
-        } 
-
-        // Validate password confirmation 
-        if (passwordInput.value !== confirmPasswordInput.value) { 
-            showError(confirmPasswordInput, 'Passwords do not match'); 
-            isValid = false; 
-        } 
-
-        // Validate terms 
-        if (!termsCheckbox.checked) { 
-            showError(termsCheckbox, 'You must accept the terms and conditions'); 
-            isValid = false; 
-        } 
-
-        if (!isValid) return; 
-
-        // Show loading state 
-        submitButton.disabled = true; 
-        spinner.classList.remove('hidden'); 
-        submitButton.querySelector('span').textContent = 'Creating account...'; 
-
-        try { 
-            // Simulate API call 
-            await new Promise(resolve => setTimeout(resolve, 1500)); 
-            // Redirect to main page (replace with your actual redirect logic) 
-            window.location.href = '/'; 
-        } catch (error) { 
-            showError(emailInput, 'Failed to create account. Please try again.'); 
-        } finally { 
-            // Reset button state 
-            submitButton.disabled = false; spinner.classList.add('hidden'); submitButton.querySelector('span').textContent = 'Create account'; 
-        } 
-    }); 
+    form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        let isValid = true;
+    
+        // Clear previous errors
+        [usernameInput, emailInput, passwordInput, confirmPasswordInput].forEach(removeError);
+    
+        // Validate username
+        if (usernameInput.value.length < 3) {
+            showError(usernameInput, 'Username must be at least 3 characters');
+            isValid = false;
+        }
+    
+        // Validate email
+        if (!validateEmail(emailInput.value)) {
+            showError(emailInput, 'Please enter a valid email address');
+            isValid = false;
+        }
+    
+        // Validate password
+        const passwordStrength = checkPasswordStrength(passwordInput.value);
+        if (passwordStrength < 3) {
+            showError(passwordInput, 'Password is too weak');
+            isValid = false;
+        }
+    
+        // Validate password confirmation
+        if (!checkPasswordsMatch()) {
+            isValid = false;
+        }
+    
+        // Validate terms
+        if (!termsCheckbox.checked) {
+            showError(termsCheckbox, 'You must accept the terms and conditions');
+            isValid = false;
+        }
+    
+        if (!isValid) return;
+    
+        // Show loading state
+        submitButton.disabled = true;
+        spinner.classList.remove('hidden');
+        submitButton.querySelector('span').textContent = 'Creating account...';
+    
+        // Prepare form data
+        const formData = {
+            email: emailInput.value,
+            username: usernameInput.value,
+            password: passwordInput.value,
+        };
+    
+        try {
+            const res = await fetch('/api/auth/register', {
+                method: 'POST',
+                body: JSON.stringify(formData),
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+            });
+    
+            // Log the response status
+            console.log('Response Status:', res.status);
+    
+            // Parse the response JSON
+            const response = await res.json();
+    
+            // Log the response data
+            console.log('Response Data:', response.data);
+    
+            // Store the response in localStorage
+            localStorage.setItem('res', JSON.stringify(response.data));
+    
+            // Handle success or error based on the response
+            if (res.ok) {
+                console.log('Registration successful:', response.message);
+                // Redirect or show a success message
+                window.location.href = '/';
+            } else {
+                console.error('Registration failed:', response.message || 'Unknown error');
+                showError(emailInput, response.message || 'Failed to create account. Please try again.');
+            }
+        } catch (error) {
+            // Log any network or unexpected errors
+            console.error('Error during registration:', error);
+            showError(emailInput, 'Failed to create account. Please try again.');
+        } finally {
+            // Reset button state
+            submitButton.disabled = false;
+            spinner.classList.add('hidden');
+            submitButton.querySelector('span').textContent = 'Create account';
+        }
+    });
 });
