@@ -201,6 +201,9 @@ function handleReplySubmit(e) {
         repliesContainer.innerHTML += createReplyHTML(newReply);
     }
 
+    // Ensure icons render properly
+    lucide.createIcons();
+
     // Reset input field and hide form
     replyForm.classList.add('hidden');
     replyInput.value = '';
