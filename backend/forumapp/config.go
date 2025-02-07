@@ -9,7 +9,7 @@ type ForumApp struct {
 	Errors error
 }
 
-func NewForumApp() *ForumApp {
+func newForumApp() *ForumApp {
 	return &ForumApp{
 		Tmpls: newTemplateCache(),
 	}
@@ -23,7 +23,7 @@ var (
 func ForumInit() (*ForumApp, error) {
 	var err error
 	once.Do(func() {
-		instance = NewForumApp()
+		instance = newForumApp()
 	})
 
 	err = instance.Tmpls.CreateTemplatesCache()

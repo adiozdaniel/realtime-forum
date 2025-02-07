@@ -18,7 +18,7 @@ func TestGetPage(t *testing.T) {
 	//z := newTemplateCache()
 	r := make(map[string]*template.Template)
 	r["home.page.html"] = template.New("home.page.html")
-	z := TemplateCache{Pages: r}
+	z := &TemplateCache{Pages: r}
 	//z.CreateTemplatesCache()
 	fmt.Println(z)
 	_, err := z.GetPage("home.page.html")
