@@ -228,6 +228,13 @@ func (h *Repo) LogoutHandler(w http.ResponseWriter, r *http.Request) {
     }
 }
 
+// CheckAuth confirms if a user is logged in
+func(h *Repo) CheckAuth(w http.ResponseWriter, r *http.Request) {
+    // Return a success response if this protected route is reached
+    w.Header().Set("Content-Type", "application/json")
+    json.NewEncoder(w).Encode(map[string]bool{"signedIn": true})
+}
+
 // Posts handler (dummy implementation)
 func (h *Repo) PostsHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method == http.MethodGet {

@@ -26,6 +26,7 @@ func (r *Routes) RegisterRoutes(mux *http.ServeMux) http.Handler {
 	auth := middlewares.NewAuthContext(r.app)
 	mux.Handle("/api/posts", auth.AuthMiddleware(http.HandlerFunc(r.repo.PostsHandler)))
 	mux.Handle("/", auth.AuthMiddleware(http.HandlerFunc(r.repo.HomePageHandler)))
+	mux.Handle("/api/auth/check", auth.AuthMiddleware(http.HandlerFunc(r.repo.CheckAuth)))
 
 	// Page routes
 	fs := r.app.Tmpls.GetProjectRoute("/static")
