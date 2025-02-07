@@ -14,8 +14,11 @@ document.addEventListener('DOMContentLoaded', function () {
     passwordToggle.addEventListener('click', () => {
         const isPassword = passwordInput.type === 'password';
         passwordInput.type = isPassword ? 'text' : 'password';
-        passwordToggle.querySelector('i').setAttribute('data-lucide', isPassword ? 'eye-off' : 'eye');
-        lucide.createIcons(passwordToggle);
+
+        if (passwordToggle.querySelector('i')){
+             passwordToggle.querySelector('i').setAttribute('data-lucide', isPassword ? 'eye-off' : 'eye');
+             lucide.createIcons(passwordToggle);
+        }        
     });
 
     // Form validation
