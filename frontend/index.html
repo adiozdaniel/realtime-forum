@@ -1,31 +1,35 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Modern Forum</title>
     <link rel="stylesheet" href="index.css">
-    <link rel="stylesheet" href="footer.css">
+    <link rel="stylesheet" href="comment.css">
     <script src="https://unpkg.com/lucide@latest"></script>
 </head>
+
 
 <body>
     <div class="app">
         <header class="header">
             <div class="header-container">
-                <div class="header-left"> 
-                    <button class="menu-button" id="menuToggle"> <i data-lucide="menu"></i>
+                <div class="header-left">
+                    <button class="menu-button" id="menuToggle">
+                        <i data-lucide="menu"></i>
                     </button>
                     <h1 class="logo">Forum</h1>
-                    <div class="search-container"> <i data-lucide="search"></i>
-                        <input type="text" placeholder="Search discussions...">
+                    <div class="search-container">
+                        <i data-lucide="search"></i>
+                        <input type="text" id="searchInput" placeholder="Search discussions...">
                     </div>
                 </div>
                 <div class="header-right">
-                    <button class="icon-button"> <i data-lucide="moon"></i>
+                    <button class="icon-button" id="darkModeToggle">
+                        <i data-lucide="moon"></i>
                     </button>
-                    <button class="icon-button"> <i data-lucide="bell"></i>
+                    <button class="icon-button">
+                        <i data-lucide="bell"></i>
                     </button>
                     <a href="login.html" class="sign-in-button">Sign In</a>
                 </div>
@@ -35,24 +39,42 @@
             <aside class="sidebar" id="sidebar">
                 <nav>
                     <ul class="category-list">
-                        <li> <button class="category-button"> <i data-lucide="hash"></i>
+                        <li>
+                            <button class="category-button">
+                                <i data-lucide="hash"></i>
                                 <span>All Posts</span>
-                            </button> </li>
-                        <li> <button class="category-button"> <i data-lucide="newspaper"></i>
-                                <span>Latest</span>
-                            </button> </li>
-                        <li> <button class="category-button"> <i data-lucide="star" i></i>
-                                <span>Popular</span> </button>
+                            </button>
                         </li>
-                        <li> <button class="category-button"> <i data-lucide="users"></i>
+                        <li>
+                            <button class="category-button">
+                                <i data-lucide="newspaper"></i>
+                                <span>Latest</span>
+                            </button>
+                        </li>
+                        <li>
+                            <button class="category-button">
+                                <i data-lucide="star"></i>
+                                <span>Popular</span>
+                            </button>
+                        </li>
+                        <li>
+                            <button class="category-button">
+                                <i data-lucide="users"></i>
                                 <span>Communities</span>
-                            </button> </li>
-                        <li> <button class="category-button"> <i data-lucide="message-square"></i>
-
-                                <span>Discussions</span> </button> </li>
-                        <li> <button class="category-button"> <i data-lucide="bookmark"></i>
+                            </button>
+                        </li>
+                        <li>
+                            <button class="category-button">
+                                <i data-lucide="message-square"></i>
+                                <span>Discussions</span>
+                            </button>
+                        </li>
+                        <li>
+                            <button class="category-button">
+                                <i data-lucide="bookmark"></i>
                                 <span>Bookmarks</span>
-                            </button> </li>
+                            </button>
+                        </li>
                     </ul>
                 </nav>
             </aside>
@@ -111,9 +133,9 @@
                     <p>&copy; 2024 Forum. All rights reserved.</p>
                 </div>
             </div>
+    
         </footer>
     </div>
-    <script src="index.js"></script>
+    <script src="index.js" type="module"></script>
 </body>
-
 </html>
