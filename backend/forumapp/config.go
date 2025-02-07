@@ -5,6 +5,7 @@ import (
 	"database/sql"
 	"fmt"
 	"net/http"
+	"os"
 	"sync"
 	"time"
 )
@@ -86,8 +87,8 @@ func (f *ForumApp) GenerateToken(userID int) (http.Cookie, error) {
 		Name:     "session_token",
 		Value:    token,
 		Path:     "/",
-		HttpOnly: true,  // Prevent JavaScript access
-		Secure:   false, // TODO: Change to true in production
+		HttpOnly: true,             // Prevent JavaScript access
+		Secure:   f.IsProduction(), // Secure in production
 		Expires:  time.Now().Add(24 * time.Hour),
 		SameSite: http.SameSiteStrictMode,
 	}
@@ -110,4 +111,9 @@ func (f *ForumApp) generateSecureToken() (string, error) {
 		b[0:4], b[4:6], b[6:8], b[8:10], b[10:16])
 
 	return token, nil
+}
+
+// isProduction returns true if the server is running in production mode
+func (f *ForumApp) IsProduction() bool {
+	return os.Getenv("ENV") == "production"
 }
