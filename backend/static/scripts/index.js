@@ -120,7 +120,8 @@ function attachPostEventListeners() {
 
 // State management for likes 
 const likeState = { 
-    posts: {} 
+    posts: {},
+    comments: {},
 }; 
     
 // Initialize like state from SAMPLE_POSTS 
@@ -137,7 +138,6 @@ function handleLike(e) {
     const button = e.currentTarget.closest('.like-button');
     if (!button) return; 
     const isComment = button.hasAttribute('data-comment-id');
-    if (!isComment) return;
     // Get the relevant IDs 
     const postId = button.getAttribute('data-post-id'); 
     if (!postId) return;
