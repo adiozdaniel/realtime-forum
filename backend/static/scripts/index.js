@@ -125,37 +125,6 @@ function handleLike(e) {
     button.classList.add('text-blue-600');
 }
 
-// Toggle mobile menu
-function toggleMobileMenu() {
-    const isVisible = sidebar.style.display === 'block';
-    sidebar.style.display = isVisible ? 'none' : 'block';
-}
-
-// Handle window resize
-function handleResize() {
-    if (window.innerWidth >= 1024) {
-        sidebar.style.display = 'block';
-    } else {
-        sidebar.style.display = 'none';
-    }
-}
-
-// Toggle dark mode
-function toggleDarkMode() {
-    document.body.classList.toggle('dark-mode');
-    localStorage.setItem('darkMode', document.body.classList.contains('dark-mode'));
-}
-
-// Search functionality
-function handleSearch(e) {
-    const searchTerm = e.target.value.toLowerCase();
-    const filteredPosts = SAMPLE_POSTS.filter(post =>
-        post.title.toLowerCase().includes(searchTerm) ||
-        post.excerpt.toLowerCase().includes(searchTerm)
-    );
-    renderPosts(filteredPosts);
-}
-
 // Initialize
 function init() {
     lucide.createIcons();
