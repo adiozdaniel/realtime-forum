@@ -2,17 +2,7 @@ package handlers
 
 import (
 	"net/http"
-
-	"forum/forumapp"
 )
-
-type Repo struct {
-	app *forumapp.ForumApp
-}
-
-func NewRepo(app *forumapp.ForumApp) *Repo {
-	return &Repo{app}
-}
 
 // HomePage handler
 func (h *Repo) HomePageHandler(w http.ResponseWriter, r *http.Request) {
@@ -27,7 +17,7 @@ func (h *Repo) HomePageHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	data := map[string]interface{} {
+	data := map[string]interface{}{
 		"Page": "home",
 	}
 
@@ -81,4 +71,3 @@ func (h *Repo) SignUpPage(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Oops, something went wrong while rendering the page!", http.StatusInternalServerError)
 	}
 }
-
