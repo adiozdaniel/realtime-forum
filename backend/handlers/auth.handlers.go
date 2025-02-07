@@ -64,11 +64,31 @@ func (h *Repo) RegisterHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	userID, _ := h.app.GenerateUUID()
 	// Save to database
-	_, err = h.app.Db.ExecContext(ctx, "INSERT INTO users (username, email, password) VALUES (?, ?, ?)", req.Username, req.Email, string(hashedPassword))
+	_, err = h.app.Db.ExecContext(ctx, "INSERT INTO users (user_id, username, email, password) VALUES (?, ?, ?, ?)", userID, req.Username, req.Email, string(hashedPassword))
 	if err != nil {
 		h.res.SetError(w, err, http.StatusInternalServerError)
 		return
+	}
+
+	// Generate a token (e.g., JWT)
+	token, err := h.app.GenerateToken(userID)
+	if err != nil {
+		h.res.SetError(w, err, http.StatusInternalServerError)
+		return
+	}
+
+	// Set the session cookie
+	http.SetCookie(w, &token)
+
+	// Respond with success and token
+	h.res.Err = false
+	h.res.Message = "Login successful"
+	h.res.Data = map[string]interface{}{
+		"token":    token.Value,
+		"user_id":  userID,
+		"username": req.Username,
 	}
 
 	h.res.Err = false
@@ -111,10 +131,11 @@ func (h *Repo) LoginHandler(w http.ResponseWriter, r *http.Request) {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
-	var username, hashedPassword string
+	var userID, username, hashedPassword string
 
-	userID, _ := h.app.GenerateUUID()
-	err := h.app.Db.QueryRowContext(ctx, "SELECT id, username, password FROM users WHERE email = ?", req.Email).Scan(&userID, &username, &hashedPassword)
+	err := h.app.Db.QueryRowContext(ctx, "SELECT user_id, username, password FROM users WHERE email = ?", req.Email).
+		Scan(&userID, &username, &hashedPassword)
+
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
 			h.res.SetError(w, errors.New("user does not exist"), http.StatusUnauthorized)

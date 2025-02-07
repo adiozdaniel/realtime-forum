@@ -63,7 +63,7 @@ func (f *ForumApp) InitDB() error {
 	// Optional: Create tables if they don't exist
 	_, err = f.Db.Exec(`
 		CREATE TABLE IF NOT EXISTS users (
-			id TEXT PRIMARY KEY,
+			user_id TEXT PRIMARY KEY,
 			username TEXT NOT NULL,
 			email TEXT NOT NULL UNIQUE,
 			password TEXT NOT NULL

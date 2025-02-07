@@ -10,16 +10,22 @@ document.addEventListener('DOMContentLoaded', function () {
     const submitButton = form.querySelector('button[type="submit"]');
     const spinner = submitButton.querySelector('.spinner');
 
+    // Constants
+    const API_ENDPOINT = '/api/auth/login';
+    const MIN_PASSWORD_LENGTH = 6;
+
     // Password visibility toggle
-    passwordToggle.addEventListener('click', () => {
+    passwordToggle.addEventListener('click', togglePasswordVisibility);
+
+    function togglePasswordVisibility() {
         const isPassword = passwordInput.type === 'password';
         passwordInput.type = isPassword ? 'text' : 'password';
 
-        if (passwordToggle.querySelector('i')){
-             passwordToggle.querySelector('i').setAttribute('data-lucide', isPassword ? 'eye-off' : 'eye');
-             lucide.createIcons(passwordToggle);
-        }        
-    });
+        if (passwordToggle.querySelector('i')) {
+            passwordToggle.querySelector('i').setAttribute('data-lucide', isPassword ? 'eye-off' : 'eye');
+            lucide.createIcons(passwordToggle);
+        }
+    }
 
     // Form validation
     function validateEmail(email) {
@@ -47,8 +53,10 @@ document.addEventListener('DOMContentLoaded', function () {
         input.classList.remove('error-input');
     }
 
-    // Form submission with backend integration
-    form.addEventListener('submit', async (e) => {
+    // Form submission
+    form.addEventListener('submit', handleLogin);
+
+    async function handleLogin(e) {
         e.preventDefault();
 
         removeError(emailInput);
@@ -59,8 +67,8 @@ document.addEventListener('DOMContentLoaded', function () {
             return;
         }
 
-        if (passwordInput.value.length < 6) {
-            showError(passwordInput, 'Password must be at least 6 characters');
+        if (passwordInput.value.length < MIN_PASSWORD_LENGTH) {
+            showError(passwordInput, `Password must be at least ${MIN_PASSWORD_LENGTH} characters`);
             return;
         }
 
@@ -74,10 +82,8 @@ document.addEventListener('DOMContentLoaded', function () {
             password: passwordInput.value,
         };
 
-        let result;
-
         try {
-            const response = await fetch('/api/auth/login', {
+            const response = await fetch(API_ENDPOINT, {
                 method: 'POST',
                 body: JSON.stringify(formData),
                 headers: {
@@ -85,31 +91,25 @@ document.addEventListener('DOMContentLoaded', function () {
                 },
             });
 
-            result = await response.json();
-            console.log('Server Response:', result); // Log the response
+            const res = await response.json();
 
-            if (!response.ok) {
-                throw new Error(result.message || 'Login failed');
+            if (response.ok) {
+                console.log('Login successful:', res.message);
+                localStorage.setItem('res', JSON.stringify(res.data));
+                window.location.href = '/';
+            } else {
+                console.error('Login failed:', res.message || 'Unknown error');
+                showError(emailInput, res.message || 'Invalid email or password');
             }
-
-           // Redirect on success
-            window.location.href = '/';
         } catch (error) {
             console.error('Login Error:', error.message);
-
-            if (result.message === "user does not exist") {
-                showError(emailInput, result.message);
-                return;
-            }
-            
-            showError(emailInput, result.message);
-            showError(passwordInput, result.message);
+            showError(emailInput, 'An error occurred. Please try again.');
         } finally {
             submitButton.disabled = false;
             spinner.classList.add('hidden');
             submitButton.querySelector('span').textContent = 'Sign in';
         }
-    });
+    }
 
     // Clear errors dynamically
     form.addEventListener('input', (event) => {

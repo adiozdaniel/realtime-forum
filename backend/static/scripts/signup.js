@@ -168,10 +168,10 @@ document.addEventListener('DOMContentLoaded', function() {
             const response = await res.json();
     
             // Log the response data
-            console.log('Response Data:', response);
+            console.log('Response Data:', response.data);
     
             // Store the response in localStorage
-            localStorage.setItem('res', JSON.stringify(response));
+            localStorage.setItem('res', JSON.stringify(response.data));
     
             // Handle success or error based on the response
             if (res.ok) {
