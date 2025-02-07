@@ -37,12 +37,22 @@ type LogoutRequest struct {
 }
 
 type Repo struct {
-	app *forumapp.ForumApp
-	res *response.JSONRes
+	app     *forumapp.ForumApp
+	res     *response.JSONRes
+	post    *PostService
+	comment *CommentService
+	user    *UserService
 }
 
 func NewRepo(app *forumapp.ForumApp) *Repo {
-	return &Repo{app, response.NewJSONRes()}
+	// initialise services
+	post := NewPostService()
+	comment := NewCommentService()
+	user := NewUserService()
+	return &Repo{
+		app, response.NewJSONRes(),
+		post, comment, user,
+	}
 }
 
 // User represents a user in the database
