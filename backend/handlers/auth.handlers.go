@@ -169,7 +169,6 @@ func (h *Repo) LoginHandler(w http.ResponseWriter, r *http.Request) {
 	token := h.app.GenerateToken(userID)
 
 	// Set the session cookie
-	h.app.Sessions.Store(userID, token)
 	http.SetCookie(w, &token)
 
 	// Respond with success and token
