@@ -2,7 +2,9 @@ package handlers
 
 import (
 	"context"
+	"database/sql"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"net/http"
 	"time"
@@ -11,36 +13,31 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
-// RegisterRequest represents the request body for user registration.
-type Request struct {
-	Username string `json:"username"`
-	Email    string `json:"email"`
-	Password string `json:"password"`
-}
-
-// RegisterResponse represents the response for user registration.
-type Response struct {
-	Message string `json:"message"`
-	Error   bool   `json:"false"`
-}
-
 // RegisterHandler handles user registration.
 func (h *Repo) RegisterHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
-		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+		h.res.SetError(w, errors.New("method not allowed"), http.StatusMethodNotAllowed)
 		return
 	}
 
 	// Parse request
 	var req Request
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-		http.Error(w, "Invalid request body", http.StatusBadRequest)
+		h.res.SetError(w, err, http.StatusBadRequest)
 		return
 	}
 
 	// Validate input
-	if req.Username == "" || req.Email == "" || req.Password == "" {
-		http.Error(w, "Username, email, and password are required", http.StatusBadRequest)
+	if req.Username == "" {
+		h.res.SetError(w, errors.New("username is required"), http.StatusBadRequest)
+		return
+	}
+	if req.Email == "" {
+		h.res.SetError(w, errors.New("email is required"), http.StatusBadRequest)
+		return
+	}
+	if req.Password == "" {
+		h.res.SetError(w, errors.New("password is required"), http.StatusBadRequest)
 		return
 	}
 
@@ -51,26 +48,26 @@ func (h *Repo) RegisterHandler(w http.ResponseWriter, r *http.Request) {
 	var exists int
 	err := h.app.Db.QueryRowContext(ctx, "SELECT COUNT(*) FROM users WHERE username = ? OR email = ?", req.Username, req.Email).Scan(&exists)
 	if err != nil {
-		http.Error(w, "Internal server error", http.StatusInternalServerError)
+		h.res.SetError(w, err, http.StatusInternalServerError)
 		return
 	}
 
 	if exists > 0 {
-		http.Error(w, "email already exists", http.StatusConflict)
+		h.res.SetError(w, errors.New("email already exists"), http.StatusConflict)
 		return
 	}
 
 	// Hash the password
 	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(req.Password), bcrypt.DefaultCost)
 	if err != nil {
-		http.Error(w, "Failed to hash password", http.StatusInternalServerError)
+		h.res.SetError(w, err, http.StatusInternalServerError)
 		return
 	}
 
 	// Save to database
 	_, err = h.app.Db.ExecContext(ctx, "INSERT INTO users (username, email, password) VALUES (?, ?, ?)", req.Username, req.Email, string(hashedPassword))
 	if err != nil {
-		http.Error(w, "Failed to register user", http.StatusInternalServerError)
+		h.res.SetError(w, err, http.StatusInternalServerError)
 		return
 	}
 
@@ -79,40 +76,33 @@ func (h *Repo) RegisterHandler(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusCreated)
 	response := Response{Message: "User registered successfully", Error: false}
 	if err := json.NewEncoder(w).Encode(response); err != nil {
-		http.Error(w, "Internal server error", http.StatusInternalServerError)
+		h.res.SetError(w, err, http.StatusInternalServerError)
 		return
 	}
-}
-
-// LoginRequest represents the request body for user login.
-type LoginRequest struct {
-	Email    string `json:"email"`
-	Password string `json:"password"`
-}
-
-// LoginResponse represents the response for user login.
-type LoginResponse struct {
-	Message string `json:"message"`
-	Token   string `json:"token,omitempty"`
 }
 
 // LoginHandler handles user login.
 func (h *Repo) LoginHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
-		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+		h.res.SetError(w, errors.New("method not allowed"), http.StatusMethodNotAllowed)
 		return
 	}
 
 	// Parse request
 	var req LoginRequest
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-		http.Error(w, "Invalid request body", http.StatusBadRequest)
+		h.res.SetError(w, errors.New("invalid request body"), http.StatusBadRequest)
 		return
 	}
 
 	// Validate input
-	if req.Email == "" || req.Password == "" {
-		http.Error(w, "Email and password are required", http.StatusBadRequest)
+	if req.Email == "" {
+		h.res.SetError(w, errors.New("email is required"), http.StatusBadRequest)
+		return
+	}
+
+	if req.Password == "" {
+		h.res.SetError(w, errors.New("password is required"), http.StatusBadRequest)
 		return
 	}
 
@@ -127,20 +117,25 @@ func (h *Repo) LoginHandler(w http.ResponseWriter, r *http.Request) {
 	)
 	err := h.app.Db.QueryRowContext(ctx, "SELECT id, username, password FROM users WHERE email = ?", req.Email).Scan(&userID, &username, &hashedPassword)
 	if err != nil {
-		http.Error(w, "Invalid email or password", http.StatusUnauthorized)
+		if errors.Is(err, sql.ErrNoRows) {
+			h.res.SetError(w, errors.New("user does not exist"), http.StatusUnauthorized)
+			return
+		}
+
+		h.res.SetError(w, err, http.StatusInternalServerError)
 		return
 	}
 
 	// Compare the provided password with the hashed password
 	if err := bcrypt.CompareHashAndPassword([]byte(hashedPassword), []byte(req.Password)); err != nil {
-		http.Error(w, "Invalid email or password", http.StatusUnauthorized)
+		h.res.SetError(w, errors.New("invalid email or password"), http.StatusUnauthorized)
 		return
 	}
 
 	// Generate a token (e.g., JWT)
 	token, err := h.generateToken(userID, username)
 	if err != nil {
-		http.Error(w, "Internal server error", http.StatusInternalServerError)
+		h.res.SetError(w, err, http.StatusInternalServerError)
 		return
 	}
 
@@ -152,7 +147,7 @@ func (h *Repo) LoginHandler(w http.ResponseWriter, r *http.Request) {
 		Token:   token,
 	}
 	if err := json.NewEncoder(w).Encode(response); err != nil {
-		http.Error(w, "Internal server error", http.StatusInternalServerError)
+		h.res.SetError(w, err, http.StatusInternalServerError)
 		return
 	}
 }
@@ -169,5 +164,6 @@ func (h *Repo) PostsHandler(w http.ResponseWriter, r *http.Request) {
 		fmt.Fprintln(w, `{"posts": []}`)
 		return
 	}
-	http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+
+	h.res.SetError(w, errors.New("method not allowed"), http.StatusMethodNotAllowed)
 }
