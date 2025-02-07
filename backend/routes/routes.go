@@ -33,6 +33,7 @@ func (r *Routes) RegisterRoutes(mux *http.ServeMux) http.Handler {
 	mux.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir(fs))))
 
 	mux.HandleFunc("/api/auth/register", r.repo.RegisterHandler)
+	mux.HandleFunc("/api/auth/logout", r.repo.LogoutHandler)
 	mux.HandleFunc("/api/auth/login", r.repo.LoginHandler)
 	mux.HandleFunc("/auth", r.repo.LoginPage)
 	mux.HandleFunc("/auth-sign-up", r.repo.SignUpPage)
