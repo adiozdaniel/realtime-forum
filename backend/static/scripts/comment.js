@@ -117,6 +117,13 @@ Object.keys(SAMPLE_COMMENTS).forEach(postId => {
             count: comment.likes,
             likedBy: new Set() // Track users who liked
         };
+
+        comment.replies.forEach(reply => {
+            likeState.comments[reply.id] = {
+                count: reply.likes,
+                likedBy: new Set()
+            };
+        });
     });
 });
 
