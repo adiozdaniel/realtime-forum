@@ -1,21 +1,23 @@
 package forumapp
 
 import (
+	"crypto/rand"
 	"database/sql"
 	"fmt"
+	"net/http"
 	"sync"
+	"time"
 )
 
 type ForumApp struct {
 	Tmpls  *TemplateCache
 	Db     *sql.DB
+	Store  sync.Map
 	Errors error
 }
 
 func newForumApp() *ForumApp {
-	return &ForumApp{
-		Tmpls: newTemplateCache(),
-	}
+	return &ForumApp{Tmpls: newTemplateCache()}
 }
 
 var (
@@ -71,4 +73,41 @@ func (f *ForumApp) InitDB() error {
 	}
 
 	return nil
+}
+
+func (f *ForumApp) GenerateToken(userID int) (http.Cookie, error) {
+	token, err := f.generateSecureToken()
+	if err != nil {
+		return http.Cookie{}, err
+	}
+
+	// Store the token in a session cookie
+	cookie := &http.Cookie{
+		Name:     "session_token",
+		Value:    token,
+		Path:     "/",
+		HttpOnly: true,  // Prevent JavaScript access
+		Secure:   false, // TODO: Change to true in production
+		Expires:  time.Now().Add(24 * time.Hour),
+		SameSite: http.SameSiteStrictMode,
+	}
+
+	// Store the token in the map
+	f.Store.Store(userID, cookie)
+	return *cookie, nil
+}
+
+// generateSecureToken creates a cryptographically secure random token
+func (f *ForumApp) generateSecureToken() (string, error) {
+	b := make([]byte, 16) // 16 bytes = 128 bits, similar to a UUID
+	_, err := rand.Read(b)
+	if err != nil {
+		return "", err
+	}
+
+	// Format it as a UUID-like string
+	token := fmt.Sprintf("%08x-%04x-%04x-%04x-%012x",
+		b[0:4], b[4:6], b[6:8], b[8:10], b[10:16])
+
+	return token, nil
 }

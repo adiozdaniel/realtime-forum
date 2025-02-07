@@ -134,27 +134,29 @@ func (h *Repo) LoginHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Generate a token (e.g., JWT)
-	token, err := h.generateToken(userID, username)
+	token, err := h.app.GenerateToken(userID)
 	if err != nil {
 		h.res.SetError(w, err, http.StatusInternalServerError)
 		return
 	}
 
+	// Set the session cookie
+	http.SetCookie(w, &token)
+
 	// Respond with success and token
 	h.res.Err = false
 	h.res.Message = "Login successful"
-	h.res.Data = token
+	h.res.Data = map[string]interface{}{
+		"token":    token.Value,
+		"user_id":  userID,
+		"username": username,
+	}
 
 	err = h.res.WriteJSON(w, *h.res, http.StatusOK)
 	if err != nil {
 		h.res.SetError(w, err, http.StatusInternalServerError)
 		return
 	}
-}
-
-// generateToken generates a JWT or session token for the user.
-func (h *Repo) generateToken(userID int, username string) (string, error) {
-	return fmt.Sprintf("%v, %v", userID, username), nil
 }
 
 // Posts handler (dummy implementation)
