@@ -8,9 +8,9 @@ import (
 
 // JSONRes represents a JSON response data
 type JSONRes struct {
-	Err     bool            `json:"error"`
-	Message string          `json:"message"`
-	Data    json.RawMessage `json:"data,omitempty"`
+	Err     bool        `json:"error"`
+	Message string      `json:"message"`
+	Data    interface{} `json:"data"`
 }
 
 // A constructor function that initializes and returns a new JSONRes instance

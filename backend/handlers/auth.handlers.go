@@ -71,11 +71,12 @@ func (h *Repo) RegisterHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	h.res.Err = false
+	h.res.Message = "User registered successfully"
+
 	// Respond with JSON
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusCreated)
-	response := Response{Message: "User registered successfully", Error: false}
-	if err := json.NewEncoder(w).Encode(response); err != nil {
+	err = h.res.WriteJSON(w, *h.res, http.StatusCreated)
+	if err != nil {
 		h.res.SetError(w, err, http.StatusInternalServerError)
 		return
 	}
@@ -140,13 +141,12 @@ func (h *Repo) LoginHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Respond with success and token
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusOK)
-	response := LoginResponse{
-		Message: "Login successful",
-		Token:   token,
-	}
-	if err := json.NewEncoder(w).Encode(response); err != nil {
+	h.res.Err = false
+	h.res.Message = "Login successful"
+	h.res.Data = token
+
+	err = h.res.WriteJSON(w, *h.res, http.StatusOK)
+	if err != nil {
 		h.res.SetError(w, err, http.StatusInternalServerError)
 		return
 	}
