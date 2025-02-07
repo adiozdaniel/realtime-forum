@@ -22,8 +22,11 @@ document.addEventListener('DOMContentLoaded', function() {
         confirmPasswordInput.type = type; 
         // Update icon 
         const icon = passwordToggle.querySelector('i'); 
-        icon.setAttribute('data-lucide', type === 'password' ? 'eye' : 'eye-off'); 
-        lucide.createIcons(); 
+
+        if (icon) {
+            icon.setAttribute('data-lucide', type === 'password' ? 'eye' : 'eye-off'); 
+            lucide.createIcons(icon); 
+        }
     }); 
 
      // Check password match
