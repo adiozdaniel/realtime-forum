@@ -52,3 +52,23 @@ func TestHomePageHandler(t *testing.T) {
 		}
 	})
 }
+func TestLoginPage(t *testing.T) {
+	t.Run("Test httpmethod", func(t *testing.T) {
+		//Template cache
+		r := make(map[string]*template.Template)
+		r["home.page.html"] = template.New("home.page.html")
+		tmplcach := &forumapp.TemplateCache{Pages: r}
+
+		fapp := &forumapp.ForumApp{}
+		fapp.Tmpls = tmplcach
+		h := &Repo{app: fapp}
+
+		req := httptest.NewRequest(http.MethodPost, "/api/auth/login", nil)
+		writer := httptest.NewRecorder()
+
+		h.LoginPage(writer, req)
+		if writer.Code != http.StatusForbidden {
+			t.Errorf("Expected Method %d,got %d", http.StatusForbidden, writer.Code)
+		}
+	})
+}
