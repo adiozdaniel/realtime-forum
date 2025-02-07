@@ -152,6 +152,23 @@ func (h *Repo) LoginHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// Check if user already has a valid session
+	if cookie, err := r.Cookie("session_token"); err == nil {
+		if storedCookie, exists := h.app.Sessions.Load(userID); exists {
+			if token, ok := storedCookie.(*http.Cookie); ok && token.Value == cookie.Value {
+				h.res.Err = false
+				h.res.Message = "Login successful (existing session)"
+				h.res.Data = map[string]interface{}{
+					"token":    token.Value,
+					"user_id":  userID,
+					"username": username,
+				}
+				h.res.WriteJSON(w, *h.res, http.StatusOK)
+				return
+			}
+		}
+	}
+
 	// Generate a token (e.g., JWT)
 	token, err := h.app.GenerateToken(userID)
 	if err != nil {
