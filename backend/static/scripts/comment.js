@@ -55,18 +55,26 @@ const SAMPLE_COMMENTS = {
 
 //  HTML for a single reply
 function createReplyHTML(reply) {
+    const replyState = likeState.comments[reply.id] || { count: 0, likedBy: new Set() };
+    const isLiked = replyState.likedBy.has('current-user');
+
     return `
         <div class="reply" data-reply-id="${reply.id}">
             <div class="comment-header">
                 <span class="comment-author">${reply.author}</span>
-                <span class="comment-time">${reply.timeAgo}</span>
             </div>
             <p class="comment-content">${reply.content}</p>
-            <div class="comment-actions">
-                <span class="comment-action">
-                    <i data-lucide="thumbs-up"></i>
-                    <span class="likes-count">${reply.likes}</span>
-                </span>
+            <div class="comment-footer">
+                <div class="comment-actions">
+                    <button class="comment-action-button like-button ${isLiked ? 'liked text-blue-600' : ''}" 
+                        data-comment-id="${reply.id}">
+                        <i data-lucide="thumbs-up"></i>
+                        <span class="likes-count">${replyState.count}</span>
+                    </button>
+                </div>
+                <div class="comment-meta">
+                    <span class="comment-time">${reply.timeAgo}</span>
+                </div>
             </div>
         </div>`;
 }
@@ -75,40 +83,10 @@ function createReplyHTML(reply) {
 function createRepliesHTML(replies) {
     if (!replies || replies.length === 0) return '';
     return `
-        <div class="replies-container">
+        <div class="replies-container hidden">
             ${replies.map(reply => createReplyHTML(reply)).join('')}
         </div>`;
 }
-
-// // comment HTML with replies
-// function createCommentHTML(comment) {
-//     return `
-//         <div class="comment" data-comment-id="${comment.id}">
-//             <div class="comment-header">
-//                 <span class="comment-author">${comment.author}</span>
-//                 <span class="comment-time">${comment.timeAgo}</span>
-//             </div>
-//             <p class="comment-content">${comment.content}</p>
-//             <div class="comment-actions">
-//                 <button class="comment-action like-button" data-comment-id="${comment.id}">
-//                     <i data-lucide="thumbs-up"></i>
-//                     <span class="likes-count">${comment.likes}</span>
-//                 </button>
-//                 <span class="comment-action reply-button">
-//                     <i data-lucide="reply"></i>
-//                     Reply
-//                 </span>
-//             </div>
-//             ${createRepliesHTML(comment.replies)}
-//             <div class="reply-form hidden">
-//                 <textarea class="reply-input" placeholder="Write your reply..."></textarea>
-//                 <div class="reply-form-actions">
-//                     <button type="button" class="reply-submit">Reply</button>
-//                     <button type="button" class="reply-cancel">Cancel</button>
-//                 </div>
-//             </div>
-//         </div>`;
-// }
 
 // Initialize like state from SAMPLE_COMMENTS
 Object.keys(SAMPLE_COMMENTS).forEach(postId => {
@@ -142,14 +120,26 @@ function createCommentHTML(comment, postId) {
                 <button class="comment-action-button like-button ${isLiked ? 'liked text-blue-600' : ''}" data-post-id="${postId}" data-comment-id="${comment.id}"> 
                     <i data-lucide="thumbs-up"></i> 
                     <span class="likes-count">${commentState?.count || 0}</span> 
-                </button> 
+                </button>
+                <button class="comment-action-button reply-button">
+                    <i data-lucide="reply"></i> 
+                    <span>Reply</span>
+                </button>  
                 
             </div>
             <div class="comment-meta">
                 <span class="comment-time">${comment.timeAgo}</span> 
             </div>
         </div>
-            <!-- reply section will be added here -->
+        ${createRepliesHTML(comment.replies)}
+        <div class="reply-form hidden">
+            <textarea class="reply-input" placeholder="Write your reply..."></textarea>
+            <div class="reply-form-actions">
+                <button type="button" class="reply-submit">Reply</button>
+                <button type="button" class="reply-cancel">Cancel</button>
+            </div>
+        </div>
+
     </div>`; 
     }
 // Handle reply button click
@@ -157,10 +147,16 @@ function handleReplyClick(e) {
     const replyButton = e.target.closest('.reply-button');
     if (!replyButton) return;
 
-    document.querySelectorAll('.reply-form').forEach(form => form.classList.add('hidden'));
-
     const comment = replyButton.closest('.comment');
+    const repliesContainer = comment.querySelector('.replies-container');
     const replyForm = comment.querySelector('.reply-form');
+
+    // Toggle replies container
+    if (repliesContainer) {
+        repliesContainer.classList.toggle('hidden');
+    }
+
+    // Show reply form and focus input
     replyForm.classList.toggle('hidden');
     replyForm.querySelector('.reply-input').focus();
 }
@@ -254,6 +250,11 @@ function loadComments(postId) {
     const comments = SAMPLE_COMMENTS[postId] || [];
 
     commentsContainer.innerHTML = comments.map(comment => createCommentHTML(comment)).join('');
+    
+    // Attach event listeners for replies
+    commentsContainer.addEventListener('click', handleReplyClick);
+    commentsContainer.addEventListener('click', handleReplySubmit);
+    commentsContainer.addEventListener('click', handleReplyCancel);
 
     lucide.createIcons(); // Ensure icons render after loading comments
 }
