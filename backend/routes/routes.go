@@ -5,21 +5,34 @@ import (
 
 	"forum/forumapp"
 	"forum/middlewares"
-	"forum/repositories"
 	"forum/repositories/authrepo"
+	"forum/repositories/commentrepo"
+	"forum/repositories/postrepo"
+	"forum/repositories/renders"
 )
 
 type Routes struct {
-	app      *forumapp.ForumApp
-	repo     *repositories.Repo
-	authRepo *authrepo.AuthRepo
+	app          *forumapp.ForumApp
+	authRepo     *authrepo.AuthRepo
+	postsRepo    *postrepo.PostsRepo
+	rendersRepo  *renders.RendersRepo
+	commentsRepo *commentrepo.CommentRepo
 }
 
-func NewRoutes(app *forumapp.ForumApp, authRepo *authrepo.AuthRepo, repo *repositories.Repo) *Routes {
+func NewRoutes(
+	app *forumapp.ForumApp,
+) *Routes {
+	authRepo := authrepo.NewAuthRepo(app)
+	postsRepo := postrepo.NewPostsRepo(app)
+	rendersRepo := renders.NewRendersRepo(app)
+	commentsRepo := commentrepo.NewCommentRepo(app)
+
 	return &Routes{
-		app:      app,
-		repo:     repo,
-		authRepo: authRepo,
+		app,
+		authRepo,
+		postsRepo,
+		rendersRepo,
+		commentsRepo,
 	}
 }
 
@@ -37,9 +50,9 @@ func (r *Routes) RegisterRoutes(mux *http.ServeMux) http.Handler {
 	mux.HandleFunc("/api/auth/register", r.authRepo.RegisterHandler)
 	mux.HandleFunc("/api/auth/logout", r.authRepo.LogoutHandler)
 	mux.HandleFunc("/api/auth/login", r.authRepo.LoginHandler)
-	mux.HandleFunc("/auth", r.repo.LoginPage)
-	mux.HandleFunc("/auth-sign-up", r.repo.SignUpPage)
-	mux.HandleFunc("/", r.repo.HomePageHandler)
+	mux.HandleFunc("/auth", r.rendersRepo.LoginPageHandler)
+	mux.HandleFunc("/auth-sign-up", r.rendersRepo.SignUpPageHandler)
+	mux.HandleFunc("/", r.rendersRepo.HomePageHandler)
 
 	// CORS middleware
 	handler := middlewares.CorsMiddleware(mux)

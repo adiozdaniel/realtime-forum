@@ -1,17 +1,17 @@
-package repositories
+package renders
 
 import (
 	"net/http"
 )
 
 // HomePage handler
-func (h *Repo) HomePageHandler(w http.ResponseWriter, r *http.Request) {
+func (m *RendersRepo) HomePageHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodGet {
 		http.Error(w, "Oops, didn't understand what you are looking for", http.StatusForbidden)
 		return
 	}
 
-	tmpl, err := h.app.Tmpls.GetPage("home.page.html")
+	tmpl, err := m.app.Tmpls.GetPage("home.page.html")
 	if err != nil {
 		http.Error(w, "Oops, something went wrong!", http.StatusInternalServerError)
 		return
@@ -28,13 +28,13 @@ func (h *Repo) HomePageHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 // Login page
-func (h *Repo) LoginPage(w http.ResponseWriter, r *http.Request) {
+func (m *RendersRepo) LoginPageHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodGet {
 		http.Error(w, "Oops, didn't understand what you are looking for", http.StatusForbidden)
 		return
 	}
 
-	tmpl, err := h.app.Tmpls.GetPage("login.page.html")
+	tmpl, err := m.app.Tmpls.GetPage("login.page.html")
 	if err != nil {
 		http.Error(w, "Oops, something went wrong!", http.StatusInternalServerError)
 		return
@@ -50,13 +50,13 @@ func (h *Repo) LoginPage(w http.ResponseWriter, r *http.Request) {
 }
 
 // sign-up page
-func (h *Repo) SignUpPage(w http.ResponseWriter, r *http.Request) {
+func (m *RendersRepo) SignUpPageHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodGet {
 		http.Error(w, "Oops, didn't understand what you are looking for", http.StatusForbidden)
 		return
 	}
 
-	tmpl, err := h.app.Tmpls.GetPage("signup.page.html")
+	tmpl, err := m.app.Tmpls.GetPage("signup.page.html")
 	if err != nil {
 		http.Error(w, "Oops, something went wrong!", http.StatusInternalServerError)
 		return

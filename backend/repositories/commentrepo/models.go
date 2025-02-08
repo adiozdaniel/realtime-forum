@@ -3,7 +3,6 @@ package commentrepo
 import (
 	"forum/forumapp"
 	"forum/repositories/shared"
-	"forum/response"
 	"time"
 )
 
@@ -21,7 +20,7 @@ type Comment struct {
 // CommentRepo represents the repository for comments
 type CommentRepo struct {
 	app     *forumapp.ForumApp
-	res     *response.JSONRes
+	res     *shared.JSONRes
 	comment CommentInterface
 	shared  *shared.SharedConfig
 }
@@ -30,11 +29,12 @@ type CommentRepo struct {
 func NewCommentRepo(app *forumapp.ForumApp) *CommentRepo {
 	commentRepo := NewCommentRepository(app.Db.Query)
 	commentService := NewCommentService(commentRepo)
+	res := shared.NewJSONRes()
 	shared := shared.NewSharedConfig()
 
 	return &CommentRepo{
 		app:     app,
-		res:     response.NewJSONRes(),
+		res:     res,
 		comment: commentService,
 		shared:  shared,
 	}

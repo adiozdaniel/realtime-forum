@@ -8,20 +8,14 @@ import (
 	"time"
 
 	"forum/forumapp"
-	"forum/repositories/authrepo"
-	"forum/repositories/commentrepo"
-	"forum/repositories/postrepo"
 	"forum/routes"
 )
 
 type Server struct {
-	app          *forumapp.ForumApp
-	authRepo     *authrepo.AuthRepo
-	postsRepo    *postrepo.PostsRepo
-	commentsRepo *commentrepo.CommentRepo
-	routes       *routes.Routes
-	server       *http.Server
-	port         string
+	app    *forumapp.ForumApp
+	routes *routes.Routes
+	server *http.Server
+	port   string
 }
 
 func NewServer() *Server {
@@ -31,15 +25,10 @@ func NewServer() *Server {
 		log.Fatal(err)
 	}
 
-	authRepo := authrepo.NewAuthRepo(app)
-	postsRepo := postrepo.NewPostsRepo(app)
-	commentsRepo := commentrepo.NewCommentRepo(app)
-	routes := routes.NewRoutes(
-		app, authRepo, postsRepo, commentsRepo,
-	)
+	routes := routes.NewRoutes(app)
 
 	return &Server{
-		app, authRepo, postsRepo, commentsRepo, routes, nil, port,
+		app, routes, nil, port,
 	}
 }
 

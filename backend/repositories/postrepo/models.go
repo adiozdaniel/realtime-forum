@@ -3,13 +3,12 @@ package postrepo
 import (
 	"forum/forumapp"
 	"forum/repositories/shared"
-	"forum/response"
 )
 
 // PostRepo represents posts repository
 type PostsRepo struct {
 	app    *forumapp.ForumApp
-	res    *response.JSONRes
+	res    *shared.JSONRes
 	post   *PostService
 	shared *shared.SharedConfig
 }
@@ -22,7 +21,7 @@ func NewPostsRepo(app *forumapp.ForumApp) *PostsRepo {
 
 	return &PostsRepo{
 		app:    app,
-		res:    response.NewJSONRes(),
+		res:    shared.NewJSONRes(),
 		post:   postService,
 		shared: shared.NewSharedConfig(),
 	}

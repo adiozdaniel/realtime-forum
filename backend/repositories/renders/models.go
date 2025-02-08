@@ -2,12 +2,12 @@ package renders
 
 import "forum/forumapp"
 
-// Response represents a response implementations
-type Response struct {
+// RendersRepo represents a response implementations
+type RendersRepo struct {
 	app *forumapp.ForumApp
 }
 
 // NewResponse creates a new instance of Response
-func NewResponse(app *forumapp.ForumApp) *Response {
-	return &Response{app}
+func NewRendersRepo(app *forumapp.ForumApp) *RendersRepo {
+	return &RendersRepo{app}
 }
