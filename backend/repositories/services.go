@@ -1,23 +1,29 @@
 package repositories
 
 import (
+	"crypto/rand"
+	"database/sql"
 	"errors"
+	"fmt"
+
+	"golang.org/x/crypto/bcrypt"
 )
 
 // UserService manages user operations
 type UserService struct {
 	user *UserRepository
+	db   *sql.DB
 }
 
 // NewUserService creates a new instance of UserService
-func NewUserService() *UserService {
-	user := &UserRepository{}
-	return &UserService{user}
+func NewUserService(db *sql.DB) *UserService {
+	user := &UserRepository{DB: db}
+	return &UserService{user, db}
 }
 
 func (u *UserService) Register(user *User) error {
 	if user.Email == "" || user.Password == "" {
-		return errors.New("email and password cannot be empty")
+		return errors.New("email or password cannot be empty")
 	}
 
 	existingUser, _ := u.user.GetUserByEmail(user.Email)
@@ -25,9 +31,19 @@ func (u *UserService) Register(user *User) error {
 		return errors.New("this email is already in use")
 	}
 
-	// Hash the password (assuming a HashPassword function exists)
-	hashedPassword := user.Password // TODO: Replace with actual hashing function
-	user.Password = hashedPassword
+	// Hash the password
+	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(user.Password), bcrypt.DefaultCost)
+	if err != nil {
+		return errors.New("oops, something went wrong. try again")
+	}
+	user.Password = string(hashedPassword)
+
+	// Generate a unique user ID
+	userID, err := generateUUID()
+	if err != nil {
+		return errors.New("oops, something went wrong. try again")
+	}
+	user.UserID = userID
 
 	return u.user.CreateUser(user)
 }
@@ -35,12 +51,13 @@ func (u *UserService) Register(user *User) error {
 // PostService manages post operations
 type PostService struct {
 	post *PostRepository
+	db   *sql.DB
 }
 
 // NewPostService creates a new instance of PostService
-func NewPostService() *PostService {
-	post := &PostRepository{}
-	return &PostService{post}
+func NewPostService(db *sql.DB) *PostService {
+	post := &PostRepository{DB: db}
+	return &PostService{post, db}
 }
 
 func (p *PostService) CreatePost(post *Post) error {
@@ -60,12 +77,13 @@ func (p *PostService) CreatePost(post *Post) error {
 // CommentService manages comment operations
 type CommentService struct {
 	comment *CommentRepository
+	db      *sql.DB
 }
 
 // NewCommentService creates a new instance of CommentService
-func NewCommentService() *CommentService {
-	comment := &CommentRepository{}
-	return &CommentService{comment}
+func NewCommentService(db *sql.DB) *CommentService {
+	comment := &CommentRepository{DB: db}
+	return &CommentService{comment, db}
 }
 
 func (c *CommentService) CreateComment(comment *Comment) error {
@@ -80,4 +98,19 @@ func (c *CommentService) CreateComment(comment *Comment) error {
 	}
 
 	return c.comment.CreateComment(comment)
+}
+
+// generateUUID creates a cryptographically secure random token
+func generateUUID() (string, error) {
+	b := make([]byte, 16)
+	_, err := rand.Read(b)
+	if err != nil {
+		return "", err
+	}
+
+	// Format it as a UUID-like string
+	token := fmt.Sprintf("%08x-%04x-%04x-%04x-%012x",
+		b[0:4], b[4:6], b[6:8], b[8:10], b[10:16])
+
+	return token, nil
 }
