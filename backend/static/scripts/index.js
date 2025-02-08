@@ -99,9 +99,11 @@ function toggleComments(e) {
 
 // Render all posts
 function renderPosts(posts = SAMPLE_POSTS) {
-    postsContainer.innerHTML = posts.map(post => createPostHTML(post)).join('');
+    if (postsContainer) {
+postsContainer.innerHTML = posts.map(post => createPostHTML(post)).join('');
+    }
+    
     lucide.createIcons();
-
     attachPostEventListeners();
 }
 

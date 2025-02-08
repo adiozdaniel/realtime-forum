@@ -4,6 +4,7 @@ import {  sidebar } from "./sidebar.js";
 const menuToggleBtn = document.querySelector('#menuToggle');
 const searchInput = document.querySelector('#searchInput'); 
 const darkModeToggle = document.querySelector('#darkModeToggle'); 
+const authButton = document.querySelector('.sign-in-button');
 
 // Toggle mobile menu
 function toggleMobileMenu() {
