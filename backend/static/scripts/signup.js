@@ -148,7 +148,8 @@ document.addEventListener('DOMContentLoaded', function() {
         // Prepare form data
         const formData = {
             email: emailInput.value,
-            username: usernameInput.value,
+            first_name: usernameInput.value,
+            last_name: 'omukokoo',
             password: passwordInput.value,
         };
     
