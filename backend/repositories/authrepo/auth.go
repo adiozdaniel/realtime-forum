@@ -4,7 +4,9 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"io"
 	"net/http"
+	"os"
 	"time"
 
 	_ "github.com/mattn/go-sqlite3"
@@ -17,34 +19,74 @@ func (h *AuthRepo) RegisterHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Parse user
-	var req User
-	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-		h.res.SetError(w, err, http.StatusBadRequest)
+	// Parse multipart form data
+	err := r.ParseMultipartForm(10 << 20) // 10MB max file size
+	if err != nil {
+		h.res.SetError(w, errors.New("failed to parse form data"), http.StatusBadRequest)
 		return
 	}
 
-	// Query the database
-	err := h.user.Register(&req)
+	// Extract form values
+	email := r.FormValue("email")
+	username := r.FormValue("username")
+	password := r.FormValue("password")
+
+	// Handle file upload
+	file, handler, err := r.FormFile("profileImage")
+	var imagePath string
+	if err == nil {
+		defer file.Close()
+
+		// Save the file to a directory profile
+		imagePath = "./static/profiles/" + handler.Filename
+		dst, err := os.Create(imagePath)
+		if err != nil {
+			h.res.SetError(w, errors.New("failed to save image"), http.StatusInternalServerError)
+			return
+		}
+		defer dst.Close()
+
+		// Copy the uploaded file to the destination
+		_, err = io.Copy(dst, file)
+		if err != nil {
+			h.res.SetError(w, errors.New("failed to save image"), http.StatusInternalServerError)
+			return
+		}
+	} else if !errors.Is(err, http.ErrMissingFile) {
+		h.res.SetError(w, errors.New("image upload failed"), http.StatusBadRequest)
+		return
+	}
+
+	// Create the user
+	user := &User{
+		Email:     email,
+		FirstName: username, // Assuming username is used as first name
+		Password:  password,
+		Image:     imagePath, // Save the image path in the database
+		CreatedAt: time.Now(),
+		UpdatedAt: time.Now(),
+	}
+
+	// Register the user
+	err = h.user.Register(user)
 	if err != nil {
 		h.res.SetError(w, err, http.StatusConflict)
 		return
 	}
 
 	// Generate a token (e.g., JWT)
-	token := h.Sessions.GenerateToken(req.UserID)
+	token := h.Sessions.GenerateToken(user.UserID)
 
 	// Set the session cookie
 	http.SetCookie(w, &token)
 
 	// Respond with success and token
-	h.res.Data = req
+	h.res.Data = user
 	h.res.Err = false
 	h.res.Message = "User registered successfully"
 
 	// Respond with JSON
-	err = h.res.WriteJSON(w, *h.res, http.StatusCreated)
-	if err != nil {
+	if err := h.res.WriteJSON(w, *h.res, http.StatusCreated); err != nil {
 		h.res.SetError(w, err, http.StatusInternalServerError)
 		return
 	}
