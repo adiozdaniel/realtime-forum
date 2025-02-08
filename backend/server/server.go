@@ -4,6 +4,7 @@ import (
 	"context"
 	"log"
 	"net/http"
+	"os"
 	"time"
 
 	"forum/forumapp"
@@ -19,7 +20,8 @@ type Server struct {
 	port   string
 }
 
-func NewServer(port string) *Server {
+func NewServer() *Server {
+	port := os.Getenv("PORT")
 	app, err := forumapp.ForumInit()
 	if err != nil {
 		log.Fatal(err)
@@ -35,7 +37,7 @@ func NewServer(port string) *Server {
 	}
 }
 
-func (s *Server) runServer() error {
+func (s *Server) serverSetup() error {
 	mux := http.NewServeMux()
 
 	// Register Routes
@@ -50,7 +52,8 @@ func (s *Server) runServer() error {
 }
 
 func (s *Server) Start(ctx context.Context) {
-	s.runServer()
+	s.port = s.validatePort()
+	s.serverSetup()
 
 	go func() {
 		log.Printf("Server starting @http://localhost:%s", s.port)
