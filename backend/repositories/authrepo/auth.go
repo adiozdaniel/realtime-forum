@@ -60,9 +60,10 @@ func (h *AuthRepo) RegisterHandler(w http.ResponseWriter, r *http.Request) {
 	// Create the user
 	user := &User{
 		Email:     email,
-		FirstName: username, // Assuming username is used as first name
+		FirstName: username,
+		LastName:  username,
 		Password:  password,
-		Image:     imagePath, // Save the image path in the database
+		Image:     imagePath[1:],
 		CreatedAt: time.Now(),
 		UpdatedAt: time.Now(),
 	}
