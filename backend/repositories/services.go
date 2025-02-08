@@ -48,6 +48,25 @@ func (u *UserService) Register(user *User) error {
 	return u.user.CreateUser(user)
 }
 
+func (u *UserService) Login(email, password string) (*User, error) {
+	if email == "" || password == "" {
+		return nil, errors.New("email or password cannot be empty")
+	}
+
+	// Retrieve user from database
+	user, err := u.user.GetUserByEmail(email)
+	if err != nil {
+		return nil, errors.New("invalid email or password")
+	}
+
+	// Compare the hashed password
+	if err := bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(password)); err != nil {
+		return nil, errors.New("did you forget your password")
+	}
+
+	return user, nil
+}
+
 // PostService manages post operations
 type PostService struct {
 	post *PostRepository
