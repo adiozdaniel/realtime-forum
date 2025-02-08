@@ -29,8 +29,8 @@ func NewServer() *Server {
 		log.Fatal(err)
 	}
 
+	authRepo := authrepo.NewAuthRepo(app)
 	repo := repositories.NewRepo(app)
-	authRepo := authrepo.NewAuthRepo(app, app.Db.Query)
 	routes := routes.NewRoutes(app, authRepo, repo)
 	return &Server{app, repo, routes, authRepo, nil, port}
 }

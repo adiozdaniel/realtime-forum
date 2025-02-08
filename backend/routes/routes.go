@@ -26,16 +26,16 @@ func NewRoutes(app *forumapp.ForumApp, authRepo *authrepo.AuthRepo, repo *reposi
 // Register routes
 func (r *Routes) RegisterRoutes(mux *http.ServeMux) http.Handler {
 	// Auth routes
-	// auth := middlewares.NewAuthContext(r.app)
-	// mux.Handle("/api/posts", auth.AuthMiddleware(http.HandlerFunc(r.repo.PostsHandler)))
-	// mux.Handle("/api/auth/check", auth.AuthMiddleware(http.HandlerFunc(r.repo.CheckAuth)))
+	auth := middlewares.NewAuthContext(r.app)
+	mux.Handle("/api/posts", auth.AuthMiddleware(http.HandlerFunc(r.authRepo.PostsHandler)))
+	mux.Handle("/api/auth/check", auth.AuthMiddleware(http.HandlerFunc(r.authRepo.CheckAuth)))
 
 	// Page routes
 	fs := r.app.Tmpls.GetProjectRoute("/static")
 	mux.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir(fs))))
 
-	// mux.HandleFunc("/api/auth/register", r.repo.RegisterHandler)
-	// mux.HandleFunc("/api/auth/logout", r.repo.LogoutHandler)
+	mux.HandleFunc("/api/auth/register", r.authRepo.RegisterHandler)
+	mux.HandleFunc("/api/auth/logout", r.authRepo.LogoutHandler)
 	mux.HandleFunc("/api/auth/login", r.authRepo.LoginHandler)
 	mux.HandleFunc("/auth", r.repo.LoginPage)
 	mux.HandleFunc("/auth-sign-up", r.repo.SignUpPage)

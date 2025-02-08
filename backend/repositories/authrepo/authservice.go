@@ -1,7 +1,6 @@
 package authrepo
 
 import (
-	"database/sql"
 	"errors"
 	"forum/repositories/shared"
 
@@ -11,13 +10,11 @@ import (
 // UserService manages user operations
 type UserService struct {
 	user UserRepo
-	db   *sql.DB
 }
 
 // NewUserService creates a new instance of UserService
-func NewUserService(db *sql.DB) *UserService {
-	var user UserRepo
-	return &UserService{user, db}
+func NewUserService(user UserRepo) *UserService {
+	return &UserService{user}
 }
 
 func (u *UserService) Register(user *User) error {

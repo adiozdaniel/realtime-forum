@@ -1,7 +1,6 @@
 package authrepo
 
 import (
-	"database/sql"
 	"forum/forumapp"
 	"forum/response"
 	"time"
@@ -34,18 +33,29 @@ type User struct {
 // AuthRepo represents the repository for authentication
 type AuthRepo struct {
 	app      *forumapp.ForumApp
-	DB       *sql.DB
 	res      *response.JSONRes
 	user     *UserService
 	Sessions *Sessions
 }
 
 // NewAuthRepo creates a new instance of AuthRepo
-func NewAuthRepo(
-	app *forumapp.ForumApp,
-	db *sql.DB,
-) *AuthRepo {
+func NewAuthRepo(app *forumapp.ForumApp) *AuthRepo {
+	// Create UserRepository (which implements UserRepo)
+	userRepo := NewUserRepo(app.Db.Query)
+
+	// Create UserService (which depends on UserRepo)
+	userService := NewUserService(userRepo)
+
+	// Initialize the response handler
 	res := response.NewJSONRes()
-	user := NewUserService(db)
-	return &AuthRepo{app, db, res, user, &Sessions{}}
+
+	// Initialize session management
+	sessions := &Sessions{}
+
+	return &AuthRepo{
+		app:      app,
+		res:      res,
+		user:     userService,
+		Sessions: sessions,
+	}
 }
