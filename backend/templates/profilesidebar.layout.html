@@ -1,0 +1,28 @@
+{{ define "profilesidebar" }}
+    <!-- Sidebar -->
+    <aside class="sidebar" id="sidebar">
+        <nav>
+            <div class="sidebar-content" id="sidebarContent">
+                <!-- Profile navigation items -->
+                <div class="sidebar-item" data-view="overview">
+                    <i data-lucide="user"></i>
+                    <span>Profile Overview</span>
+                </div>
+                <div class="sidebar-item" data-view="posts">
+                    <i data-lucide="file-text"></i>
+                    <span>My Posts</span>
+                </div>
+                <div class="sidebar-item" data-view="comments">
+                    <i data-lucide="message-circle"></i>
+                    <span>My Comments</span>
+                </div>
+                <div class="sidebar-item" data-view="settings">
+                    <i data-lucide="settings"></i>
+                    <span>Settings</span>
+                </div>
+            </div>
+        </nav>
+    </aside>
+
+    <script src="/static/scripts/profile.js" type="module"></script>
+{{ end}}
