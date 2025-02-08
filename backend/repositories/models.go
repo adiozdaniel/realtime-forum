@@ -45,10 +45,13 @@ type Repo struct {
 }
 
 func NewRepo(app *forumapp.ForumApp) *Repo {
+	// get the initialised db connection
+	db := app.Db.Query
+
 	// initialise services
-	post := NewPostService()
-	comment := NewCommentService()
-	user := NewUserService()
+	post := NewPostService(db)
+	comment := NewCommentService(db)
+	user := NewUserService(db)
 	return &Repo{
 		app, response.NewJSONRes(),
 		post, comment, user,
