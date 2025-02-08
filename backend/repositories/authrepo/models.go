@@ -2,6 +2,7 @@ package authrepo
 
 import (
 	"forum/forumapp"
+	"forum/repositories/shared"
 	"forum/response"
 	"time"
 )
@@ -36,6 +37,7 @@ type AuthRepo struct {
 	res      *response.JSONRes
 	user     *UserService
 	Sessions *Sessions
+	shared   *shared.SharedConfig
 }
 
 // NewAuthRepo creates a new instance of AuthRepo
@@ -57,5 +59,6 @@ func NewAuthRepo(app *forumapp.ForumApp) *AuthRepo {
 		res:      res,
 		user:     userService,
 		Sessions: sessions,
+		shared:   shared.NewSharedConfig(),
 	}
 }

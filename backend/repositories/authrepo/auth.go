@@ -4,9 +4,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"io"
 	"net/http"
-	"os"
 	"time"
 
 	_ "github.com/mattn/go-sqlite3"
@@ -19,41 +17,14 @@ func (h *AuthRepo) RegisterHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Parse multipart form data
-	err := r.ParseMultipartForm(10 << 20) // 10MB max file size
-	if err != nil {
-		h.res.SetError(w, errors.New("failed to parse form data"), http.StatusBadRequest)
-		return
-	}
-
 	// Extract form values
 	email := r.FormValue("email")
 	username := r.FormValue("username")
 	password := r.FormValue("password")
 
-	// Handle file upload
-	file, handler, err := r.FormFile("profileImage")
-	var imagePath string
-	if err == nil {
-		defer file.Close()
-
-		// Save the file to a directory profile
-		imagePath = "./static/profiles/" + handler.Filename
-		dst, err := os.Create(imagePath)
-		if err != nil {
-			h.res.SetError(w, errors.New("failed to save image"), http.StatusInternalServerError)
-			return
-		}
-		defer dst.Close()
-
-		// Copy the uploaded file to the destination
-		_, err = io.Copy(dst, file)
-		if err != nil {
-			h.res.SetError(w, errors.New("failed to save image"), http.StatusInternalServerError)
-			return
-		}
-	} else if !errors.Is(err, http.ErrMissingFile) {
-		h.res.SetError(w, errors.New("image upload failed"), http.StatusBadRequest)
+	imagePath, err := h.shared.SaveImage(r)
+	if err != nil {
+		h.res.SetError(w, err, http.StatusBadRequest)
 		return
 	}
 
