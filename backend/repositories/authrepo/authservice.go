@@ -9,12 +9,16 @@ import (
 
 // UserService manages user operations
 type UserService struct {
-	user UserRepo
+	user   UserRepo
+	shared *shared.SharedConfig
 }
 
 // NewUserService creates a new instance of UserService
 func NewUserService(user UserRepo) *UserService {
-	return &UserService{user}
+	return &UserService{
+		user:   user,
+		shared: shared.NewSharedConfig(),
+	}
 }
 
 func (u *UserService) Register(user *User) error {
@@ -35,7 +39,7 @@ func (u *UserService) Register(user *User) error {
 	user.Password = string(hashedPassword)
 
 	// Generate a unique user ID
-	userID, err := shared.GenerateUUID()
+	userID, err := u.shared.GenerateUUID()
 	if err != nil {
 		return errors.New("oops, something went wrong. try again")
 	}

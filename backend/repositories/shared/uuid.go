@@ -5,8 +5,8 @@ import (
 	"fmt"
 )
 
-// generateUUID creates a cryptographically secure random token
-func GenerateUUID() (string, error) {
+// GenerateUUID creates a cryptographically secure random token
+func (s *SharedConfig) GenerateUUID() (string, error) {
 	b := make([]byte, 16)
 	_, err := rand.Read(b)
 	if err != nil {
