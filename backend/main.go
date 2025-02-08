@@ -1,18 +1,15 @@
 package main
 
 import (
-	"os"
+	"context"
 
 	"forum/server"
 )
 
 func main() {
-	// Start server
-	port := os.Getenv("PORT")
-	if port == "" {
-		port = "4000"
-	}
+	s := server.NewServer()
+	ctx, cancel := context.WithCancel(context.Background())
 
-	s := server.NewServer(port)
-	s.Start()
+	go s.ServerCommands(cancel)
+	s.Start(ctx)
 }
