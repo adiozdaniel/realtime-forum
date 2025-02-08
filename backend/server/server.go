@@ -6,13 +6,13 @@ import (
 	"net/http"
 
 	"forum/forumapp"
-	"forum/handlers"
+	"forum/repositories"
 	"forum/routes"
 )
 
 type Server struct {
 	app    *forumapp.ForumApp
-	repo   *handlers.Repo
+	repo   *repositories.Repo
 	routes *routes.Routes
 	server *http.Server
 	port   string
@@ -24,7 +24,7 @@ func NewServer(port string) *Server {
 		log.Fatal(err)
 	}
 
-	repo := handlers.NewRepo(app)
+	repo := repositories.NewRepo(app)
 	routes := routes.NewRoutes(app, repo)
 	return &Server{
 		app:    app,
@@ -34,7 +34,7 @@ func NewServer(port string) *Server {
 	}
 }
 
-func(s *Server) runServer() error {
+func (s *Server) runServer() error {
 	mux := http.NewServeMux()
 
 	// Register Routes
@@ -50,7 +50,7 @@ func(s *Server) runServer() error {
 
 func (s *Server) Start(ctx context.Context) {
 	s.runServer()
-	
+
 	go func() {
 		<-ctx.Done()
 		log.Println("Server shutting down...")
@@ -64,7 +64,7 @@ func (s *Server) Start(ctx context.Context) {
 
 	log.Printf("Server starting @http://localhost:%s", s.port)
 	err := s.server.ListenAndServe()
-	if err != nil && err != http.ErrServerClosed{
+	if err != nil && err != http.ErrServerClosed {
 		log.Fatal("Server failed:", err)
 	}
 }
