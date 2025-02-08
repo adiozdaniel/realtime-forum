@@ -25,3 +25,138 @@ Date:   Sat Feb 8 09:27:23 2025 +0300
     refactor(database): change database reference name
     - Changed `forumapp.database.go` database reference to Query.
     - These gives a more readable approach. For instance, to access it: `forumapp.Db.Query` implements a more straight forward approach to reference the queries provided by the database.
+
+## The third approach uses a query interface
+
+The previous approach:
+
+```go
+// RegisterHandler handles user registration.
+func (h *Repo) RegisterHandler(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodPost {
+		h.res.SetError(w, errors.New("method not allowed"), http.StatusMethodNotAllowed)
+		return
+	}
+
+	// Parse request
+	var req Request
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		h.res.SetError(w, err, http.StatusBadRequest)
+		return
+	}
+
+	// Validate input
+	if req.Username == "" {
+		h.res.SetError(w, errors.New("username is required"), http.StatusBadRequest)
+		return
+	}
+	if req.Email == "" {
+		h.res.SetError(w, errors.New("email is required"), http.StatusBadRequest)
+		return
+	}
+	if req.Password == "" {
+		h.res.SetError(w, errors.New("password is required"), http.StatusBadRequest)
+		return
+	}
+
+	// Check if username or email already exists
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	var exists int
+	err := h.app.Db.Query.QueryRowContext(ctx, "SELECT COUNT(*) FROM users WHERE username = ? OR email = ?", req.Username, req.Email).Scan(&exists)
+	if err != nil {
+		h.res.SetError(w, err, http.StatusInternalServerError)
+		return
+	}
+
+	if exists > 0 {
+		h.res.SetError(w, errors.New("email already exists"), http.StatusConflict)
+		return
+	}
+
+	// Hash the password
+	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(req.Password), bcrypt.DefaultCost)
+	if err != nil {
+		h.res.SetError(w, err, http.StatusInternalServerError)
+		return
+	}
+
+	userID, _ := h.app.GenerateUUID()
+	// Save to database
+	_, err = h.app.Db.Query.ExecContext(ctx, "INSERT INTO users (user_id, username, email, password) VALUES (?, ?, ?, ?)", userID, req.Username, req.Email, string(hashedPassword))
+	if err != nil {
+		h.res.SetError(w, err, http.StatusInternalServerError)
+		return
+	}
+
+	// Generate a token (e.g., JWT)
+	token := h.app.GenerateToken(userID)
+
+	// Set the session cookie
+	http.SetCookie(w, &token)
+
+	// Respond with success and token
+	h.res.Err = false
+	h.res.Message = "Login successful"
+	h.res.Data = map[string]interface{}{
+		"token":    token.Value,
+		"user_id":  userID,
+		"username": req.Username,
+	}
+
+	h.res.Err = false
+	h.res.Message = "User registered successfully"
+
+	// Respond with JSON
+	err = h.res.WriteJSON(w, *h.res, http.StatusCreated)
+	if err != nil {
+		h.res.SetError(w, err, http.StatusInternalServerError)
+		return
+	}
+}
+```
+
+The query interface basic approach:
+
+```go
+// RegisterHandler handles user registration.
+func (h *Repo) RegisterHandler(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodPost {
+		h.res.SetError(w, errors.New("method not allowed"), http.StatusMethodNotAllowed)
+		return
+	}
+
+	// Parse user
+	var req User
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		h.res.SetError(w, err, http.StatusBadRequest)
+		return
+	}
+
+	// Query the database
+	err := h.user.Register(&req)
+	if err != nil {
+		h.res.SetError(w, err, http.StatusConflict)
+		return
+	}
+
+	// Generate a token (e.g., JWT)
+	token := h.app.GenerateToken(req.UserID)
+
+	// Set the session cookie
+	http.SetCookie(w, &token)
+
+	// Respond with success and token
+	h.res.Data = req
+	h.res.Err = false
+	h.res.Message = "User registered successfully"
+
+	// Respond with JSON
+	err = h.res.WriteJSON(w, *h.res, http.StatusCreated)
+	if err != nil {
+		h.res.SetError(w, err, http.StatusInternalServerError)
+		return
+	}
+}
+```
