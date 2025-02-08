@@ -1,4 +1,3 @@
-
 {{define "base" }}
 <!DOCTYPE html>
 <html lang="en">
@@ -11,16 +10,23 @@
     <!-- Styling -->
     <link rel="stylesheet" href="/static/css/index.css">
     <link rel="stylesheet" href="/static/css/header.css">
-    <link rel="stylesheet" href="/static/css/comment.css">
+    <!-- <link rel="stylesheet" href="/static/css/comment.css"> -->
     <link rel="stylesheet" href="/static/css/footer.css">
-    <!-- <link rel="stylesheet" href="/static/css/createpost.css"> -->
     <link rel="stylesheet" href="/static/css/login.css">
     <link rel="stylesheet" href="/static/css/signup.css">
+
+    <!-- Page-Specific Styles -->
+{{ if or (eq .Page "home") (eq .Page "profile") }}
+<link rel="stylesheet" href="/static/css/comment.css">
+{{ end }}
+
+{{ if eq .Page "profile"}}
+<link rel="stylesheet" href="/static/css/profile.css">
+{{ end }}
 
 
     <!-- scripts -->
     <script src="https://unpkg.com/lucide@latest"></script>
-    <!-- <script src="/static/scripts/createposts.js"></script> -->
 </head>
 
 <body>
@@ -28,19 +34,33 @@
         {{block "header" .}} {{end}}
         {{ block "headerjs" .}} {{end}}
         <div class="main-container">
-           {{ if eq .Page "home"}}
-                {{block "sidebar" .}} {{end}}
-           {{ end }}
 
-           <!-- Page Content -->
-           <main class="main-content">
-             {{block "content" .}} {{end}}
-           </main>
-           
-            {{ block "homescript" .}} {{end}}
-            {{ block "loginscript" .}} {{end}}
-            {{ block "signupscript" .}} {{end}}
+            {{ if eq .Page "home"}}
+                {{block "sidebar" .}} {{end}}
+            {{ else }}
+                {{ if eq .Page "profile"}}
+                    {{block "profilesidebar" .}} {{end}}
+                {{end}}
+            {{ end }}
+
+            <!-- Page Content -->
+            <main class="main-content">
+                {{ if eq .Page "profile"}}
+                    {{block "profileContent" .}} {{end}}
+                {{ else }}
+                    {{block "content" .}} {{end}}
+                {{end}}
+            </main>
+
+            {{ if eq .Page "profile"}}
+                {{block "profilescript" .}} {{end}}
+            {{ else }}
+                {{ block "homescript" .}} {{end}}
+                {{ block "loginscript" .}} {{end}}
+                {{ block "signupscript" .}} {{end}}
+            {{end}}
         </div>
+
        {{ block "footer" .}}{{end}}
     </div>
 </body>
