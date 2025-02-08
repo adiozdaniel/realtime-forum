@@ -4,6 +4,7 @@ import (
 	"context"
 	"log"
 	"net/http"
+	"time"
 
 	"forum/forumapp"
 	"forum/repositories"
@@ -52,19 +53,23 @@ func (s *Server) Start(ctx context.Context) {
 	s.runServer()
 
 	go func() {
-		<-ctx.Done()
-		log.Println("Server shutting down...")
-		if err := s.server.Shutdown(context.Background()); err != nil {
-			log.Printf("Error shutting down server: %v\n", err)
+		log.Printf("Server starting @http://localhost:%s", s.port)
+		err := s.server.ListenAndServe()
+		if err != nil && err != http.ErrServerClosed {
+			log.Fatal("Server failed:", err)
 		}
-
-		log.Println("Server successuly shutdown!")
-		return
 	}()
 
-	log.Printf("Server starting @http://localhost:%s", s.port)
-	err := s.server.ListenAndServe()
-	if err != nil && err != http.ErrServerClosed {
-		log.Fatal("Server failed:", err)
+	<-ctx.Done()
+	log.Println("Server shutting down...")
+
+	// use a timeout context to shut down the server
+	clsCtx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	if err := s.server.Shutdown(clsCtx); err != nil {
+		log.Printf("Error shutting down server: %v\n", err)
+	} else {
+		log.Println("Server successuly shutdown!")
 	}
 }
