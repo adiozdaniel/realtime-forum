@@ -1,71 +1,9 @@
 package repositories
 
 import (
-	"crypto/rand"
 	"database/sql"
 	"errors"
-	"fmt"
-
-	"golang.org/x/crypto/bcrypt"
 )
-
-// UserService manages user operations
-type UserService struct {
-	user *UserRepository
-	db   *sql.DB
-}
-
-// NewUserService creates a new instance of UserService
-func NewUserService(db *sql.DB) *UserService {
-	user := &UserRepository{DB: db}
-	return &UserService{user, db}
-}
-
-func (u *UserService) Register(user *User) error {
-	if user.Email == "" || user.Password == "" {
-		return errors.New("email or password cannot be empty")
-	}
-
-	existingUser, _ := u.user.GetUserByEmail(user.Email)
-	if existingUser != nil {
-		return errors.New("this email is already in use")
-	}
-
-	// Hash the password
-	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(user.Password), bcrypt.DefaultCost)
-	if err != nil {
-		return errors.New("oops, something went wrong. try again")
-	}
-	user.Password = string(hashedPassword)
-
-	// Generate a unique user ID
-	userID, err := generateUUID()
-	if err != nil {
-		return errors.New("oops, something went wrong. try again")
-	}
-	user.UserID = userID
-
-	return u.user.CreateUser(user)
-}
-
-func (u *UserService) Login(email, password string) (*User, error) {
-	if email == "" || password == "" {
-		return nil, errors.New("email or password cannot be empty")
-	}
-
-	// Retrieve user from database
-	user, err := u.user.GetUserByEmail(email)
-	if err != nil {
-		return nil, errors.New("invalid email or password")
-	}
-
-	// Compare the hashed password
-	if err := bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(password)); err != nil {
-		return nil, errors.New("did you forget your password")
-	}
-
-	return user, nil
-}
 
 // PostService manages post operations
 type PostService struct {
@@ -117,19 +55,4 @@ func (c *CommentService) CreateComment(comment *Comment) error {
 	}
 
 	return c.comment.CreateComment(comment)
-}
-
-// generateUUID creates a cryptographically secure random token
-func generateUUID() (string, error) {
-	b := make([]byte, 16)
-	_, err := rand.Read(b)
-	if err != nil {
-		return "", err
-	}
-
-	// Format it as a UUID-like string
-	token := fmt.Sprintf("%08x-%04x-%04x-%04x-%012x",
-		b[0:4], b[4:6], b[6:8], b[8:10], b[10:16])
-
-	return token, nil
 }

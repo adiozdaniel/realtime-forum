@@ -1,4 +1,4 @@
-package repositories
+package authrepo
 
 import (
 	"encoding/json"
@@ -11,7 +11,7 @@ import (
 )
 
 // RegisterHandler handles user registration.
-func (h *Repo) RegisterHandler(w http.ResponseWriter, r *http.Request) {
+func (h *AuthRepo) RegisterHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
 		h.res.SetError(w, errors.New("method not allowed"), http.StatusMethodNotAllowed)
 		return
@@ -32,7 +32,7 @@ func (h *Repo) RegisterHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Generate a token (e.g., JWT)
-	token := h.app.GenerateToken(req.UserID)
+	token := h.Sessions.GenerateToken(req.UserID)
 
 	// Set the session cookie
 	http.SetCookie(w, &token)
@@ -51,7 +51,7 @@ func (h *Repo) RegisterHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 // LoginHandler handles user login.
-func (h *Repo) LoginHandler(w http.ResponseWriter, r *http.Request) {
+func (h *AuthRepo) LoginHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
 		h.res.SetError(w, errors.New("method not allowed"), http.StatusMethodNotAllowed)
 		return
@@ -72,7 +72,7 @@ func (h *Repo) LoginHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Check if user already has a valid session
 	if cookie, err := r.Cookie("session_token"); err == nil {
-		if storedCookie, exists := h.app.Sessions.Load(user.UserID); exists {
+		if storedCookie, exists := h.Sessions.Sess.Load(user.UserID); exists {
 			if token, ok := storedCookie.(*http.Cookie); ok && token.Value == cookie.Value {
 				h.res.Err = false
 				h.res.Message = "Login successful (existing session)"
@@ -84,7 +84,7 @@ func (h *Repo) LoginHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Generate a token
-	token := h.app.GenerateToken(user.UserID)
+	token := h.Sessions.GenerateToken(user.UserID)
 
 	// Set the session cookie
 	http.SetCookie(w, &token)
@@ -102,7 +102,7 @@ func (h *Repo) LoginHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 // LogoutHandler handles user logout.
-func (h *Repo) LogoutHandler(w http.ResponseWriter, r *http.Request) {
+func (h *AuthRepo) LogoutHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
 		h.res.SetError(w, errors.New("method not allowed"), http.StatusMethodNotAllowed)
 		return
@@ -121,7 +121,7 @@ func (h *Repo) LogoutHandler(w http.ResponseWriter, r *http.Request) {
 
 	sessionToken := cookie.Value
 
-	h.app.Sessions.Delete(sessionToken)
+	h.Sessions.Sess.Delete(sessionToken)
 
 	// Clear the session cookie by setting an expired cookie
 	http.SetCookie(w, &http.Cookie{
@@ -143,14 +143,14 @@ func (h *Repo) LogoutHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 // CheckAuth confirms if a user is logged in
-func (h *Repo) CheckAuth(w http.ResponseWriter, r *http.Request) {
+func (h *AuthRepo) CheckAuth(w http.ResponseWriter, r *http.Request) {
 	// Return a success response if this protected route is reached
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(map[string]bool{"signedIn": true})
 }
 
 // Posts handler (dummy implementation)
-func (h *Repo) PostsHandler(w http.ResponseWriter, r *http.Request) {
+func (h *AuthRepo) PostsHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method == http.MethodGet {
 		w.WriteHeader(http.StatusOK)
 		fmt.Fprintln(w, `{"posts": []}`)

@@ -5,6 +5,7 @@ import (
 	"net/http"
 
 	"forum/forumapp"
+	"forum/repositories/authrepo"
 )
 
 type contextKey string
@@ -12,11 +13,11 @@ type contextKey string
 const userIDKey contextKey = "userID"
 
 type AuthContext struct {
-	app *forumapp.ForumApp
+	Sessions *authrepo.Sessions
 }
 
 func NewAuthContext(app *forumapp.ForumApp) *AuthContext {
-	return &AuthContext{app: app}
+	return &AuthContext{Sessions: &authrepo.Sessions{}}
 }
 
 // SetUserIDInContext adds the user ID to the request context
@@ -44,7 +45,7 @@ func (a *AuthContext) AuthMiddleware(next http.Handler) http.Handler {
 		var userID string
 		found := false
 
-		a.app.Sessions.Range(func(key, value interface{}) bool {
+		a.Sessions.Sess.Range(func(key, value interface{}) bool {
 			if token, ok := value.(*http.Cookie); ok && token.Value == cookie.Value {
 				userID, _ = key.(string)
 				found = true

@@ -6,42 +6,11 @@ import (
 	"time"
 )
 
-// RegisterRequest represents the request body for user registration.
-type Request struct {
-	Username string `json:"username"`
-	Email    string `json:"email"`
-	Password string `json:"password"`
-}
-
-// RegisterResponse represents the response for user registration.
-type Response struct {
-	Message string `json:"message"`
-	Error   bool   `json:"false"`
-}
-
-// LoginRequest represents the request body for user login.
-type LoginRequest struct {
-	Email    string `json:"email"`
-	Password string `json:"password"`
-}
-
-// LoginResponse represents the response for user login.
-type LoginResponse struct {
-	Message string `json:"message"`
-	Token   string `json:"token,omitempty"`
-}
-
-// LogoutRequest represents the request body for logout
-type LogoutRequest struct {
-	UserId string `json:"user_id"`
-}
-
 type Repo struct {
 	app     *forumapp.ForumApp
 	res     *response.JSONRes
 	post    *PostService
 	comment *CommentService
-	user    *UserService
 }
 
 func NewRepo(app *forumapp.ForumApp) *Repo {
@@ -51,24 +20,10 @@ func NewRepo(app *forumapp.ForumApp) *Repo {
 	// initialise services
 	post := NewPostService(db)
 	comment := NewCommentService(db)
-	user := NewUserService(db)
 	return &Repo{
 		app, response.NewJSONRes(),
-		post, comment, user,
+		post, comment,
 	}
-}
-
-// User represents a user in the database
-type User struct {
-	UserID    string    `json:"user_id"`
-	Email     string    `json:"email"`
-	Password  string    `json:"password"`
-	FirstName string    `json:"first_name,omitempty"`
-	LastName  string    `json:"last_name,omitempty"`
-	Image     string    `json:"image,omitempty"`
-	Role      string    `json:"role,omitempty"`
-	CreatedAt time.Time `json:"created_at"`
-	UpdatedAt time.Time `json:"updated_at"`
 }
 
 // Post represents a post in the database

@@ -9,15 +9,17 @@ import (
 
 	"forum/forumapp"
 	"forum/repositories"
+	"forum/repositories/authrepo"
 	"forum/routes"
 )
 
 type Server struct {
-	app    *forumapp.ForumApp
-	repo   *repositories.Repo
-	routes *routes.Routes
-	server *http.Server
-	port   string
+	app      *forumapp.ForumApp
+	repo     *repositories.Repo
+	routes   *routes.Routes
+	authRepo *authrepo.AuthRepo
+	server   *http.Server
+	port     string
 }
 
 func NewServer() *Server {
@@ -28,13 +30,9 @@ func NewServer() *Server {
 	}
 
 	repo := repositories.NewRepo(app)
-	routes := routes.NewRoutes(app, repo)
-	return &Server{
-		app:    app,
-		repo:   repo,
-		routes: routes,
-		port:   port,
-	}
+	authRepo := authrepo.NewAuthRepo(app, app.Db.Query)
+	routes := routes.NewRoutes(app, authRepo, repo)
+	return &Server{app, repo, routes, authRepo, nil, port}
 }
 
 func (s *Server) serverSetup() error {
