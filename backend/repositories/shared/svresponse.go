@@ -6,18 +6,6 @@ import (
 	"net/http"
 )
 
-// JSONRes represents a JSON response data
-type JSONRes struct {
-	Err     bool        `json:"error"`
-	Message string      `json:"message"`
-	Data    interface{} `json:"data"`
-}
-
-// A constructor function that initializes and returns a new JSONRes instance
-func NewJSONRes() *JSONRes {
-	return &JSONRes{}
-}
-
 // SetError sets the error message and status code for the JSON response
 func (j *JSONRes) SetError(w http.ResponseWriter, err error, status ...int) error {
 	statusCode := http.StatusBadRequest
