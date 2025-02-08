@@ -49,8 +49,10 @@ if (allCategoriesBtn) {
 
 // Close dropdown when clicking outside
 document.addEventListener("click", (e) => {
-	if (!categoryDropdown.contains(e.target) && e.target !== allCategoriesBtn) {
-		categoryDropdown.classList.add("hidden");
+	if (categoryDropdown) {
+		if (!categoryDropdown.contains(e.target) && e.target !== allCategoriesBtn) {
+			categoryDropdown.classList.add("hidden");
+		}
 	}
 });
 

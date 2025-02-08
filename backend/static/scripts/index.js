@@ -1,10 +1,16 @@
 // API Endpoints
-const LOGIN_ENDPOINT = "/api/auth/login";
-const REGISTER_ENDPOINT = "/api/auth/register";
-const LOGOUT_ENDPOINT = "/api/auth/logout";
+window.API_ENDPOINTS = {
+	login: "/api/auth/login",
+	register: "/api/auth/register",
+	logout: "/api/auth/logout",
+	posts: "/api/posts",
+	comments: "/api/comments",
+};
 
-const POSTS_ENDPOINT = "/api/posts";
-const COMMENTS_ENDPOINT = "/api/comments";
+// Constants
+window.CONSTANTS = {
+	MIN_PASSWORD_LENGTH: 8,
+};
 
 // DOM Elements
 const postsContainer = document.querySelector("#postsContainer");
