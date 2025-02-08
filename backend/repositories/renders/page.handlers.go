@@ -11,17 +11,11 @@ func (m *RendersRepo) HomePageHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	tmpl, err := m.app.Tmpls.GetPage("home.page.html")
-	if err != nil {
-		http.Error(w, "Oops, something went wrong!", http.StatusInternalServerError)
-		return
-	}
-
 	data := map[string]interface{}{
 		"Page": "home",
 	}
 
-	err = tmpl.Execute(w, data)
+	err := m.RenderTemplate(w, "home.page.html", data)
 	if err != nil {
 		http.Error(w, "Oops, something went wrong while rendering the page!", http.StatusInternalServerError)
 	}
@@ -34,16 +28,7 @@ func (m *RendersRepo) LoginPageHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	tmpl, err := m.app.Tmpls.GetPage("login.page.html")
-	if err != nil {
-		http.Error(w, "Oops, something went wrong!", http.StatusInternalServerError)
-		return
-	}
-	// data := map[string]interface{} {
-	// 	"isAuthPage": true,
-	// }
-
-	err = tmpl.Execute(w, nil)
+	err := m.RenderTemplate(w, "login.page.html", nil)
 	if err != nil {
 		http.Error(w, "Oops, something went wrong while rendering the page!", http.StatusInternalServerError)
 	}
@@ -56,18 +41,9 @@ func (m *RendersRepo) SignUpPageHandler(w http.ResponseWriter, r *http.Request) 
 		return
 	}
 
-	tmpl, err := m.app.Tmpls.GetPage("signup.page.html")
-	if err != nil {
-		http.Error(w, "Oops, something went wrong!", http.StatusInternalServerError)
-		return
-	}
-
-	// data := map[string]interface{} {
-	// 	"isAuthPage": true,
-	// }
-
-	err = tmpl.Execute(w, nil)
+	err := m.RenderTemplate(w, "signup.page.html", nil)
 	if err != nil {
 		http.Error(w, "Oops, something went wrong while rendering the page!", http.StatusInternalServerError)
+		return
 	}
 }
