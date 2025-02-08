@@ -2,6 +2,7 @@ import { renderPosts, SAMPLE_POSTS } from "./index.js";
 const sidebar = document.querySelector('#sidebar'); 
 const allCategoriesBtn = document.querySelector('#allCategories');
 const categoryDropdown = document.querySelector('#categoryDropdown')
+const profileBtn = document.querySelector('#profile');
 
 // Handle window resize 
 function handleResize() { 
@@ -29,6 +30,12 @@ function createCategoryDropdown() {
 allCategoriesBtn.addEventListener('click', (e) => {
     e.stopPropagation();
     categoryDropdown.classList.toggle('hidden');
+});
+
+// Toggle profile
+profileBtn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    window.location.href = "http://localhost:4000/api/profile"
 });
 
 // Close dropdown when clicking outside
