@@ -10,7 +10,7 @@ import (
 
 // DataConfig manages the database connection
 type DataConfig struct {
-	Db *sql.DB
+	Query *sql.DB
 }
 
 // TableManager handles table creation
@@ -28,23 +28,23 @@ func (d *DataConfig) InitDB(dbPath string) error {
 	var err error
 
 	// Open the SQLite database
-	d.Db, err = sql.Open("sqlite3", dbPath)
+	d.Query, err = sql.Open("sqlite3", dbPath)
 	if err != nil {
 		return fmt.Errorf("failed to connect to database: %v", err)
 	}
 
 	// Check if the database is accessible
-	if err = d.Db.Ping(); err != nil {
+	if err = d.Query.Ping(); err != nil {
 		return fmt.Errorf("failed to ping database: %v", err)
 	}
 
 	// Enable foreign keys
-	if _, err = d.Db.Exec("PRAGMA foreign_keys = ON"); err != nil {
+	if _, err = d.Query.Exec("PRAGMA foreign_keys = ON"); err != nil {
 		return fmt.Errorf("failed to enable foreign keys: %v", err)
 	}
 
 	// Create tables using TableManager
-	tm := NewTableManager(d.Db)
+	tm := NewTableManager(d.Query)
 	if err = tm.CreateTables(); err != nil {
 		return fmt.Errorf("failed to create tables: %v", err)
 	}

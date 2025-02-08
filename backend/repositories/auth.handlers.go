@@ -46,7 +46,7 @@ func (h *Repo) RegisterHandler(w http.ResponseWriter, r *http.Request) {
 	defer cancel()
 
 	var exists int
-	err := h.app.Db.QueryRowContext(ctx, "SELECT COUNT(*) FROM users WHERE username = ? OR email = ?", req.Username, req.Email).Scan(&exists)
+	err := h.app.Db.Query.QueryRowContext(ctx, "SELECT COUNT(*) FROM users WHERE username = ? OR email = ?", req.Username, req.Email).Scan(&exists)
 	if err != nil {
 		h.res.SetError(w, err, http.StatusInternalServerError)
 		return
@@ -66,7 +66,7 @@ func (h *Repo) RegisterHandler(w http.ResponseWriter, r *http.Request) {
 
 	userID, _ := h.app.GenerateUUID()
 	// Save to database
-	_, err = h.app.Db.ExecContext(ctx, "INSERT INTO users (user_id, username, email, password) VALUES (?, ?, ?, ?)", userID, req.Username, req.Email, string(hashedPassword))
+	_, err = h.app.Db.Query.ExecContext(ctx, "INSERT INTO users (user_id, username, email, password) VALUES (?, ?, ?, ?)", userID, req.Username, req.Email, string(hashedPassword))
 	if err != nil {
 		h.res.SetError(w, err, http.StatusInternalServerError)
 		return
@@ -129,7 +129,7 @@ func (h *Repo) LoginHandler(w http.ResponseWriter, r *http.Request) {
 
 	var userID, username, hashedPassword string
 
-	err := h.app.Db.QueryRowContext(ctx, "SELECT user_id, username, password FROM users WHERE email = ?", req.Email).
+	err := h.app.Db.Query.QueryRowContext(ctx, "SELECT user_id, username, password FROM users WHERE email = ?", req.Email).
 		Scan(&userID, &username, &hashedPassword)
 
 	if err != nil {
