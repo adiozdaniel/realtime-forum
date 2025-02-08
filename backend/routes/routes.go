@@ -3,45 +3,14 @@ package routes
 import (
 	"net/http"
 
-	"forum/forumapp"
 	"forum/middlewares"
-	"forum/repositories/authrepo"
-	"forum/repositories/commentrepo"
-	"forum/repositories/postrepo"
-	"forum/repositories/renders"
 )
-
-type Routes struct {
-	app          *forumapp.ForumApp
-	authRepo     *authrepo.AuthRepo
-	postsRepo    *postrepo.PostsRepo
-	rendersRepo  *renders.RendersRepo
-	commentsRepo *commentrepo.CommentRepo
-}
-
-func NewRoutes(
-	app *forumapp.ForumApp,
-) *Routes {
-	authRepo := authrepo.NewAuthRepo(app)
-	postsRepo := postrepo.NewPostsRepo(app)
-	rendersRepo := renders.NewRendersRepo(app)
-	commentsRepo := commentrepo.NewCommentRepo(app)
-
-	return &Routes{
-		app,
-		authRepo,
-		postsRepo,
-		rendersRepo,
-		commentsRepo,
-	}
-}
 
 // Register routes
 func (r *Routes) RegisterRoutes(mux *http.ServeMux) http.Handler {
-	// Auth routes
-	auth := middlewares.NewAuthContext(r.app)
-	mux.Handle("/api/posts", auth.AuthMiddleware(http.HandlerFunc(r.authRepo.PostsHandler)))
-	mux.Handle("/api/auth/check", auth.AuthMiddleware(http.HandlerFunc(r.authRepo.CheckAuth)))
+
+	mux.Handle("/api/posts", r.auth.AuthMiddleware(http.HandlerFunc(r.authRepo.PostsHandler)))
+	mux.Handle("/api/auth/check", r.auth.AuthMiddleware(http.HandlerFunc(r.authRepo.CheckAuth)))
 
 	// Page routes
 	fs := r.app.Tmpls.GetProjectRoute("/static")
