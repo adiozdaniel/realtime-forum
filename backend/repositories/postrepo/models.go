@@ -7,10 +7,10 @@ import (
 
 // PostRepo represents posts repository
 type PostsRepo struct {
-	app    *forumapp.ForumApp
-	res    *shared.JSONRes
-	post   *PostService
-	shared *shared.SharedConfig
+	app     *forumapp.ForumApp
+	res     *shared.JSONRes
+	service *PostService
+	shared  *shared.SharedConfig
 }
 
 // NewPost returns a new Post instance
@@ -20,9 +20,9 @@ func NewPostsRepo(app *forumapp.ForumApp) *PostsRepo {
 	postService := NewPostService(postRepo)
 
 	return &PostsRepo{
-		app:    app,
-		res:    shared.NewJSONRes(),
-		post:   postService,
-		shared: shared.NewSharedConfig(),
+		app:     app,
+		res:     shared.NewJSONRes(),
+		service: postService,
+		shared:  shared.NewSharedConfig(),
 	}
 }

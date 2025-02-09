@@ -12,19 +12,19 @@ func (r *Routes) RegisterRoutes(mux *http.ServeMux) http.Handler {
 	// ===== Protected RESTFUL API Endpoints ===== //
 
 	// === Posts ===
-	mux.Handle("/api/posts/create", r.auth.AuthMiddleware(http.HandlerFunc(r.authRepo.PostsHandler)))
-	mux.Handle("/api/posts/delete", r.auth.AuthMiddleware(http.HandlerFunc(r.authRepo.PostsHandler)))
-	mux.Handle("/api/posts/update", r.auth.AuthMiddleware(http.HandlerFunc(r.authRepo.PostsHandler)))
-	mux.Handle("/api/posts/like", r.auth.AuthMiddleware(http.HandlerFunc(r.authRepo.PostsHandler)))
-	mux.Handle("/api/posts/dislike", r.auth.AuthMiddleware(http.HandlerFunc(r.authRepo.PostsHandler)))
+	// mux.Handle("/api/posts/create", r.auth.AuthMiddleware(http.HandlerFunc(r.postsRepo.AllPosts)))
+	// mux.Handle("/api/posts/delete", r.auth.AuthMiddleware(http.HandlerFunc(r.postsRepo.AllPosts)))
+	// mux.Handle("/api/posts/update", r.auth.AuthMiddleware(http.HandlerFunc(r.postsRepo.AllPosts)))
+	// mux.Handle("/api/posts/like", r.auth.AuthMiddleware(http.HandlerFunc(r.postsRepo.AllPosts)))
+	// mux.Handle("/api/posts/dislike", r.auth.AuthMiddleware(http.HandlerFunc(r.postsRepo.AllPosts)))
 	// === End Posts ===
 
 	// === Comments ===
-	mux.Handle("/api/comments/create", r.auth.AuthMiddleware(http.HandlerFunc(r.authRepo.PostsHandler)))
-	mux.Handle("/api/comments/delete", r.auth.AuthMiddleware(http.HandlerFunc(r.authRepo.PostsHandler)))
-	mux.Handle("/api/comments/update", r.auth.AuthMiddleware(http.HandlerFunc(r.authRepo.PostsHandler)))
-	mux.Handle("/api/comments/like", r.auth.AuthMiddleware(http.HandlerFunc(r.authRepo.PostsHandler)))
-	mux.Handle("/api/comments/dislike", r.auth.AuthMiddleware(http.HandlerFunc(r.authRepo.PostsHandler)))
+	// mux.Handle("/api/comments/create", r.auth.AuthMiddleware(http.HandlerFunc(r.authRepo.AllPosts)))
+	// mux.Handle("/api/comments/delete", r.auth.AuthMiddleware(http.HandlerFunc(r.authRepo.AllPosts)))
+	// mux.Handle("/api/comments/update", r.auth.AuthMiddleware(http.HandlerFunc(r.authRepo.AllPosts)))
+	// mux.Handle("/api/comments/like", r.auth.AuthMiddleware(http.HandlerFunc(r.authRepo.AllPosts)))
+	// mux.Handle("/api/comments/dislike", r.auth.AuthMiddleware(http.HandlerFunc(r.authRepo.AllPosts)))
 	// === End Comments ===
 
 	// === Auth ===
@@ -40,7 +40,7 @@ func (r *Routes) RegisterRoutes(mux *http.ServeMux) http.Handler {
 	// ===== Unprotected RESTFUL API Endpoints ===== //
 
 	// === Posts ===
-	mux.HandleFunc("/api/posts", r.authRepo.PostsHandler)
+	mux.HandleFunc("/api/posts", r.postsRepo.AllPosts)
 	// === End Posts ===
 
 	// Unprotected Auth RESTFUL API Endpoints

@@ -3,7 +3,6 @@ package authrepo
 import (
 	"encoding/json"
 	"errors"
-	"fmt"
 	"net/http"
 	"time"
 
@@ -161,15 +160,4 @@ func (h *AuthRepo) CheckAuth(w http.ResponseWriter, r *http.Request) {
 	// Return a success response if this protected route is reached
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(map[string]bool{"signedIn": true})
-}
-
-// Posts handler (dummy implementation)
-func (h *AuthRepo) PostsHandler(w http.ResponseWriter, r *http.Request) {
-	if r.Method == http.MethodGet {
-		w.WriteHeader(http.StatusOK)
-		fmt.Fprintln(w, `{"posts": []}`)
-		return
-	}
-
-	h.res.SetError(w, errors.New("method not allowed"), http.StatusMethodNotAllowed)
 }
