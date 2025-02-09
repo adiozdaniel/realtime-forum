@@ -5,8 +5,6 @@ const menuToggleBtn = document.querySelector("#menuToggle");
 const searchInput = document.querySelector("#searchInput");
 const darkModeToggle = document.querySelector("#darkModeToggle");
 const authButton = document.querySelector(".sign-in-button");
-const profileImageElement = document.querySelector(".profile-image img");
-const userData = JSON.parse(localStorage.getItem("res"));
 
 // Toggle mobile menu
 function toggleMobileMenu() {
@@ -94,13 +92,14 @@ function init() {
 		document.body.classList.add("dark-mode");
 	}
 
-	console.log("Profile Image URL:", userData?.image);
-	console.log("Profile Image Element:", profileImageElement);
-
 	// Update profile image
-	if (userData && userData.image && userData.first_name) {
-		profileImageElement.src = userData.image;
-		profileImageElement.alt = userData.first_name;
+	if (
+		window.RESDATA.userData &&
+		window.RESDATA.userData.image &&
+		window.RESDATA.userData.first_name
+	) {
+		window.RESDATA.profileImageElement.src = window.RESDATA.userData.image;
+		window.RESDATA.profileImageElement.alt = window.RESDATA.userData.first_name;
 	}
 }
 

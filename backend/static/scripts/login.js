@@ -112,4 +112,13 @@ document.addEventListener("DOMContentLoaded", function () {
 			removeError(event.target);
 		}
 	});
+
+	// Reset profile data
+	if (window.RESDATA.userData) {
+		localStorage.removeItem("res");
+		window.RESDATA.userData = null;
+		window.RESDATA.profileImageElement.src = "";
+		window.RESDATA.profileImageElement.alt = "";
+		window.location.reload();
+	}
 });

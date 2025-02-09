@@ -12,6 +12,12 @@ window.CONSTANTS = {
 	MIN_PASSWORD_LENGTH: 8,
 };
 
+// global variables
+window.RESDATA = {
+	userData: JSON.parse(localStorage.getItem("res")),
+	profileImageElement: document.querySelector(".profile-image img"),
+};
+
 // DOM Elements
 const postsContainer = document.querySelector("#postsContainer");
 
