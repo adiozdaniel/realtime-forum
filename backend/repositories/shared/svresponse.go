@@ -2,7 +2,6 @@ package shared
 
 import (
 	"encoding/json"
-	"errors"
 	"net/http"
 )
 
@@ -39,22 +38,4 @@ func (j *JSONRes) WriteJSON(w http.ResponseWriter, payload JSONRes, statusCode i
 	w.WriteHeader(statusCode)
 	_, err = w.Write(out)
 	return err
-}
-
-// ReadJSON intercepts JSON request body to verify validity of the structure
-func (j *JSONRes) ReadJSON(w http.ResponseWriter, r *http.Request, data interface{}) error {
-	if r.Header.Get("Content-Type") != "application/json" {
-		return errors.New("wrong request format")
-	}
-
-	maxBytes := 1 * 1024 * 1024
-	r.Body = http.MaxBytesReader(w, r.Body, int64(maxBytes))
-
-	dec := json.NewDecoder(r.Body)
-	err := dec.Decode(data)
-	if err != nil {
-		return errors.New("wrong request format")
-	}
-
-	return nil
 }
