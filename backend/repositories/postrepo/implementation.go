@@ -12,16 +12,16 @@ import (
 
 // Post represents a forum post
 type Post struct {
-	PostID       string
-	UserID       string
-	PostTitle    string
-	PostContent  string
-	PostImage    string
-	PostVideo    string
-	PostCategory string
-	PostLikes    int
-	CreatedAt    time.Time
-	UpdatedAt    time.Time
+	PostID       string    `json:"post_id"`
+	UserID       string    `json:"user_id"`
+	PostTitle    string    `json:"post_title"`
+	PostContent  string    `json:"post_content"`
+	PostImage    string    `json:"post_image, omitempty"`
+	PostVideo    string    `json:"post_video, omitempty"`
+	PostCategory string    `json:"post_category"`
+	PostLikes    int       `json:"post_likes"`
+	CreatedAt    time.Time `json:"created_at"`
+	UpdatedAt    time.Time `json:"updated_at"`
 }
 
 // PostRepository handles database operations for posts

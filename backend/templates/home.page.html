@@ -8,6 +8,31 @@
 	type="module"
 ></script>
 {{end}} {{define "content"}}
+
+<!-- Post creation form -->
+<form id="postForm">
+	<label for="title">Title:</label>
+	<input
+		type="text"
+		id="title"
+		name="title"
+		required
+	/>
+
+	<label for="content">Content:</label>
+	<textarea
+		id="content"
+		name="content"
+		required
+	></textarea>
+
+	<button type="submit">Create Post</button>
+</form>
+
+<div id="message"></div>
+<!-- Message display area -->
+<!-- Post creation form end -->
+
 <h2 class="section-title">Recent Discussions</h2>
 <div
 	class="posts-container"

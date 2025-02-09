@@ -2,6 +2,7 @@
 class PostService {
 	constructor() {
 		this.apiEndpoints = window.API_ENDPOINTS;
+		this.userData = window.RESDATA.userData;
 	}
 }
 
@@ -22,18 +23,24 @@ PostService.prototype.fetchPosts = async function () {
 
 // Method to create a new post
 PostService.prototype.createPost = async function (postData) {
+	const formData = new URLSearchParams();
+	formData.append("title", postData.title);
+	formData.append("content", postData.content);
+	formData.append("user_id", this.userData.user_id);
+
 	try {
+		console.log(postData);
 		const response = await fetch(this.apiEndpoints.createpost, {
 			method: "POST",
-			headers: {
-				"Content-Type": "application/json",
-			},
-			body: JSON.stringify(postData), // Convert post data to JSON
+			body: formData,
 		});
+		const responseText = await response.text(); // Get raw response text
+
+		let newPost = JSON.parse(responseText); // Parse manually
 		if (!response.ok) {
 			throw new Error("Failed to create post");
 		}
-		const newPost = await response.json(); // Parse response as JSON
+		newPost = await response.json(); // Parse response as JSON
 		return newPost;
 	} catch (error) {
 		console.error("Error creating post:", error);

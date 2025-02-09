@@ -236,10 +236,34 @@ function handleLike(e) {
 	);
 }
 
+document
+	.getElementById("postForm")
+	.addEventListener("submit", async function (event) {
+		event.preventDefault(); // Prevent default form submission
+
+		const title = document.getElementById("title").value;
+		const content = document.getElementById("content").value;
+
+		const postData = { title, content };
+
+		const newPost = await window.postService.createPost(postData);
+
+		const messageDiv = document.getElementById("message");
+		if (newPost) {
+			messageDiv.innerText = "Post created successfully!";
+			messageDiv.style.color = "green";
+			console.log(newPost);
+		} else {
+			messageDiv.innerText = "Failed to create post.";
+			messageDiv.style.color = "red";
+		}
+
+		this.reset();
+	});
+
 // Initialize
 function init() {
 	const posts = window.postService.fetchPosts();
-	console.log(posts);
 	// Initial render
 	renderPosts();
 }

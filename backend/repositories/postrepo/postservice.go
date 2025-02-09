@@ -36,3 +36,11 @@ func (p *PostService) CreatePost(post *Post) error {
 
 	return p.post.CreatePost(post)
 }
+
+func (p *PostService) ListPosts() ([]*Post, error) {
+	posts, err := p.post.ListPosts()
+	if err != nil {
+		return nil, err
+	}
+	return posts, nil
+}

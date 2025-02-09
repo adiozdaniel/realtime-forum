@@ -11,7 +11,7 @@ func (p *PostsRepo) AllPosts(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	posts, err := p.service.post.ListPosts()
+	posts, err := p.post.ListPosts()
 	if err != nil {
 		p.res.SetError(w, err, http.StatusInternalServerError)
 		return
@@ -42,7 +42,7 @@ func (p *PostsRepo) CreatePost(w http.ResponseWriter, r *http.Request) {
 		PostContent: content,
 	}
 
-	err := p.service.post.CreatePost(post)
+	err := p.post.CreatePost(post)
 	if err != nil {
 		p.res.SetError(w, err, http.StatusInternalServerError)
 		return
