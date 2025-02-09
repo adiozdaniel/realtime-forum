@@ -9,19 +9,50 @@ import (
 // Register routes
 func (r *Routes) RegisterRoutes(mux *http.ServeMux) http.Handler {
 
-	mux.Handle("/api/posts", r.auth.AuthMiddleware(http.HandlerFunc(r.authRepo.PostsHandler)))
-	mux.Handle("/api/auth/check", r.auth.AuthMiddleware(http.HandlerFunc(r.authRepo.CheckAuth)))
+	// ===== Protected RESTFUL API Endpoints ===== //
 
-	// Page routes
+	// === Posts ===
+	mux.Handle("/api/posts/create", r.auth.AuthMiddleware(http.HandlerFunc(r.authRepo.PostsHandler)))
+	mux.Handle("/api/posts/delete", r.auth.AuthMiddleware(http.HandlerFunc(r.authRepo.PostsHandler)))
+	mux.Handle("/api/posts/update", r.auth.AuthMiddleware(http.HandlerFunc(r.authRepo.PostsHandler)))
+	mux.Handle("/api/posts/like", r.auth.AuthMiddleware(http.HandlerFunc(r.authRepo.PostsHandler)))
+	mux.Handle("/api/posts/dislike", r.auth.AuthMiddleware(http.HandlerFunc(r.authRepo.PostsHandler)))
+	// === End Posts ===
+
+	// === Comments ===
+	mux.Handle("/api/comments/create", r.auth.AuthMiddleware(http.HandlerFunc(r.authRepo.PostsHandler)))
+	mux.Handle("/api/comments/delete", r.auth.AuthMiddleware(http.HandlerFunc(r.authRepo.PostsHandler)))
+	mux.Handle("/api/comments/update", r.auth.AuthMiddleware(http.HandlerFunc(r.authRepo.PostsHandler)))
+	mux.Handle("/api/comments/like", r.auth.AuthMiddleware(http.HandlerFunc(r.authRepo.PostsHandler)))
+	mux.Handle("/api/comments/dislike", r.auth.AuthMiddleware(http.HandlerFunc(r.authRepo.PostsHandler)))
+	// === End Comments ===
+
+	// === Auth ===
+	mux.Handle("/api/auth/check", r.auth.AuthMiddleware(http.HandlerFunc(r.authRepo.CheckAuth)))
+	// === End Auth ===
+
+	// ===== End Protected RESTFUL API Endpoints ===== //
+
+	// ==== Static files server ====
 	fs := r.app.Tmpls.GetProjectRoute("/static")
 	mux.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir(fs))))
 
+	// ===== Unprotected RESTFUL API Endpoints ===== //
+
+	// === Posts ===
+	mux.HandleFunc("/api/posts", r.authRepo.PostsHandler)
+	// === End Posts ===
+
+	// Unprotected Auth RESTFUL API Endpoints
 	mux.HandleFunc("/api/auth/register", r.authRepo.RegisterHandler)
 	mux.HandleFunc("/api/auth/logout", r.authRepo.LogoutHandler)
 	mux.HandleFunc("/api/auth/login", r.authRepo.LoginHandler)
+	// ===== End Unprotected RESTFUL API Endpoints =====
+
+	// Page routes
+	mux.HandleFunc("/", r.rendersRepo.HomePageHandler)
 	mux.HandleFunc("/auth", r.rendersRepo.LoginPageHandler)
 	mux.HandleFunc("/auth-sign-up", r.rendersRepo.SignUpPageHandler)
-	mux.HandleFunc("/", r.rendersRepo.HomePageHandler)
 
 	// CORS middleware
 	handler := middlewares.CorsMiddleware(mux)
