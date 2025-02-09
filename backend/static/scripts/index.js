@@ -3,8 +3,22 @@ window.API_ENDPOINTS = {
 	login: "/api/auth/login",
 	register: "/api/auth/register",
 	logout: "/api/auth/logout",
-	posts: "/api/posts",
-	comments: "/api/comments",
+
+	// posts ENDPOINTS
+	allposts: "/api/posts",
+	createpost: "/api/posts/create",
+	deletepost: "/api/posts/delete",
+	updatepost: "/api/posts/update",
+	likepost: "/api/posts/like",
+	dislikepost: "/api/posts/dislike",
+
+	// comments ENDPOINTS
+	allcomments: "/api/comments",
+	createcomment: "/api/comments/create",
+	deletecomment: "/api/comments/delete",
+	updatecomment: "/api/comments/update",
+	likecomment: "/api/comments/like",
+	dislikecomment: "/api/comments/dislike",
 };
 
 // Constants
@@ -16,6 +30,8 @@ window.CONSTANTS = {
 window.RESDATA = {
 	userData: JSON.parse(localStorage.getItem("res")),
 	profileImageElement: document.querySelector(".profile-image img"),
+	postsData: JSON.parse(localStorage.getItem("posts")),
+	commentsData: JSON.parse(localStorage.getItem("comments")),
 };
 
 // DOM Elements
