@@ -1,12 +1,19 @@
-{{template "base" .}}
-{{define "homescript"}}
-    <script src="/static/scripts/index.js" type="module"></script>
-    <script src="/static/scripts/comment.js" type="module"></script>
-{{end}}
-
-{{define "content"}}
-    <h2 class="section-title">Recent Discussions</h2>
-    <div class="posts-container" id="postsContainer">
-        <!-- Posts will be inserted here by JavaScript -->
-    </div>
+{{template "base" .}} {{define "homescript"}}
+<script
+	src="/static/scripts/index.js"
+	type="module"
+></script>
+<script
+	src="/static/scripts/comment.js"
+	type="module"
+></script>
+{{end}} {{define "content"}}
+<h2 class="section-title">Recent Discussions</h2>
+<div
+	class="posts-container"
+	id="postsContainer"
+>
+	<!-- Posts will be inserted here by JavaScript -->
+</div>
+<script src="/static/scripts/postsservice.js"></script>
 {{end}}

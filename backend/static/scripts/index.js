@@ -238,6 +238,8 @@ function handleLike(e) {
 
 // Initialize
 function init() {
+	const posts = window.postService.fetchPosts();
+	console.log(posts);
 	// Initial render
 	renderPosts();
 }
