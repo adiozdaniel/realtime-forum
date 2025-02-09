@@ -243,28 +243,26 @@ document
 
 		const title = document.getElementById("title").value;
 		const content = document.getElementById("content").value;
+		const category = document.getElementById("category").value;
 
-		const postData = { title, content };
-
+		const postData = { title, content, category };
 		const newPost = await window.postService.createPost(postData);
-
 		const messageDiv = document.getElementById("message");
-		if (newPost) {
+
+		if (newPost.error) {
+			messageDiv.innerText = newPost.error;
+			messageDiv.style.color = "red";
+		} else {
 			messageDiv.innerText = "Post created successfully!";
 			messageDiv.style.color = "green";
 			console.log(newPost);
-		} else {
-			messageDiv.innerText = "Failed to create post.";
-			messageDiv.style.color = "red";
 		}
-
 		this.reset();
 	});
 
 // Initialize
 async function init() {
 	const posts = await window.postService.fetchPosts();
-	console.log(posts);
 	// Initial render
 	renderPosts(posts);
 }

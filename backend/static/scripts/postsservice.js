@@ -27,23 +27,21 @@ PostService.prototype.createPost = async function (postData) {
 	formData.append("title", postData.title);
 	formData.append("content", postData.content);
 	formData.append("user_id", this.userData.user_id);
+	formData.append("category", postData.category);
 
 	try {
 		const response = await fetch(this.apiEndpoints.createpost, {
 			method: "POST",
 			body: formData,
 		});
-		const responseText = await response.text(); // Get raw response text
 
-		let newPost = JSON.parse(responseText); // Parse manually
+		const newPost = await response.json(); // Parse response as JSON
 		if (!response.ok) {
 			throw new Error("Failed to create post");
 		}
-		newPost = await response.json(); // Parse response as JSON
 		return newPost;
 	} catch (error) {
-		console.error("Error creating post:", error);
-		return null; // Return null on failure
+		return newPost;
 	}
 };
 
