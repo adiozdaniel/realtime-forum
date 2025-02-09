@@ -84,33 +84,33 @@ import { loadComments, handleCommentSubmit } from "./comment.js";
 function createPostHTML(post) {
 	const isLiked = likeState.posts[post.postId]?.likedBy.has("current-user");
 	return ` 
-        <article class="post-card" data-post-id="${post.postId}"> 
+        <article class="post-card" data-post-id="${post.post_Id}"> 
             <div class="flex items-start justify-between">
                 <div> 
-                    <span class="post-category">${post.category}</span> 
-                    <h3 class="post-title">${post.title}</h3> 
-                    <p class="post-excerpt">${post.excerpt}</p> 
+                    <span class="post-category">${post.post_category}</span> 
+                    <h3 class="post-title">${post.post_title}</h3> 
+                    <p class="post-excerpt">${post.post_content}</p> 
                 </div> 
             </div> 
             <div class="post-footer"> 
                 <div class="post-actions"> 
                     <button class="post-action-button like-button ${
 											isLiked ? "liked text-blue-600" : ""
-										}" data-post-id="${post.postId}"> 
+										}" data-post-id="${post.post_Id}"> 
                         <i data-lucide="thumbs-up"></i>
                         <span class="likes-count">${
-													likeState.posts[post.postId]?.count || 0
+													likeState.posts[post.post_Id]?.count || 0
 												}</span> 
                     </button> 
                     <button class="post-action-button comment-toggle" data-post-id="${
-											post.postId
+											post.post_Id
 										}">
                         <i data-lucide="message-square"></i> 
                         <span class="comments-count">${post.comments}</span> 
                     </button> 
                 </div> 
                 <div class="post-meta"> 
-                    <span>by ${post.author}</span>
+                    <span>by ${post.post_author}</span>
                     <span>•</span> 
                     <span>${post.timeAgo}</span> 
                 </div> 
@@ -264,7 +264,7 @@ document
 async function init() {
 	const posts = await window.postService.fetchPosts();
 	// Initial render
-	renderPosts(posts);
+	renderPosts(posts.data);
 }
 
 // Start the application
