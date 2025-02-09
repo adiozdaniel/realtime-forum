@@ -35,29 +35,23 @@ type AuthRepo struct {
 	app      *forumapp.ForumApp
 	res      *shared.JSONRes
 	user     *UserService
-	Sessions *Sessions
 	shared   *shared.SharedConfig
+	Sessions *Sessions
 }
 
 // NewAuthRepo creates a new instance of AuthRepo
 func NewAuthRepo(app *forumapp.ForumApp) *AuthRepo {
-	// Create UserRepository (which implements UserRepo)
-	userRepo := NewUserRepo(app.Db.Query)
-
-	// Create UserService (which depends on UserRepo)
-	userService := NewUserService(userRepo)
-
-	// Initialize the response handler
 	res := shared.NewJSONRes()
-
-	// Initialize session management
+	shared := shared.NewSharedConfig()
 	sessions := &Sessions{}
+	userRepo := NewUserRepo(app.Db.Query)
+	userService := NewUserService(userRepo)
 
 	return &AuthRepo{
 		app:      app,
 		res:      res,
 		user:     userService,
+		shared:   shared,
 		Sessions: sessions,
-		shared:   shared.NewSharedConfig(),
 	}
 }
