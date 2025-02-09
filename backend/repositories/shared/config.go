@@ -12,11 +12,11 @@ func NewSharedConfig() *SharedConfig {
 	}
 }
 
-// JSONRes represents a JSON response data
+// JSONRes represents a JSON response structure.
 type JSONRes struct {
 	Err     bool        `json:"error"`
 	Message string      `json:"message"`
-	Data    interface{} `json:"data"`
+	Data    interface{} `json:"data,omitempty"`
 }
 
 // A constructor function that initializes and returns a new JSONRes instance

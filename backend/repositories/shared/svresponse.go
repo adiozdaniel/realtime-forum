@@ -21,21 +21,35 @@ func (j *JSONRes) SetError(w http.ResponseWriter, err error, status ...int) erro
 	return j.WriteJSON(w, *j, statusCode)
 }
 
-// WriteJSON writes the JSON response to the client
+// WriteJSON writes a well-structured JSON response to the client.
 func (j *JSONRes) WriteJSON(w http.ResponseWriter, payload JSONRes, statusCode int, headers ...http.Header) error {
-	out, err := json.Marshal(payload)
-	if err != nil {
-		return err
-	}
-
 	w.Header().Set("Content-Type", "application/json")
+
+	// Set custom headers if provided
 	if len(headers) > 0 {
 		for k, v := range headers[0] {
 			w.Header()[k] = v
 		}
 	}
 
+	// Encode payload into JSON
+	out, err := json.Marshal(payload)
+	if err != nil {
+		// Handle JSON encoding errors
+		errorResponse := JSONRes{
+			Err:     true,
+			Message: "Internal Server Error: Failed to encode response",
+			Data:    nil,
+		}
+		w.WriteHeader(http.StatusInternalServerError)
+		json.NewEncoder(w).Encode(errorResponse)
+		return err
+	}
+
+	// Set HTTP status code
 	w.WriteHeader(statusCode)
+
+	// Write JSON response
 	_, err = w.Write(out)
 	return err
 }
