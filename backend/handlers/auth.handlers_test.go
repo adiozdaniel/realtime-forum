@@ -144,7 +144,7 @@ func TestLogoutHandler(t *testing.T) {
 }
 
 func TestPostsHandler(t *testing.T) {
-	t.Run("method", func(t *testing.T) {
+	t.Run("other issues", func(t *testing.T) {
 		// Template cache
 		r := make(map[string]*template.Template)
 		r["home.page.html"] = template.New("home.page.html")
@@ -158,6 +158,23 @@ func TestPostsHandler(t *testing.T) {
 		w := httptest.NewRecorder()
 		h.PostsHandler(w, req)
 		if w.Code != http.StatusOK {
+			t.Errorf("expected %d got %d", http.StatusMethodNotAllowed, w.Code)
+		}
+	})
+	t.Run("method", func(t *testing.T) {
+		// Template cache
+		r := make(map[string]*template.Template)
+		r["home.page.html"] = template.New("home.page.html")
+		tmplcach := &forumapp.TemplateCache{Pages: r}
+
+		fapp := &forumapp.ForumApp{}
+		fapp.Tmpls = tmplcach
+		jsonres := &response.JSONRes{}
+		h := &Repo{app: fapp, res: jsonres}
+		req := httptest.NewRequest(http.MethodPost, "/api/auth/posts", nil)
+		w := httptest.NewRecorder()
+		h.PostsHandler(w, req)
+		if w.Code != http.StatusMethodNotAllowed {
 			t.Errorf("expected %d got %d", http.StatusMethodNotAllowed, w.Code)
 		}
 	})
