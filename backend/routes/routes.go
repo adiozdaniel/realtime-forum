@@ -12,7 +12,7 @@ func (r *Routes) RegisterRoutes(mux *http.ServeMux) http.Handler {
 	// ===== Protected RESTFUL API Endpoints ===== //
 
 	// === Posts ===
-	// mux.Handle("/api/posts/create", r.auth.AuthMiddleware(http.HandlerFunc(r.postsRepo.AllPosts)))
+	mux.Handle("/api/posts/create", r.auth.AuthMiddleware(http.HandlerFunc(r.postsRepo.CreatePost)))
 	// mux.Handle("/api/posts/delete", r.auth.AuthMiddleware(http.HandlerFunc(r.postsRepo.AllPosts)))
 	// mux.Handle("/api/posts/update", r.auth.AuthMiddleware(http.HandlerFunc(r.postsRepo.AllPosts)))
 	// mux.Handle("/api/posts/like", r.auth.AuthMiddleware(http.HandlerFunc(r.postsRepo.AllPosts)))
