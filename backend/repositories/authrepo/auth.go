@@ -46,7 +46,7 @@ func (h *AuthRepo) RegisterHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Generate a token (e.g., JWT)
+	// Generate a token
 	token := h.Sessions.GenerateToken(user.UserID)
 
 	// Set the session cookie

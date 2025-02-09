@@ -4,7 +4,6 @@ import (
 	"context"
 	"net/http"
 
-	"forum/forumapp"
 	"forum/repositories/authrepo"
 )
 
@@ -16,8 +15,8 @@ type AuthContext struct {
 	Sessions *authrepo.Sessions
 }
 
-func NewAuthContext(app *forumapp.ForumApp) *AuthContext {
-	return &AuthContext{Sessions: &authrepo.Sessions{}}
+func NewAuthContext(ses *authrepo.Sessions) *AuthContext {
+	return &AuthContext{ses}
 }
 
 // SetUserIDInContext adds the user ID to the request context
