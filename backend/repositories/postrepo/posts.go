@@ -34,12 +34,16 @@ func (p *PostsRepo) CreatePost(w http.ResponseWriter, r *http.Request) {
 	title := r.FormValue("title")
 	content := r.FormValue("content")
 	userID := r.FormValue("user_id")
+	author := r.FormValue("author")
+	category := r.FormValue("category")
 
 	// Create the post
 	post := &Post{
-		UserID:      userID,
-		PostTitle:   title,
-		PostContent: content,
+		UserID:       userID,
+		PostAuthor:   author,
+		PostTitle:    title,
+		PostContent:  content,
+		PostCategory: category,
 	}
 
 	err := p.post.CreatePost(post)

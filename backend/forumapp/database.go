@@ -77,6 +77,7 @@ func (tm *TableManager) CreateTables() error {
 			CREATE TABLE IF NOT EXISTS posts (
 				post_id TEXT PRIMARY KEY,
 				user_id TEXT NOT NULL,
+				post_author TEXT NOT NULL,
 				post_title TEXT NOT NULL,
 				post_content TEXT NOT NULL,
 				post_image TEXT,
