@@ -23,6 +23,34 @@ PostService.prototype.fetchPosts = async function () {
 
 // Method to create a new post
 PostService.prototype.createPost = async function (postData) {
+	if (!this.userData?.user_id) {
+		return {
+			error: true,
+			message: "You need to login to create a post!",
+		};
+	}
+
+	if (!postData?.title) {
+		return {
+			error: true,
+			message: "Please provide a title for the post!",
+		};
+	}
+
+	if (!postData?.content) {
+		return {
+			error: true,
+			message: "Please provide a content for the post!",
+		};
+	}
+
+	if (!postData?.category) {
+		return {
+			error: true,
+			message: "Please select a category for the post!",
+		};
+	}
+
 	const formData = new URLSearchParams();
 	formData.append("title", postData.title);
 	formData.append("content", postData.content);
@@ -42,7 +70,10 @@ PostService.prototype.createPost = async function (postData) {
 		}
 		return newPost;
 	} catch (error) {
-		return newPost;
+		return {
+			error: true,
+			message: newPost.message,
+		};
 	}
 };
 

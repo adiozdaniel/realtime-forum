@@ -250,7 +250,7 @@ document
 		const messageDiv = document.getElementById("message");
 
 		if (newPost.error) {
-			messageDiv.innerText = newPost.error;
+			messageDiv.innerText = newPost.message;
 			messageDiv.style.color = "red";
 		} else {
 			messageDiv.innerText = "Post created successfully!";
