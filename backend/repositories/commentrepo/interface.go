@@ -10,4 +10,6 @@ type CommentInterface interface {
 	GetCommentByID(id string) (*Comment, error)
 	DeleteComment(id string) error
 	ListCommentsByPost(postID string) ([]*Comment, error)
+	AddLike(id string) error
+	DisLike(id string) error
 }

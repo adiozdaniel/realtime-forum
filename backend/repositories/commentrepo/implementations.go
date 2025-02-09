@@ -66,3 +66,17 @@ func (r *CommentRepository) ListCommentsByPost(postID string) ([]*Comment, error
 
 	return comments, nil
 }
+
+// AddLike increments the like count for a comment
+func (r *CommentRepository) AddLike(id string) error {
+	query := `UPDATE comments SET likes = likes + 1 WHERE comment_id = ?`
+	_, err := r.DB.Exec(query, id)
+	return err
+}
+
+// DisLike decrements the like count for a comment
+func (r *CommentRepository) DisLike(id string) error {
+	query := `UPDATE comments SET likes = likes - 1 WHERE comment_id = ?`
+	_, err := r.DB.Exec(query, id)
+	return err
+}

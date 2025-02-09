@@ -13,6 +13,7 @@ type Comment struct {
 	UserID          string    `json:"user_id"`
 	ParentCommentID string    `json:"parent_comment_id,omitempty"`
 	Comment         string    `json:"comment"`
+	Likes           int       `json:"likes"`
 	CreatedAt       time.Time `json:"created_at"`
 	UpdatedAt       time.Time `json:"updated_at"`
 }

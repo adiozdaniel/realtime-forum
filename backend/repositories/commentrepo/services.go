@@ -41,3 +41,11 @@ func (s *CommentService) DeleteComment(id string) error {
 func (s *CommentService) ListCommentsByPost(postID string) ([]*Comment, error) {
 	return s.com.ListCommentsByPost(postID)
 }
+
+func (s *CommentService) AddLike(id string) error {
+	return s.com.AddLike(id)
+}
+
+func (s *CommentService) DisLike(id string) error {
+	return s.com.DisLike(id)
+}
