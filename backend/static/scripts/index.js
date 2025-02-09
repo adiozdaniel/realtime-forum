@@ -262,10 +262,11 @@ document
 	});
 
 // Initialize
-function init() {
-	const posts = window.postService.fetchPosts();
+async function init() {
+	const posts = await window.postService.fetchPosts();
+	console.log(posts);
 	// Initial render
-	renderPosts();
+	renderPosts(posts);
 }
 
 // Start the application

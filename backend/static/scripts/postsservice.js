@@ -29,7 +29,6 @@ PostService.prototype.createPost = async function (postData) {
 	formData.append("user_id", this.userData.user_id);
 
 	try {
-		console.log(postData);
 		const response = await fetch(this.apiEndpoints.createpost, {
 			method: "POST",
 			body: formData,
