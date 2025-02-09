@@ -5,7 +5,11 @@ import (
 )
 
 // RenderTemplate renders an HTML template
-func (m *RendersRepo) RenderTemplate(w http.ResponseWriter, templateName string, data interface{}) error {
+func (m *RendersRepo) RenderTemplate(
+	w http.ResponseWriter,
+	templateName string,
+	data interface{},
+) error {
 	tmpl, err := m.app.Tmpls.GetPage(templateName)
 	if err != nil {
 		return err
