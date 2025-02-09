@@ -70,10 +70,13 @@ PostService.prototype.createPost = async function (postData) {
 		}
 		return newPost;
 	} catch (error) {
-		return {
-			error: true,
-			message: newPost.message,
-		};
+		if (error) {
+			return {
+				error: true,
+				message: "You need to login to create a post!",
+			};
+		}
+		throw new Error("Failed to create post");
 	}
 };
 
