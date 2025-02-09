@@ -11,4 +11,6 @@ type PostRepo interface {
 	UpdatePost(post *Post) error
 	DeletePost(id string) error
 	ListPosts() ([]*Post, error)
+	AddLike(id string) error
+	DisLike(id string) error
 }

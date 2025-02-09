@@ -15,19 +15,19 @@ func NewCommentRepository(db *sql.DB) *CommentRepository {
 }
 
 func (r *CommentRepository) CreateComment(comment *Comment) error {
-	query := `INSERT INTO comments (comment_id, post_id, user_id, parent_comment_id, comment, created_at, updated_at)
-	          VALUES (?, ?, ?, ?, ?, ?, ?)`
-	_, err := r.DB.Exec(query, comment.CommentID, comment.PostID, comment.UserID, comment.ParentCommentID, comment.Comment, comment.CreatedAt, comment.UpdatedAt)
+	query := `INSERT INTO comments (comment_id, post_id, user_id, parent_comment_id, comment, likes, created_at, updated_at)
+	          VALUES (?, ?, ?, ?, ?, ?, ?, ?)`
+	_, err := r.DB.Exec(query, comment.CommentID, comment.PostID, comment.UserID, comment.ParentCommentID, comment.Comment, comment.Likes, comment.CreatedAt, comment.UpdatedAt)
 	return err
 }
 
 // GetCommentByID retrieves a comment by its ID
 func (r *CommentRepository) GetCommentByID(id string) (*Comment, error) {
-	query := `SELECT comment_id, post_id, user_id, parent_comment_id, comment, created_at, updated_at FROM comments WHERE comment_id = ?`
+	query := `SELECT comment_id, post_id, user_id, parent_comment_id, comment, likes, created_at, updated_at FROM comments WHERE comment_id = ?`
 	row := r.DB.QueryRow(query, id)
 
 	var comment Comment
-	err := row.Scan(&comment.CommentID, &comment.PostID, &comment.UserID, &comment.ParentCommentID, &comment.Comment, &comment.CreatedAt, &comment.UpdatedAt)
+	err := row.Scan(&comment.CommentID, &comment.PostID, &comment.UserID, &comment.ParentCommentID, &comment.Comment, &comment.Likes, &comment.CreatedAt, &comment.UpdatedAt)
 	if err != nil {
 		return nil, err
 	}
@@ -44,7 +44,7 @@ func (r *CommentRepository) DeleteComment(id string) error {
 
 // ListCommentsByPost retrieves all comments for a given post
 func (r *CommentRepository) ListCommentsByPost(postID string) ([]*Comment, error) {
-	query := `SELECT comment_id, post_id, user_id, parent_comment_id, comment, created_at, updated_at FROM comments WHERE post_id = ?`
+	query := `SELECT comment_id, post_id, user_id, parent_comment_id, comment, likes, created_at, updated_at FROM comments WHERE post_id = ?`
 	rows, err := r.DB.Query(query, postID)
 	if err != nil {
 		return nil, err
@@ -54,7 +54,7 @@ func (r *CommentRepository) ListCommentsByPost(postID string) ([]*Comment, error
 	var comments []*Comment
 	for rows.Next() {
 		var comment Comment
-		if err := rows.Scan(&comment.CommentID, &comment.PostID, &comment.UserID, &comment.ParentCommentID, &comment.Comment, &comment.CreatedAt, &comment.UpdatedAt); err != nil {
+		if err := rows.Scan(&comment.CommentID, &comment.PostID, &comment.UserID, &comment.ParentCommentID, &comment.Comment, &comment.Likes, &comment.CreatedAt, &comment.UpdatedAt); err != nil {
 			return nil, err
 		}
 		comments = append(comments, &comment)
