@@ -68,21 +68,25 @@ func TestRegisterHandler(t *testing.T) {
 }
 
 func TestLoginHandler(t *testing.T) {
-	// Template cache
-	r := make(map[string]*template.Template)
-	r["home.page.html"] = template.New("home.page.html")
-	tmplcach := &forumapp.TemplateCache{Pages: r}
 
-	fapp := &forumapp.ForumApp{}
-	fapp.Tmpls = tmplcach
-	jsonres := &response.JSONRes{}
-	h := &Repo{app: fapp, res: jsonres}
-	req := httptest.NewRequest(http.MethodGet, "/api/auth/login", nil)
-	w := httptest.NewRecorder()
-	h.LoginHandler(w, req)
-	if w.Code != http.StatusMethodNotAllowed {
-		t.Errorf("expected %d got %d", http.StatusMethodNotAllowed, w.Code)
-	}
+	t.Run("method", func(t *testing.T) {
+		// Template cache
+		r := make(map[string]*template.Template)
+		r["home.page.html"] = template.New("home.page.html")
+		tmplcach := &forumapp.TemplateCache{Pages: r}
+
+		fapp := &forumapp.ForumApp{}
+		fapp.Tmpls = tmplcach
+		jsonres := &response.JSONRes{}
+		h := &Repo{app: fapp, res: jsonres}
+		req := httptest.NewRequest(http.MethodGet, "/api/auth/login", nil)
+		w := httptest.NewRecorder()
+		h.LoginHandler(w, req)
+		if w.Code != http.StatusMethodNotAllowed {
+			t.Errorf("expected %d got %d", http.StatusMethodNotAllowed, w.Code)
+		}
+	})
+
 	t.Run("data incomplete", func(t *testing.T) {
 		r := make(map[string]*template.Template)
 		r["home.page.html"] = template.New("home.page.html")
@@ -118,21 +122,43 @@ func TestLoginHandler(t *testing.T) {
 		}
 	})
 }
+func TestLogoutHandler(t *testing.T) {
+	t.Run("method", func(t *testing.T) {
+		// Template cache
+		r := make(map[string]*template.Template)
+		r["home.page.html"] = template.New("home.page.html")
+		tmplcach := &forumapp.TemplateCache{Pages: r}
+
+		fapp := &forumapp.ForumApp{}
+		fapp.Tmpls = tmplcach
+		jsonres := &response.JSONRes{}
+		h := &Repo{app: fapp, res: jsonres}
+		req := httptest.NewRequest(http.MethodGet, "/api/auth/posts", nil)
+		w := httptest.NewRecorder()
+		h.LogoutHandler(w, req)
+		if w.Code != http.StatusMethodNotAllowed {
+			t.Errorf("expected %d got %d", http.StatusMethodNotAllowed, w.Code)
+		}
+	})
+
+}
 
 func TestPostsHandler(t *testing.T) {
-	// Template cache
-	r := make(map[string]*template.Template)
-	r["home.page.html"] = template.New("home.page.html")
-	tmplcach := &forumapp.TemplateCache{Pages: r}
+	t.Run("method", func(t *testing.T) {
+		// Template cache
+		r := make(map[string]*template.Template)
+		r["home.page.html"] = template.New("home.page.html")
+		tmplcach := &forumapp.TemplateCache{Pages: r}
 
-	fapp := &forumapp.ForumApp{}
-	fapp.Tmpls = tmplcach
-	jsonres := &response.JSONRes{}
-	h := &Repo{app: fapp, res: jsonres}
-	req := httptest.NewRequest(http.MethodGet, "/api/auth/posts", nil)
-	w := httptest.NewRecorder()
-	h.PostsHandler(w, req)
-	if w.Code != http.StatusOK {
-		t.Errorf("expected %d got %d", http.StatusMethodNotAllowed, w.Code)
-	}
+		fapp := &forumapp.ForumApp{}
+		fapp.Tmpls = tmplcach
+		jsonres := &response.JSONRes{}
+		h := &Repo{app: fapp, res: jsonres}
+		req := httptest.NewRequest(http.MethodGet, "/api/auth/posts", nil)
+		w := httptest.NewRecorder()
+		h.PostsHandler(w, req)
+		if w.Code != http.StatusOK {
+			t.Errorf("expected %d got %d", http.StatusMethodNotAllowed, w.Code)
+		}
+	})
 }
