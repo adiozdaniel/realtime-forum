@@ -83,6 +83,23 @@ func TestLoginHandler(t *testing.T) {
 	if w.Code != http.StatusMethodNotAllowed {
 		t.Errorf("expected %d got %d", http.StatusMethodNotAllowed, w.Code)
 	}
+	t.Run("data incomplete", func(t *testing.T) {
+		r := make(map[string]*template.Template)
+		r["home.page.html"] = template.New("home.page.html")
+		tmplcach := &forumapp.TemplateCache{Pages: r}
+
+		fapp := &forumapp.ForumApp{}
+		fapp.Tmpls = tmplcach
+		jsonres := &response.JSONRes{}
+		incomplete := []byte(`{"username": "John Doe"}`)
+		h := &Repo{app: fapp, res: jsonres}
+		req := httptest.NewRequest(http.MethodPost, "/api/auth/login", bytes.NewBuffer(incomplete))
+		w := httptest.NewRecorder()
+		h.LoginHandler(w, req)
+		if w.Code != http.StatusBadRequest {
+			t.Errorf("expected %d got %d", http.StatusBadRequest, w.Code)
+		}
+	})
 }
 
 func TestPostsHandler(t *testing.T) {
