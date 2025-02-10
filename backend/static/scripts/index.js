@@ -3,6 +3,7 @@ window.API_ENDPOINTS = {
 	login: "/api/auth/login",
 	register: "/api/auth/register",
 	logout: "/api/auth/logout",
+	check: "/api/auth/check",
 
 	// posts ENDPOINTS
 	allposts: "/api/posts",
@@ -237,8 +238,8 @@ function handleLike(e) {
 }
 
 document
-	.getElementById("postForm")
-	.addEventListener("submit", async function (event) {
+	?.getElementById("postForm")
+	?.addEventListener("submit", async function (event) {
 		event.preventDefault(); // Prevent default form submission
 
 		const title = document.getElementById("title").value;
@@ -262,9 +263,9 @@ document
 
 // Initialize
 async function init() {
-	const posts = await window.postService.fetchPosts();
+	const posts = await window?.postService?.fetchPosts();
 	// Initial render
-	renderPosts(posts.data);
+	renderPosts(posts?.data);
 }
 
 // Start the application
