@@ -36,6 +36,7 @@ func (a *AuthContext) AuthMiddleware(next http.Handler) http.Handler {
 		// Check if session token exists
 		cookie, err := r.Cookie("session_token")
 		if err != nil {
+			http.Error(w, "you must be logged in to access this service", http.StatusForbidden)
 			http.Redirect(w, r, "/auth", http.StatusFound) // Redirect to login page
 			return
 		}
