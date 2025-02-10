@@ -157,7 +157,34 @@ func (h *AuthRepo) LogoutHandler(w http.ResponseWriter, r *http.Request) {
 
 // CheckAuth confirms if a user is logged in
 func (h *AuthRepo) CheckAuth(w http.ResponseWriter, r *http.Request) {
-	// Return a success response if this protected route is reached
-	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(map[string]bool{"signedIn": true})
+	// Retrieve session token from cookie
+	cookie, err := r.Cookie("session_token")
+	if err != nil {
+		h.res.SetError(w, errors.New("not logged in"), http.StatusUnauthorized)
+		return
+	}
+
+	// Check if the session exists
+	var found bool
+	h.Sessions.Sess.Range(func(_, value interface{}) bool {
+		if token, ok := value.(*http.Cookie); ok && token.Value == cookie.Value {
+			found = true
+			return false // Stop iteration
+		}
+		return true
+	})
+
+	if !found {
+		h.res.SetError(w, errors.New("not logged in: invalid session"), http.StatusUnauthorized)
+		return
+	}
+
+	// User is authenticated
+	h.res.Err = false
+	h.res.Message = "User is logged in"
+	h.res.Data = map[string]bool{"signedIn": true}
+
+	if err := h.res.WriteJSON(w, *h.res, http.StatusOK); err != nil {
+		h.res.SetError(w, err, http.StatusInternalServerError)
+	}
 }
