@@ -44,3 +44,24 @@ func (p *PostService) ListPosts() ([]*Post, error) {
 	}
 	return posts, nil
 }
+
+func (p *PostService) AddLike(postID string, userID string) (*Post, error) {
+	if postID == "" {
+		return nil, errors.New("post ID cannot be empty")
+	}
+	if userID == "" {
+		return nil, errors.New("user ID cannot be empty")
+	}
+
+	err := p.post.AddLike(postID)
+	if err != nil {
+		return nil, err
+	}
+
+	post, err := p.post.GetPostByID(postID)
+	if err != nil {
+		return nil, err
+	}
+
+	return post, nil
+}
