@@ -33,7 +33,7 @@ function toggleDarkMode() {
 }
 async function signOutUser() {
 	try {
-		let response = await fetch("/api/auth/logout", {
+		let response = await fetch(window.API_ENDPOINTS.logout, {
 			method: "POST",
 			credentials: "include",
 		});
@@ -57,14 +57,14 @@ async function isSignedIn() {
 	}
 
 	try {
-		let response = await fetch("/api/auth/check", { credentials: "include" });
+		let response = await fetch(window.API_ENDPOINTS.check, {
+			credentials: "include",
+		});
 		if (!response.ok) {
+			authButton.textContent = "Sign In";
 			throw new Error("Not signed in");
 		}
-
-		let data = await response.json();
-
-		return data.signedIn;
+		return true;
 	} catch (error) {
 		return false;
 	}
@@ -73,7 +73,6 @@ async function isSignedIn() {
 // Initialize function
 function init() {
 	// handleResize();
-
 	authButton.textContent = isSignedIn() ? "Sign Out" : "Sign In";
 
 	// Automatically log out if on /auth
