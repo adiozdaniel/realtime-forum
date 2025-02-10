@@ -28,7 +28,7 @@ func (r *Routes) RegisterRoutes(mux *http.ServeMux) http.Handler {
 	// === End Comments ===
 
 	// === Auth ===
-	mux.Handle("/api/auth/check", r.auth.AuthMiddleware(http.HandlerFunc(r.authRepo.CheckAuth)))
+
 	// === End Auth ===
 
 	// ===== End Protected RESTFUL API Endpoints ===== //
@@ -44,6 +44,7 @@ func (r *Routes) RegisterRoutes(mux *http.ServeMux) http.Handler {
 	// === End Posts ===
 
 	// Unprotected Auth RESTFUL API Endpoints
+	mux.HandleFunc("/api/auth/check", r.authRepo.CheckAuth)
 	mux.HandleFunc("/api/auth/register", r.authRepo.RegisterHandler)
 	mux.HandleFunc("/api/auth/logout", r.authRepo.LogoutHandler)
 	mux.HandleFunc("/api/auth/login", r.authRepo.LoginHandler)
