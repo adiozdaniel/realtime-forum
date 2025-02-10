@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"bytes"
+	"fmt"
 	"html/template"
 	"net/http"
 	"net/http/httptest"
@@ -68,7 +69,6 @@ func TestRegisterHandler(t *testing.T) {
 }
 
 func TestLoginHandler(t *testing.T) {
-
 	t.Run("method", func(t *testing.T) {
 		// Template cache
 		r := make(map[string]*template.Template)
@@ -122,6 +122,7 @@ func TestLoginHandler(t *testing.T) {
 		}
 	})
 }
+
 func TestLogoutHandler(t *testing.T) {
 	t.Run("method", func(t *testing.T) {
 		// Template cache
@@ -140,7 +141,25 @@ func TestLogoutHandler(t *testing.T) {
 			t.Errorf("expected %d got %d", http.StatusMethodNotAllowed, w.Code)
 		}
 	})
+	t.Run("cookie", func(t *testing.T) {
+		// Template cache
+		r := make(map[string]*template.Template)
+		r["home.page.html"] = template.New("home.page.html")
+		tmplcach := &forumapp.TemplateCache{Pages: r}
 
+		fapp := &forumapp.ForumApp{}
+		fapp.Tmpls = tmplcach
+		jsonres := &response.JSONRes{}
+		h := &Repo{app: fapp, res: jsonres}
+		req := httptest.NewRequest(http.MethodGet, "/api/auth/posts", nil)
+		w := httptest.NewRecorder()
+		h.LogoutHandler(w, req)
+		_, err := req.Cookie("session_cookie")
+		fmt.Println(err)
+		if err != http.ErrNoCookie {
+			t.Errorf("expected %s got %v", http.ErrNoCookie, err)
+		}
+	})
 }
 
 func TestPostsHandler(t *testing.T) {
