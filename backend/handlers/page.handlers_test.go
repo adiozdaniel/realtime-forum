@@ -115,4 +115,23 @@ func TestSignUpPage(t *testing.T) {
 			t.Errorf("Expected Method %d,got %d", http.StatusForbidden, writer.Code)
 		}
 	})
+	t.Run("template", func(t *testing.T) {
+		// Template cache
+		r := make(map[string]*template.Template)
+		r["home.page.html"] = template.New("home.page.html")
+		tmplcach := &forumapp.TemplateCache{Pages: r}
+
+		fapp := &forumapp.ForumApp{}
+		fapp.Tmpls = tmplcach
+		jsonres := &response.JSONRes{}
+		h := &Repo{app: fapp, res: jsonres}
+
+		req := httptest.NewRequest(http.MethodGet, "/auth/sign-up", nil)
+		writer := httptest.NewRecorder()
+
+		h.SignUpPage(writer, req)
+		if writer.Code != http.StatusInternalServerError {
+			t.Errorf("Expected Method %d,got %d", http.StatusInternalServerError, writer.Code)
+		}
+	})
 }
