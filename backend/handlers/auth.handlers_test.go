@@ -2,7 +2,6 @@ package handlers
 
 import (
 	"bytes"
-	"fmt"
 	"html/template"
 	"net/http"
 	"net/http/httptest"
@@ -155,7 +154,7 @@ func TestLogoutHandler(t *testing.T) {
 		w := httptest.NewRecorder()
 		h.LogoutHandler(w, req)
 		_, err := req.Cookie("session_cookie")
-		fmt.Println(err)
+
 		if err != http.ErrNoCookie {
 			t.Errorf("expected %s got %v", http.ErrNoCookie, err)
 		}

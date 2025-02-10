@@ -1,12 +1,13 @@
 package handlers
 
 import (
-	"fmt"
-	"forum/forumapp"
 	"html/template"
 	"net/http"
 	"net/http/httptest"
 	"testing"
+
+	"forum/forumapp"
+	"forum/response"
 )
 
 type fort struct {
@@ -14,27 +15,29 @@ type fort struct {
 }
 
 func TestHomePageHandler(t *testing.T) {
-	//Template cache
-	r := make(map[string]*template.Template)
-	r["home.page.html"] = template.New("home.page.html")
-	tmplcach := &forumapp.TemplateCache{Pages: r}
+	t.Run("template", func(t *testing.T) {
+		// Template cache
+		r := make(map[string]*template.Template)
+		r["home.page.html"] = template.New("home.page.html")
+		tmplcach := &forumapp.TemplateCache{Pages: r}
 
-	// tmplcach := forumapp.NewTemplateCache()
-	// tmplcach.CreateTemplatesCache()
-	fapp := &forumapp.ForumApp{}
-	fapp.Tmpls = tmplcach
-	h := &Repo{app: fapp}
-	// h := &Repo{}
-	//h.app.Tmpls.CreateTemplatesCache() // Pages["home.page.html"]=
-	req := httptest.NewRequest(http.MethodGet, "/", nil)
-	writer := httptest.NewRecorder()
-	fmt.Println(req, writer, h)
-	h.HomePageHandler(writer, req)
-	if writer.Code != http.StatusInternalServerError {
-		t.Errorf("Expected Method %d,got %d", http.StatusOK, writer.Code)
-	}
+		// tmplcach := forumapp.NewTemplateCache()
+		// tmplcach.CreateTemplatesCache()
+		fapp := &forumapp.ForumApp{}
+		fapp.Tmpls = tmplcach
+		h := &Repo{app: fapp}
+		// h := &Repo{}
+		// h.app.Tmpls.CreateTemplatesCache() // Pages["home.page.html"]=
+		req := httptest.NewRequest(http.MethodGet, "/", nil)
+		writer := httptest.NewRecorder()
+		// fmt.Println(req, writer, h)
+		h.HomePageHandler(writer, req)
+		if writer.Code != http.StatusInternalServerError {
+			t.Errorf("Expected Method %d,got %d", http.StatusInternalServerError, writer.Code)
+		}
+	})
 	t.Run("Test httpmethod", func(t *testing.T) {
-		//Template cache
+		// Template cache
 		r := make(map[string]*template.Template)
 		r["home.page.html"] = template.New("home.page.html")
 		tmplcach := &forumapp.TemplateCache{Pages: r}
@@ -52,9 +55,10 @@ func TestHomePageHandler(t *testing.T) {
 		}
 	})
 }
+
 func TestLoginPage(t *testing.T) {
 	t.Run("Test httpmethod", func(t *testing.T) {
-		//Template cache
+		// Template cache
 		r := make(map[string]*template.Template)
 		r["home.page.html"] = template.New("home.page.html")
 		tmplcach := &forumapp.TemplateCache{Pages: r}
@@ -71,10 +75,30 @@ func TestLoginPage(t *testing.T) {
 			t.Errorf("Expected Method %d,got %d", http.StatusForbidden, writer.Code)
 		}
 	})
+	t.Run("template", func(t *testing.T) {
+		// Template cache
+		r := make(map[string]*template.Template)
+		r["home.page.html"] = template.New("home.page.html")
+		tmplcach := &forumapp.TemplateCache{Pages: r}
+
+		fapp := &forumapp.ForumApp{}
+		fapp.Tmpls = tmplcach
+		jsonres := &response.JSONRes{}
+		h := &Repo{app: fapp, res: jsonres}
+
+		req := httptest.NewRequest(http.MethodGet, "/api/auth/login", nil)
+		writer := httptest.NewRecorder()
+
+		h.LoginPage(writer, req)
+		if writer.Code != http.StatusInternalServerError {
+			t.Errorf("Expected Method %d,got %d", http.StatusInternalServerError, writer.Code)
+		}
+	})
 }
+
 func TestSignUpPage(t *testing.T) {
 	t.Run("Test httpmethod", func(t *testing.T) {
-		//Template cache
+		// Template cache
 		r := make(map[string]*template.Template)
 		r["home.page.html"] = template.New("home.page.html")
 		tmplcach := &forumapp.TemplateCache{Pages: r}
