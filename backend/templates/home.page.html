@@ -9,57 +9,36 @@
 ></script>
 {{end}} {{define "content"}}
 
-<!-- Post creation form -->
-<form id="postForm">
-	<label for="title">Title:</label>
-	<input
-		type="text"
-		id="title"
-		name="title"
-		required
-	/>
+<div id="modal" class="modal">
+	<div class="modal-content">
+		<h2>Create a New Post</h2>
+		<form id="postForm">
+			<div class="form-group"> <label>Title</label> <input type="text" id="title" required> </div>
+			<div class="form-group"> <label>Category</label> <select id="category" required>
+					<option value="">Select a category</option>
+					<option value="Tutorial">Tutorial</option>
+					<option value="Discussion">Discussion</option>
+					<option value="Guide">Guide</option>
+					<option value="Question">Question</option>
+				</select> </div>
+			<div class="form-group"> <label>Excerpt</label> <textarea id="excerpt" rows="4" required></textarea>
+			</div>
+			<div class="form-actions"> <button type="button" id="cancelBtn" class="cancel-btn">Cancel</button>
+				<button type="submit" class="submit-btn">Create Post</button> </div>
+		</form>
+	</div>
+</div>
+<div id="message"></div>
+<!-- Message display area -->
+<!-- Post creation form end -->
 
-	<label for="content">Content:</label>
-	<textarea
-		id="content"
-		name="content"
-		required
-	></textarea>
-
-	<label for="category">Category:</label>
-	<select
-		id="category"
-		name="category"
-		required
-	>
-		<option
-			value=""
-			disabled
-			selected
-		>
-			Select a category
-		</option>
-		<option value="Technology">Technology</option>
-		<option value="Health">Health</option>
-		<option value="Education">Education</option>
-		<option value="Lifestyle">Lifestyle</option>
-	</select>
-
-	<button type="submit">Create Post</button>
-</form>
-
-<div>
+<div class="btn-discussions">
+	<h2 class="section-title">Recent Discussions</h2>
 	<button id="createPostBtn" class="create-post-btn">
 		<i data-lucide="plus"></i>
 		Create Post
 	</button>
 </div>
-
-<div id="message"></div>
-<!-- Message display area -->
-<!-- Post creation form end -->
-
-<h2 class="section-title">Recent Discussions</h2>
 <div
 	class="posts-container"
 	id="postsContainer"
@@ -67,4 +46,5 @@
 	<!-- Posts will be inserted here by JavaScript -->
 </div>
 <script src="/static/scripts/postsservice.js"></script>
+<script src="/static/scripts/createposts.js"></script>
 {{end}}
