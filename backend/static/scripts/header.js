@@ -92,14 +92,14 @@ function init() {
 	}
 
 	// Update profile image
-	if (
-		window.RESDATA.userData &&
-		window.RESDATA.userData.image &&
-		window.RESDATA.userData.first_name
-	) {
-		window.RESDATA.profileImageElement.src = window.RESDATA.userData.image;
-		window.RESDATA.profileImageElement.alt = window.RESDATA.userData.first_name;
-	}
+	// if (
+	// 	window.RESDATA.userData &&
+	// 	window.RESDATA.userData.image &&
+	// 	window.RESDATA.userData.first_name
+	// ) {
+	// 	window.RESDATA.profileImageElement.src = window.RESDATA.userData.image;
+	// 	window.RESDATA.profileImageElement.alt = window.RESDATA.userData.first_name;
+	// }
 }
 
 // Start the application

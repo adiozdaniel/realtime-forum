@@ -41,12 +41,14 @@ function createCategoryDropdown() {
 }
 
 // Toggle dropdown
+if (allCategoriesBtn)
 allCategoriesBtn.addEventListener('click', (e) => {
     e.stopPropagation();
     categoryDropdown.classList.toggle('hidden');
 });
 
 // Toggle profile
+if (profileBtn)
 profileBtn.addEventListener('click', (e) => {
     e.stopPropagation();
     window.location.href = "http://localhost:4000/api/profile"
@@ -62,8 +64,8 @@ document.addEventListener("click", (e) => {
 });
 
 // Handle category selection
-if (categoryDropdown) {
-	categoryDropdown.addEventListener("change", (e) => {
+if (categoryDropdown)
+categoryDropdown.addEventListener("change", (e) => {
 		if (e.target.classList.contains("category-checkbox")) {
 			const checkbox = e.target;
 			const checkboxes = document.querySelectorAll(".category-checkbox");
@@ -82,7 +84,7 @@ if (categoryDropdown) {
 			filterPosts();
 		}
 	});
-}
+
 
 // Filter posts based on selected categories
 function filterPosts() {

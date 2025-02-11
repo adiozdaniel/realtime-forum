@@ -207,6 +207,7 @@ function handleLike(e) {
 // Initialize
 function init() {
     // Initial render 
+    if (postsContainer)
     renderPosts(); 
 } 
 
