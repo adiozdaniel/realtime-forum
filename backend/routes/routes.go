@@ -37,13 +37,23 @@ func (r *Routes) RegisterRoutes(mux *http.ServeMux) http.Handler {
 	fs := r.app.Tmpls.GetProjectRoute("/static")
 	mux.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir(fs))))
 
-	mux.HandleFunc("/api/auth/register", r.repo.RegisterHandler)
-	mux.HandleFunc("/api/auth/logout", r.repo.LogoutHandler)
-	mux.HandleFunc("/api/auth/login", r.repo.LoginHandler)
-	mux.HandleFunc("/auth", r.repo.LoginPage)
-	mux.HandleFunc("/auth-sign-up", r.repo.SignUpPage)
-	mux.HandleFunc("/", r.repo.HomePageHandler)
-	mux.HandleFunc("/api/profile", r.repo.ProfilePage)
+	// ===== Unprotected RESTFUL API Endpoints ===== //
+
+	// === Posts ===
+	mux.HandleFunc("/api/posts", r.postsRepo.AllPosts)
+	// === End Posts ===
+
+	// Unprotected Auth RESTFUL API Endpoints
+	mux.HandleFunc("/api/auth/check", r.authRepo.CheckAuth)
+	mux.HandleFunc("/api/auth/register", r.authRepo.RegisterHandler)
+	mux.HandleFunc("/api/auth/logout", r.authRepo.LogoutHandler)
+	mux.HandleFunc("/api/auth/login", r.authRepo.LoginHandler)
+	// ===== End Unprotected RESTFUL API Endpoints =====
+
+	// Page routes
+	mux.HandleFunc("/", r.rendersRepo.HomePageHandler)
+	mux.HandleFunc("/auth", r.rendersRepo.LoginPageHandler)
+	mux.HandleFunc("/auth-sign-up", r.rendersRepo.SignUpPageHandler)
 
 	// CORS middleware
 	handler := middlewares.CorsMiddleware(mux)
