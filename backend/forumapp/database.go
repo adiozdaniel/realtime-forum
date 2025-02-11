@@ -83,7 +83,7 @@ func (tm *TableManager) CreateTables() error {
 				post_video TEXT,
 				post_category TEXT NOT NULL,
 				post_likes INTEGER DEFAULT 0,
-				post_dislikes INTEGER DEFAULT 0,
+				post_hasComments INTEGER DEFAULT 1,
 				created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
 				updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
 				FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE

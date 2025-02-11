@@ -28,37 +28,37 @@ const postsContainer = document.querySelector('#postsContainer');
 // Sample Data
 const SAMPLE_POSTS = [
     {
-        postId: "01",
-        title: "Getting Started with Go and Angular",
-        author: "Jane Cooper",
-        category: "Tutorial",
-        likes: 42,
-        comments: 12,
-        excerpt: "Learn how to build a modern web application using Go for the backend and Angular for the frontend...",
-        timeAgo: "2h ago",
-        hasComments: true
+        post_id:"01",
+        post_title: "Getting Started with Go and Angular",
+        post_author: "Jane Cooper",
+        post_category: "Tutorial",
+        post_likes: 42,
+        post_comments: 12,
+        post_content: "Learn how to build a modern web application using Go for the backend and Angular for the frontend...",
+        post_timeAgo: "2h ago",
+        post_hasComments: true
     },
     {
-        postId: "02",
-        title: "Best Practices for API Design",
-        author: "John Smith",
-        category: "Discussion",
-        likes: 28,
-        comments: 8,
-        excerpt: "Let's discuss the best practices for designing RESTful APIs that are both scalable and maintainable...",
-        timeAgo: "4h ago",
-        hasComments: true
+        post_id: "02",
+        post_title: "Best Practices for API Design",
+        post_author: "John Smith",
+        post_category: "Discussion",
+        post_likes: 28,
+        post_comments: 8,
+        post_content: "Let's discuss the best practices for designing RESTful APIs that are both scalable and maintainable...",
+        post_timeAgo: "4h ago",
+        post_hasComments: true
     },
     {
-        postId: "03",
-        title: "Web Performance Optimization Tips",
-        author: "Alice Johnson",
-        category: "Guide",
-        likes: 35,
-        comments: 15,
-        excerpt: "Essential tips and tricks for optimizing your web application's performance...",
-        timeAgo: "6h ago",
-        hasComments: true
+        post_id: "03",
+        post_title: "Web Performance Optimization Tips",
+        post_author: "Alice Johnson",
+        post_category: "Guide",
+        post_likes: 35,
+        post_comments: 15,
+        post_content: "Essential tips and tricks for optimizing your web application's performance...",
+        post_timeAgo: "6h ago",
+        post_hasComments: true
     }
 ];
     
@@ -67,38 +67,38 @@ import { loadComments, handleCommentSubmit } from './comment.js';
 
 /// Modified createPostHTML function to include liked state 
 function createPostHTML(post) { 
-    const isLiked = likeState.posts[post.postId]?.likedBy.has('current-user'); 
+    const isLiked = likeState.posts[post.post_id]?.likedBy.has('current-user'); 
     return ` 
-        <article class="post-card" data-post-id="${post.postId}"> 
+        <article class="post-card" data-post-id="${post.post_id}"> 
             <div class="flex items-start justify-between">
                 <div> 
-                    <span class="post-category">${post.category}</span> 
-                    <h3 class="post-title">${post.title}</h3> 
-                    <p class="post-excerpt">${post.excerpt}</p> 
+                    <span class="post-category">${post.post_category}</span> 
+                    <h3 class="post-title">${post.post_title}</h3> 
+                    <p class="post-excerpt">${post.post_content}</p> 
                 </div> 
             </div> 
             <div class="post-footer"> 
                 <div class="post-actions"> 
-                    <button class="post-action-button like-button ${isLiked ? 'liked text-blue-600' : ''}" data-post-id="${post.postId}"> 
+                    <button class="post-action-button like-button ${isLiked ? 'liked text-blue-600' : ''}" data-post-id="${post.post_id}"> 
                         <i data-lucide="thumbs-up"></i>
-                        <span class="likes-count">${likeState.posts[post.postId]?.count || 0}</span> 
+                        <span class="likes-count">${likeState.posts[post.post_id]?.count || 0}</span> 
                     </button> 
-                    <button class="post-action-button comment-toggle" data-post-id="${post.postId}">
+                    <button class="post-action-button comment-toggle" data-post-id="${post.post_id}">
                         <i data-lucide="message-square"></i> 
-                        <span class="comments-count">${post.comments}</span> 
+                        <span class="comments-count">${post.post_comments}</span> 
                     </button> 
                 </div> 
                 <div class="post-meta"> 
-                    <span>by ${post.author}</span>
+                    <span>by ${post.post_author}</span>
                     <span>•</span> 
-                    <span>${post.timeAgo}</span> 
+                    <span>${post.post_timeAgo}</span> 
                 </div> 
             </div> 
-            <div class="comments-section hidden" id="comments-${post.postId}"> 
+            <div class="comments-section hidden" id="comments-${post.post_id}"> 
                 <div class="comments-container"> 
                     <!-- Comments will be inserted here --> 
                 </div> 
-                <form class="comment-form" data-post-id="${post.postId}"> 
+                <form class="comment-form" data-post-id="${post.post_id}"> 
                     <textarea placeholder="Write your comment..." class="comment-input"></textarea> 
                     <button type="submit" class="comment-submit">Post Comment</button> 
                 </form> 
@@ -150,8 +150,8 @@ const likeState = {
     
 // Initialize like state from SAMPLE_POSTS 
 SAMPLE_POSTS.forEach(post => { 
-    likeState.posts[post.postId] = { 
-    count: post.likes, 
+    likeState.posts[post.post_id] = { 
+    count: post.post_likes, 
     likedBy: new Set() 
     // Track users who liked (can be expanded with user IDs) 
     }; 
