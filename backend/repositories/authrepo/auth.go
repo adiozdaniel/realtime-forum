@@ -17,42 +17,29 @@ func (h *AuthRepo) RegisterHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Extract form values
-	email := r.FormValue("email")
-	username := r.FormValue("username")
-	password := r.FormValue("password")
+	var req User
 
-	imagePath, err := h.shared.SaveImage(r)
+	err := json.NewDecoder(r.Body).Decode(&req)
 	if err != nil {
 		h.res.SetError(w, err, http.StatusBadRequest)
 		return
 	}
 
-	// Create the user
-	user := &User{
-		Email:     email,
-		FirstName: username,
-		LastName:  username,
-		Password:  password,
-		Image:     imagePath[1:],
-		CreatedAt: time.Now(),
-		UpdatedAt: time.Now(),
-	}
-
 	// Register the user
-	err = h.user.Register(user)
+	err = h.user.Register(&req)
 	if err != nil {
 		h.res.SetError(w, err, http.StatusConflict)
 		return
 	}
 
 	// Generate a token
-	token := h.Sessions.GenerateToken(user.UserID)
+	token := h.Sessions.GenerateToken(req.UserID)
 
 	// Set the session cookie
 	http.SetCookie(w, &token)
 
 	// Respond with success and token
-	h.res.Data = user
+	h.res.Data = req
 	h.res.Err = false
 	h.res.Message = "User registered successfully"
 
