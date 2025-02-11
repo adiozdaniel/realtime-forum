@@ -16,18 +16,18 @@ func NewUserRepo(db *sql.DB) *UserRepository {
 }
 
 func (r *UserRepository) CreateUser(user *User) error {
-	query := `INSERT INTO users (user_id, email, password, first_name, last_name, image, role, created_at, updated_at)
+	query := `INSERT INTO users (user_id, email, password, user_name, image, role, created_at, updated_at)
 	          VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`
-	_, err := r.DB.Exec(query, user.UserID, user.Email, user.Password, user.FirstName, user.LastName, user.Image, user.Role, user.CreatedAt, user.UpdatedAt)
+	_, err := r.DB.Exec(query, user.UserID, user.Email, user.Password, user.UserName, user.Image, user.Role, user.CreatedAt, user.UpdatedAt)
 	return err
 }
 
 func (r *UserRepository) GetUserByEmail(email string) (*User, error) {
-	query := `SELECT user_id, email, password, first_name, last_name, image, role, created_at, updated_at FROM users WHERE email = ?`
+	query := `SELECT user_id, email, password, user_name, image, role, created_at, updated_at FROM users WHERE email = ?`
 	row := r.DB.QueryRow(query, email)
 
 	user := &User{}
-	err := row.Scan(&user.UserID, &user.Email, &user.Password, &user.FirstName, &user.LastName, &user.Image, &user.Role, &user.CreatedAt, &user.UpdatedAt)
+	err := row.Scan(&user.UserID, &user.Email, &user.Password, &user.UserName, &user.Image, &user.Role, &user.CreatedAt, &user.UpdatedAt)
 	if err != nil {
 		return nil, err
 	}
@@ -42,11 +42,11 @@ func (r *UserRepository) DeleteUser(id string) error {
 }
 
 func (r *UserRepository) GetUserByID(id string) (*User, error) {
-	query := `SELECT user_id, email, password, first_name, last_name, image, role, created_at, updated_at FROM users WHERE user_id = ?`
+	query := `SELECT user_id, email, password, user_name, image, role, created_at, updated_at FROM users WHERE user_id = ?`
 	row := r.DB.QueryRow(query, id)
 
 	user := &User{}
-	err := row.Scan(&user.UserID, &user.Email, &user.Password, &user.FirstName, &user.LastName, &user.Image, &user.Role, &user.CreatedAt, &user.UpdatedAt)
+	err := row.Scan(&user.UserID, &user.Email, &user.Password, &user.UserName, &user.Image, &user.Role, &user.CreatedAt, &user.UpdatedAt)
 	if err != nil {
 		return nil, err
 	}
@@ -54,7 +54,7 @@ func (r *UserRepository) GetUserByID(id string) (*User, error) {
 }
 
 func (r *UserRepository) UpdateUser(user *User) error {
-	query := `UPDATE users SET email = ?, password = ?, first_name = ?, last_name = ?, image = ?, role = ?, updated_at = ? WHERE user_id = ?`
-	_, err := r.DB.Exec(query, user.Email, user.Password, user.FirstName, user.LastName, user.Image, user.Role, time.Now(), user.UserID)
+	query := `UPDATE users SET email = ?, password = ?, user_name = ?, image = ?, role = ?, updated_at = ? WHERE user_id = ?`
+	_, err := r.DB.Exec(query, user.Email, user.Password, user.UserName, user.Image, user.Role, time.Now(), user.UserID)
 	return err
 }
