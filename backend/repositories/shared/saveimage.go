@@ -1,0 +1,43 @@
+package shared
+
+import (
+	"errors"
+	"io"
+	"net/http"
+	"os"
+)
+
+// SaveImage handles file uploads and saves the image to a specified directory.
+// It returns the image path or an error.
+func (s *SharedConfig) SaveImage(r *http.Request) (string, error) {
+	err := r.ParseMultipartForm(20 << 20) // 20MB max file size
+	if err != nil {
+		return "", errors.New("failed to parse form data")
+	}
+
+	var imagePath string
+
+	// Handle file upload
+	file, handler, err := r.FormFile("profileImage")
+	if err == nil {
+		defer file.Close()
+
+		// Save the file to a directory profile
+		imagePath = "./static/profiles/" + handler.Filename
+		dst, err := os.Create(imagePath)
+		if err != nil {
+			return "", errors.New("failed to save image")
+		}
+		defer dst.Close()
+
+		// Copy the uploaded file to the destination
+		_, err = io.Copy(dst, file)
+		if err != nil {
+			return "", errors.New("failed to save image")
+		}
+	} else if !errors.Is(err, http.ErrMissingFile) {
+		return "", errors.New("image upload failed")
+	}
+
+	return imagePath[1:], nil
+}

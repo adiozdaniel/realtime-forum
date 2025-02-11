@@ -3,31 +3,37 @@ package routes
 import (
 	"net/http"
 
-	"forum/forumapp"
 	"forum/middlewares"
-	"forum/repositories"
 )
-
-type Routes struct {
-	app  *forumapp.ForumApp
-	repo *repositories.Repo
-}
-
-func NewRoutes(app *forumapp.ForumApp, repo *repositories.Repo) *Routes {
-	return &Routes{
-		app:  app,
-		repo: repo,
-	}
-}
 
 // Register routes
 func (r *Routes) RegisterRoutes(mux *http.ServeMux) http.Handler {
-	// Auth routes
-	auth := middlewares.NewAuthContext(r.app)
-	mux.Handle("/api/posts", auth.AuthMiddleware(http.HandlerFunc(r.repo.PostsHandler)))
-	mux.Handle("/api/auth/check", auth.AuthMiddleware(http.HandlerFunc(r.repo.CheckAuth)))
 
-	// Page routes
+	// ===== Protected RESTFUL API Endpoints ===== //
+
+	// === Posts ===
+	mux.Handle("/api/posts/create", r.auth.AuthMiddleware(http.HandlerFunc(r.postsRepo.CreatePost)))
+	// mux.Handle("/api/posts/delete", r.auth.AuthMiddleware(http.HandlerFunc(r.postsRepo.AllPosts)))
+	// mux.Handle("/api/posts/update", r.auth.AuthMiddleware(http.HandlerFunc(r.postsRepo.AllPosts)))
+	mux.Handle("/api/posts/like", r.auth.AuthMiddleware(http.HandlerFunc(r.postsRepo.AddLike)))
+	// mux.Handle("/api/posts/dislike", r.auth.AuthMiddleware(http.HandlerFunc(r.postsRepo.AllPosts)))
+	// === End Posts ===
+
+	// === Comments ===
+	// mux.Handle("/api/comments/create", r.auth.AuthMiddleware(http.HandlerFunc(r.authRepo.AllPosts)))
+	// mux.Handle("/api/comments/delete", r.auth.AuthMiddleware(http.HandlerFunc(r.authRepo.AllPosts)))
+	// mux.Handle("/api/comments/update", r.auth.AuthMiddleware(http.HandlerFunc(r.authRepo.AllPosts)))
+	// mux.Handle("/api/comments/like", r.auth.AuthMiddleware(http.HandlerFunc(r.authRepo.AllPosts)))
+	// mux.Handle("/api/comments/dislike", r.auth.AuthMiddleware(http.HandlerFunc(r.authRepo.AllPosts)))
+	// === End Comments ===
+
+	// === Auth ===
+
+	// === End Auth ===
+
+	// ===== End Protected RESTFUL API Endpoints ===== //
+
+	// ==== Static files server ====
 	fs := r.app.Tmpls.GetProjectRoute("/static")
 	mux.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir(fs))))
 

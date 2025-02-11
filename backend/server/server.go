@@ -8,13 +8,11 @@ import (
 	"time"
 
 	"forum/forumapp"
-	"forum/repositories"
 	"forum/routes"
 )
 
 type Server struct {
 	app    *forumapp.ForumApp
-	repo   *repositories.Repo
 	routes *routes.Routes
 	server *http.Server
 	port   string
@@ -27,13 +25,10 @@ func NewServer() *Server {
 		log.Fatal(err)
 	}
 
-	repo := repositories.NewRepo(app)
-	routes := routes.NewRoutes(app, repo)
+	routes := routes.NewRoutes(app)
+
 	return &Server{
-		app:    app,
-		repo:   repo,
-		routes: routes,
-		port:   port,
+		app, routes, nil, port,
 	}
 }
 
