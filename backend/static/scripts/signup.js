@@ -150,8 +150,6 @@ document.addEventListener('DOMContentLoaded', function() {
             last_name: 'omukokoo',
             password: passwordInput.value,
         };
-
-		console.log(formData);
     
         try {
             const res = await fetch(window.API_ENDPOINTS.register, {
