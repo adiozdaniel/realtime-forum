@@ -182,8 +182,10 @@ const likeState = {
 	comments: {},
 };
 
+const postService = new PostService();
+
 // Handle like button click for both posts and comments
-function handleLike(e) {
+const handleLike = async(e) => {
 	const button = e.currentTarget.closest(".like-button");
 	if (!button) return;
 	const isComment = button.hasAttribute("data-comment-id");
@@ -206,17 +208,43 @@ function handleLike(e) {
 	}
 	const likeData = isComment ? stateRef[commentId] : stateRef; //
 	if (!likeData) return;
+
 	// Simulate current user ID (in real app, get from auth)
-	const currentUserId = "current-user";
+	if (!window.RESDATA?.userData) {
+		window.location.href = "http://localhost:4000/auth";
+		return
+	};
+	const currentUserId = window.RESDATA.userData.user_id;
+
 	// Toggle like
 	if (likeData.likedBy.has(currentUserId)) {
-		likeData.count--;
-		likeData.likedBy.delete(currentUserId);
-		button.classList.remove("liked", "text-blue-600");
+		const res = await postService.dislikePost(postId);
+		console.log("disliking post....");
+		console.log(res);
+
+		if (res.error) {
+			alert(res.message);
+			return
+		};
+
+			likeData.count--;
+			likeData.likedBy.delete(currentUserId);
+			button.classList.remove("liked", "text-blue-600");
+		
 	} else {
-		likeData.count++;
-		likeData.likedBy.add(currentUserId);
-		button.classList.add("liked", "text-blue-600");
+		const res = await postService.likePost(postId);
+		console.log("liking post ...");
+		console.log(res);
+
+		if (res.error) {
+			alert(res.message);
+			return
+		};
+
+			likeData.count++;
+			likeData.likedBy.add(currentUserId);
+			button.classList.add("liked", "text-blue-600");
+		
 	}
 
 	// Update UI
@@ -228,12 +256,12 @@ function handleLike(e) {
 	button.classList.add("like-animation");
 	setTimeout(() => button.classList.remove("like-animation"), 300);
 	// In a real application, you would send this to your backend
-	console.log(
-		`${isComment ? "Comment" : "Post"} ${
-			isComment ? commentId : postId
-		} likes:`,
-		{ count: likeData.count, isLiked: likeData.likedBy.has(currentUserId) }
-	);
+	// console.log(
+	// 	`${isComment ? "Comment" : "Post"} ${
+	// 		isComment ? commentId : postId
+	// 	} likes:`,
+	// 	{ count: likeData.count, isLiked: likeData.likedBy.has(currentUserId) }
+	// );
 }
 
 // Initialize

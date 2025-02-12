@@ -127,13 +127,15 @@ PostService.prototype.deletePost = async function (postId) {
 // Method to like a post by ID
 PostService.prototype.likePost = async function (postId) {
 	try {
-		const response = await fetch(`${this.apiEndpoints.likepost}/${postId}`, {
+		const response = await fetch(this.apiEndpoints.likepost, {
 			method: "POST",
+			body: JSON.stringify(postId),
+			headers: {
+				"Content-Type" : "application/json"
+			}
 		});
-		if (!response.ok) {
-			throw new Error("Failed to like post");
-		}
-		const updatedPost = await response.json(); // Parse response as JSON
+
+		const updatedPost = await response.json();
 		return updatedPost;
 	} catch (error) {
 		console.error("Error liking post:", error);
@@ -144,13 +146,15 @@ PostService.prototype.likePost = async function (postId) {
 // Method to dislike a post by ID
 PostService.prototype.dislikePost = async function (postId) {
 	try {
-		const response = await fetch(`${this.apiEndpoints.dislikepost}/${postId}`, {
+		const response = await fetch(this.apiEndpoints.dislikepost, {
 			method: "POST",
+			body: JSON.stringify(postId),
+			headers: {
+				"Content-Type" : "application/json"
+			}
 		});
-		if (!response.ok) {
-			throw new Error("Failed to dislike post");
-		}
-		const updatedPost = await response.json(); // Parse response as JSON
+		
+		const updatedPost = await response.json();
 		return updatedPost;
 	} catch (error) {
 		console.error("Error disliking post:", error);
