@@ -2,6 +2,7 @@ package middlewares
 
 import (
 	"context"
+	"encoding/json"
 	"net/http"
 
 	"forum/repositories/authrepo"
@@ -12,11 +13,19 @@ type contextKey string
 const userIDKey contextKey = "userID"
 
 type AuthContext struct {
+	res      *JSONRes
 	Sessions *authrepo.Sessions
 }
 
+// JSONRes represents a JSON response structure.
+type JSONRes struct {
+	Err     bool        `json:"error"`
+	Message string      `json:"message"`
+	Data    interface{} `json:"data,omitempty"`
+}
+
 func NewAuthContext(ses *authrepo.Sessions) *AuthContext {
-	return &AuthContext{ses}
+	return &AuthContext{res: &JSONRes{}, Sessions: ses}
 }
 
 // SetUserIDInContext adds the user ID to the request context
@@ -36,8 +45,7 @@ func (a *AuthContext) AuthMiddleware(next http.Handler) http.Handler {
 		// Check if session token exists
 		cookie, err := r.Cookie("session_token")
 		if err != nil {
-			http.Error(w, "you must be logged in to access this service", http.StatusForbidden)
-			http.Redirect(w, r, "/auth", http.StatusFound) // Redirect to login page
+			sendUnauthorizedResponse(w, "Unauthorized: you need to be logged in to access this resource")
 			return
 		}
 
@@ -55,7 +63,7 @@ func (a *AuthContext) AuthMiddleware(next http.Handler) http.Handler {
 		})
 
 		if !found {
-			http.Redirect(w, r, "/auth", http.StatusFound) // Redirect to login page
+			sendUnauthorizedResponse(w, "Unauthorized: you need to be logged in to access this resource")
 			return
 		}
 
@@ -63,4 +71,31 @@ func (a *AuthContext) AuthMiddleware(next http.Handler) http.Handler {
 		ctx := a.SetUserIDInContext(r.Context(), userID)
 		next.ServeHTTP(w, r.WithContext(ctx))
 	})
+}
+
+// Helper function to send unauthorized JSON response
+func sendUnauthorizedResponse(w http.ResponseWriter, message string) {
+	w.Header().Set("Content-Type", "application/json")
+
+	var res JSONRes
+	res.Err = true
+	res.Message = message
+	res.Data = nil
+
+	// Encode payload into JSON
+	out, err := json.Marshal(res)
+	if err != nil {
+		http.Error(w, "Oops, server misbehaving, try later!", http.StatusInternalServerError)
+		return
+	}
+
+	// Set HTTP status code
+	w.WriteHeader(http.StatusUnauthorized)
+
+	// Write JSON response
+	_, err = w.Write(out)
+	if err != nil {
+		http.Error(w, "Oops, server misbehaving, try later!", http.StatusInternalServerError)
+		return
+	}
 }
