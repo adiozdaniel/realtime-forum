@@ -24,11 +24,18 @@ window.API_ENDPOINTS = {
 
 // ResData object
 window.RESDATA = {
-	userData: localStorage.getItem("res")
-		? JSON.parse(localStorage.getItem("res"))
-		: null,
-	profileImageElement: null,
+    userData: (() => {
+        try {
+            const data = localStorage.getItem('res');
+            return data ? JSON.parse(data) : null;
+        } catch (error) {
+            console.error("Error parsing localStorage data:", error);
+            return null;
+        }
+    })(),
+    profileImageElement: null
 };
+
 
 // Constants
 window.CONSTANTS = {

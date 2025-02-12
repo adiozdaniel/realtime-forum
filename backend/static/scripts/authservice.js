@@ -24,6 +24,8 @@ AuthService.prototype.login = async function (credentials) {
 			body: JSON.stringify(credentials),
 		});
 
+		localStorage.setItem('res', JSON.stringify(response));
+
 		return response.json();
 	} catch (error) {
 		throw new Error(response.message || "Failed to log in");
@@ -47,6 +49,8 @@ AuthService.prototype.register = async function (userData) {
 				"Content-Type": "application/json",
 			},
 		});
+
+		localStorage.setItem('res', JSON.stringify(response));
 
 		return response.json();
 	} catch (error) {
