@@ -182,15 +182,6 @@ const likeState = {
 	comments: {},
 };
 
-// Initialize like state from SAMPLE_POSTS
-SAMPLE_POSTS.forEach((post) => {
-	likeState.posts[post.post_id] = {
-		count: post.post_likes,
-		likedBy: new Set(),
-		// Track users who liked (can be expanded with user IDs)
-	};
-});
-
 // Handle like button click for both posts and comments
 function handleLike(e) {
 	const button = e.currentTarget.closest(".like-button");
@@ -251,12 +242,17 @@ const init = async() => {
 	const posts = await postService.fetchPosts();
 
 	const postList = Array.isArray(posts) ? posts : posts.data;
-	
+
 	postList.forEach((post) => SAMPLE_POSTS.push(post));
 
-	// SAMPLE_POSTS.push(posts.data);
-
-	console.log(SAMPLE_POSTS);
+	// Initialize like state from SAMPLE_POSTS
+	SAMPLE_POSTS.forEach((post) => {
+		likeState.posts[post.post_id] = {
+			count: post.post_likes,
+			likedBy: new Set(),
+			// Track users who liked (can be expanded with user IDs)
+		};
+	});
 
 	// Initial render
 	if (postsContainer) renderPosts();
