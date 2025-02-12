@@ -9,22 +9,57 @@
 ></script>
 {{end}} {{define "content"}}
 
-<div id="modal" class="modal">
+<div
+	id="modal"
+	class="modal"
+>
 	<div class="modal-content">
 		<h2>Create a New Post</h2>
 		<form id="postForm">
-			<div class="form-group"> <label>Title</label> <input type="text" id="title" required> </div>
-			<div class="form-group"> <label>Category</label> <select id="category" required>
+			<div class="form-group">
+				<label>Title</label>
+				<input
+					type="text"
+					id="modal-content-title"
+					required
+				/>
+			</div>
+			<div class="form-group">
+				<label>Category</label>
+				<select
+					id="category"
+					required
+				>
 					<option value="">Select a category</option>
 					<option value="Tutorial">Tutorial</option>
 					<option value="Discussion">Discussion</option>
 					<option value="Guide">Guide</option>
 					<option value="Question">Question</option>
-				</select> </div>
-			<div class="form-group"> <label>Excerpt</label> <textarea id="excerpt" rows="4" required></textarea>
+				</select>
 			</div>
-			<div class="form-actions"> <button type="button" id="cancelBtn" class="cancel-btn">Cancel</button>
-				<button type="submit" class="submit-btn">Create Post</button> </div>
+			<div class="form-group">
+				<label>Excerpt</label>
+				<textarea
+					id="excerpt"
+					rows="4"
+					required
+				></textarea>
+			</div>
+			<div class="form-actions">
+				<button
+					type="button"
+					id="cancelBtn"
+					class="cancel-btn"
+				>
+					Cancel
+				</button>
+				<button
+					type="submit"
+					class="submit-btn"
+				>
+					Create Post
+				</button>
+			</div>
 		</form>
 	</div>
 </div>
@@ -34,7 +69,10 @@
 
 <div class="btn-discussions">
 	<h2 class="section-title">Recent Discussions</h2>
-	<button id="createPostBtn" class="create-post-btn">
+	<button
+		id="createPostBtn"
+		class="create-post-btn"
+	>
 		<i data-lucide="plus"></i>
 		Create Post
 	</button>
@@ -45,6 +83,12 @@
 >
 	<!-- Posts will be inserted here by JavaScript -->
 </div>
-<script src="/static/scripts/postsservice.js"></script>
-<script src="/static/scripts/createposts.js"></script>
+<script
+	type="module"
+	src="/static/scripts/postsservice.js"
+></script>
+<script
+	type="module"
+	src="/static/scripts/createposts.js"
+></script>
 {{end}}

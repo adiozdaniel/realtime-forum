@@ -1,5 +1,5 @@
 // PostService class for handling post-related API requests
-class PostService {
+export class PostService {
 	constructor() {
 		this.apiEndpoints = window.API_ENDPOINTS;
 		this.userData = window.RESDATA.userData;
@@ -150,5 +150,3 @@ PostService.prototype.dislikePost = async function (postId) {
 		return null; // Return null on failure
 	}
 };
-
-export { PostService };
