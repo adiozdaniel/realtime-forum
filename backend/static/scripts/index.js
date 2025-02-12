@@ -1,3 +1,5 @@
+import { PostService } from './postsservice.js';
+
 // API Endpoints
 window.API_ENDPOINTS = {
 	login: "/api/auth/login",
@@ -244,7 +246,18 @@ function handleLike(e) {
 }
 
 // Initialize
-function init() {
+const init = async() => {
+	const postService = new PostService();
+	const posts = await postService.fetchPosts();
+
+	const postList = Array.isArray(posts) ? posts : posts.data;
+	
+	postList.forEach((post) => SAMPLE_POSTS.push(post));
+
+	// SAMPLE_POSTS.push(posts.data);
+
+	console.log(SAMPLE_POSTS);
+
 	// Initial render
 	if (postsContainer) renderPosts();
 }
