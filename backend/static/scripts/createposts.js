@@ -4,10 +4,6 @@ document.addEventListener("DOMContentLoaded", () => {
 	const createPostBtn = document.getElementById("createPostBtn");
 	const cancelBtn = document.getElementById("cancelBtn");
 	const postForm = document.getElementById("postForm");
-	const title = document.getElementById("modal-content-title").value;
-	const user_name = document.getElementById("author").value;
-	const category = document.getElementById("category").value;
-	const excerpt = document.getElementById("excerpt").value;
 
 	// Open modal
 	createPostBtn.addEventListener("click", () => {
@@ -29,11 +25,16 @@ document.addEventListener("DOMContentLoaded", () => {
 	// Handle form submission
 	postForm.addEventListener("submit", (e) => {
 		e.preventDefault();
+		const title = document.getElementById("title").value;
+		const category = document.getElementById("category").value;
+		const author = document.getElementById("author").value;
+		const content = document.getElementById("excerpt").value;
+
 		const formData = {
 			title: title,
-			user_name: user_name,
+			user_name: author,
 			category: category,
-			excerpt: excerpt,
+			content: content,
 		};
 
 		// Send the data to a server
