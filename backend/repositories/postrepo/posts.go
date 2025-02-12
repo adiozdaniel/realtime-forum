@@ -1,6 +1,7 @@
 package postrepo
 
 import (
+	"encoding/json"
 	"net/http"
 )
 
@@ -30,23 +31,15 @@ func (p *PostsRepo) CreatePost(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Extract form values
-	title := r.FormValue("title")
-	content := r.FormValue("content")
-	userID := r.FormValue("user_id")
-	author := r.FormValue("author")
-	category := r.FormValue("category")
+	var req Post
 
-	// Create the post
-	post := &Post{
-		UserID:       userID,
-		PostAuthor:   author,
-		PostTitle:    title,
-		PostContent:  content,
-		PostCategory: category,
+	err := json.NewDecoder(r.Body).Decode(&req)
+	if err != nil {
+		p.res.SetError(w, err, http.StatusInternalServerError)
+		return
 	}
 
-	err := p.post.CreatePost(post)
+	err = p.post.CreatePost(&req)
 	if err != nil {
 		p.res.SetError(w, err, http.StatusInternalServerError)
 		return
@@ -54,7 +47,7 @@ func (p *PostsRepo) CreatePost(w http.ResponseWriter, r *http.Request) {
 
 	p.res.Err = false
 	p.res.Message = "Success"
-	p.res.Data = post
+	p.res.Data = req
 	p.res.WriteJSON(w, *p.res, http.StatusOK)
 }
 
