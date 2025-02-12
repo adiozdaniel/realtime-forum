@@ -1,3 +1,5 @@
+import { AuthService } from "./authservice.js";
+
 document.addEventListener("DOMContentLoaded", function () {
 	// Initialize Lucide icons
 	lucide.createIcons();
@@ -8,6 +10,10 @@ document.addEventListener("DOMContentLoaded", function () {
 	const passwordToggle = document.getElementById("passwordToggle");
 	const submitButton = form.querySelector('button[type="submit"]');
 	const spinner = submitButton.querySelector(".spinner");
+
+	// Initialize AuthService
+	const authService = new AuthService();
+
 	// Password visibility toggle
 	passwordToggle.addEventListener("click", () => {
 		const type = passwordInput.type === "password" ? "text" : "password";
@@ -77,33 +83,20 @@ document.addEventListener("DOMContentLoaded", function () {
 			password: passwordInput.value,
 		};
 
-		try {
-			const response = await fetch(window.API_ENDPOINTS.login, {
-				method: "POST",
-				body: JSON.stringify(formData),
-				headers: {
-					"Content-Type": "application/json",
-				},
-			});
+		const response = await authService.login(formData);
 
-			const res = await response.json();
-
-			if (response.ok) {
-				console.log("Login successful:", res.message);
-				localStorage.setItem("res", JSON.stringify(res.data));
-				window.location.href = "/";
-			} else {
-				console.error("Login failed:", res.message || "Unknown error");
-				showError(emailInput, res.message || "Invalid email or password");
-			}
-		} catch (error) {
-			console.error("Login Error:", error.message);
-			showError(emailInput, "An error occurred. Please try again.");
-		} finally {
-			submitButton.disabled = false;
-			spinner.classList.add("hidden");
-			submitButton.querySelector("span").textContent = "Sign in";
+		if (!response.error) {
+			console.log("Login successful:", response.message);
+			localStorage.setItem("res", JSON.stringify(response.data));
+			window.location.href = "/";
+		} else {
+			console.error("Login failed:", response.message || "Unknown error");
+			showError(emailInput, response.message || "Invalid email or password");
 		}
+
+		submitButton.disabled = false;
+		spinner.classList.add("hidden");
+		submitButton.querySelector("span").textContent = "Sign in";
 	}
 
 	// Clear errors dynamically

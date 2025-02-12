@@ -151,7 +151,4 @@ PostService.prototype.dislikePost = async function (postId) {
 	}
 };
 
-// Initialize the PostService instance when the page loads
-document.addEventListener("DOMContentLoaded", () => {
-	window.postService = new PostService();
-});
+export { PostService };

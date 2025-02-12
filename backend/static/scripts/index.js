@@ -30,6 +30,12 @@ window.RESDATA = {
 	profileImageElement: null,
 };
 
+// Constants
+window.CONSTANTS = {
+	MIN_PASSWORD_LENGTH: 8,
+	MAX_PASSWORD_LENGTH: 35,
+};
+
 // DOM Elements
 const postsContainer = document.querySelector("#postsContainer");
 
