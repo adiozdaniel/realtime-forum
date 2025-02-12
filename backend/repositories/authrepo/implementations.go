@@ -17,7 +17,7 @@ func NewUserRepo(db *sql.DB) *UserRepository {
 
 func (r *UserRepository) CreateUser(user *User) error {
 	query := `INSERT INTO users (user_id, email, password, user_name, image, role, created_at, updated_at)
-	          VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`
+	          VALUES (?, ?, ?, ?, ?, ?, ?, ?)`
 	_, err := r.DB.Exec(query, user.UserID, user.Email, user.Password, user.UserName, user.Image, user.Role, user.CreatedAt, user.UpdatedAt)
 	return err
 }
