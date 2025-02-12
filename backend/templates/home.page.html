@@ -9,57 +9,66 @@
 ></script>
 {{end}} {{define "content"}}
 
-<div
-	id="modal"
-	class="modal"
->
+<div id="createPostModal" class="hidden">
 	<div class="modal-content">
 		<h2>Create a New Post</h2>
-		<form id="postForm">
-			<div class="form-group">
-				<label>Title</label>
-				<input
-					type="text"
-					id="title"
-					required
-				/>
-			</div>
-			<div class="form-group">
-				<label>Category</label>
-				<select
-					id="category"
-					required
-				>
+		<form id="createPostForm">
+			<div class="form-group"> <label>Title</label> <input type="text" id="postTitle" required> </div>
+			<div class="form-group"> <label>Author</label> <input type="text" id="postAuthor" required> </div>
+			<div class="form-group"> <label>Category</label> <select id="postCategory" required>
 					<option value="">Select a category</option>
 					<option value="Tutorial">Tutorial</option>
 					<option value="Discussion">Discussion</option>
 					<option value="Guide">Guide</option>
 					<option value="Question">Question</option>
-				</select>
+				</select> </div>
+			<div class="form-group"> <label>Content</label> <textarea id="postContent" rows="4"
+					required></textarea> </div>
+			<div class="form-group"> <label>Add Media</label>
+				<div class="media-options">
+					<div class="image-upload"> 
+						<label for="imageUpload" class="upload-btn"> <i data-lucide="image"></i> Upload Image </label> 
+						<input type="file"
+							id="imageUpload" 
+							accept=".jpg,.jpeg,.png,.gif,image/jpeg,image/png,image/gif" 
+							class="hidden"
+						> 
+						<div class="upload-info"> 
+							<small>Accepted formats: JPEG, PNG, GIF (max 20MB)</small> 
+							<div id="uploadError" class="upload-error hidden"></div> 
+						</div>
+					</div>
+					<div class="video-upload"> 
+						<input 
+							type="url" 
+							id="videoLink"
+							placeholder="Paste video URL (YouTube/Vimeo)"
+						> 
+					</div>
+				</div>
 			</div>
-			<div class="form-group">
-				<label>Excerpt</label>
-				<textarea
-					id="excerpt"
-					rows="4"
-					required
-				></textarea>
+			<div id="mediaPreview" class="media-preview hidden">
+				<div id="imagePreviewContainer" class="image-preview-container hidden"> 
+					<img id="imagePreview"
+						src="" 
+						alt="Preview"
+						> 
+						<button 
+						type="button" 
+						id="removeImage" 
+						class="remove-media"
+						> 
+						<i data-lucide="x"></i> 
+					</button> 
+				</div>
+				<div id="videoPreviewContainer" class="video-preview-container hidden">
+					<div id="videoPreview"></div> <button type="button" id="removeVideo" class="remove-media">
+						<i data-lucide="x"></i> </button>
+				</div>
 			</div>
-			<div class="form-actions">
-				<button
-					type="button"
-					id="cancelBtn"
-					class="cancel-btn"
-				>
-					Cancel
-				</button>
-				<button
-					type="submit"
-					class="submit-btn"
-				>
-					Create Post
-				</button>
-			</div>
+			<div class="form-actions"> <button type="button" id="cancelPost"
+					class="cancel-button">Cancel</button> <button type="submit" class="submit-button">Create
+					Post</button> </div>
 		</form>
 	</div>
 </div>
@@ -73,14 +82,11 @@
 		id="createPostBtn"
 		class="create-post-btn"
 	>
-		<i data-lucide="plus"></i>
+		<i data-lucide="plus-circle"></i>
 		Create Post
 	</button>
 </div>
-<div
-	class="posts-container"
-	id="postsContainer"
->
+<div class="posts-container" id="postsContainer">
 	<!-- Posts will be inserted here by JavaScript -->
 </div>
 <script
