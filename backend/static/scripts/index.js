@@ -214,14 +214,14 @@ const handleLike = async (e) => {
 		return;
 	}
 	const currentUserId = window.RESDATA.userData.user_id;
+	const postData = {
+		post_id: postId,
+		user_id: currentUserId,
+	};
 
 	// Toggle like
 	if (likeData.likedBy.has(currentUserId)) {
-		const res = await postService.dislikePost({
-			postId: postId,
-			UserId: currentUserId,
-		});
-		console.log("disliking post....");
+		const res = await postService.dislikePost(postData);
 		console.log(res);
 
 		if (res.error) {
@@ -233,11 +233,7 @@ const handleLike = async (e) => {
 		likeData.likedBy.delete(currentUserId);
 		button.classList.remove("liked", "text-blue-600");
 	} else {
-		const res = await postService.likePost({
-			PostId: postId,
-			UserId: currentUserId,
-		});
-		console.log("liking post ...");
+		const res = await postService.likePost(postData);
 		console.log(res);
 
 		if (res.error) {

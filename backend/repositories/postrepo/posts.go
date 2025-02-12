@@ -3,6 +3,7 @@ package postrepo
 import (
 	"encoding/json"
 	"fmt"
+	"log"
 	"net/http"
 )
 
@@ -66,6 +67,8 @@ func (p *PostsRepo) AddLike(w http.ResponseWriter, r *http.Request) {
 		p.res.SetError(w, fmt.Errorf("invalid request payload: %v", err), http.StatusBadRequest)
 		return
 	}
+
+	log.Printf("Adding like to post: %+v", req)
 
 	// Call the AddLike method to add a like to the post
 	post, err := p.post.AddLike(&req)

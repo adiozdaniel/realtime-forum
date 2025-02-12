@@ -113,11 +113,12 @@ PostService.prototype.deletePost = async function (postId) {
 };
 
 // Method to like a post by ID
-PostService.prototype.likePost = async function (postId) {
+PostService.prototype.likePost = async function (postData) {
+	console.log("received postData:", postData);
 	try {
 		const response = await fetch(this.apiEndpoints.likepost, {
 			method: "POST",
-			body: JSON.stringify(postId),
+			body: JSON.stringify(postData),
 			headers: {
 				"Content-Type": "application/json",
 			},
