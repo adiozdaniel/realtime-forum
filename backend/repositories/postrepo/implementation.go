@@ -39,7 +39,7 @@ func NewPostRepository(db *sql.DB) *PostRepository {
 // CreatePost inserts a new post into the database
 func (r *PostRepository) CreatePost(post *Post) error {
 	query := `INSERT INTO posts (post_id, user_id, post_author, post_title, post_content, post_image, post_video, post_category, post_likes, post_hasComments, created_at, updated_at)
-	          VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
+	          VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
 	_, err := r.DB.Exec(query, post.PostID, post.UserID, post.PostAuthor, post.PostTitle, post.PostContent, post.PostImage, post.PostVideo, post.PostCategory, post.PostLikes, post.HasComments, post.CreatedAt, post.UpdatedAt)
 	return err
 }
