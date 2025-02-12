@@ -54,25 +54,27 @@ func (p *PostsRepo) CreatePost(w http.ResponseWriter, r *http.Request) {
 
 // AddLike adds a like to a post
 func (p *PostsRepo) AddLike(w http.ResponseWriter, r *http.Request) {
+	// Ensure the request method is POST
 	if r.Method != http.MethodPost {
-		http.Error(w, "Oops, didn't understand what you are looking for", http.StatusForbidden)
+		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
 		return
 	}
 
+	// Decode the request body into a PostLike struct
 	var req PostLike
-
-	err := json.NewDecoder(r.Body).Decode(&req)
-	if err != nil {
-		p.res.SetError(w, err, http.StatusInternalServerError)
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		p.res.SetError(w, fmt.Errorf("invalid request payload: %v", err), http.StatusBadRequest)
 		return
 	}
 
+	// Call the AddLike method to add a like to the post
 	post, err := p.post.AddLike(&req)
 	if err != nil {
-		p.res.SetError(w, err, http.StatusInternalServerError)
+		p.res.SetError(w, fmt.Errorf("failed to add like to post: %v", err), http.StatusInternalServerError)
 		return
 	}
 
+	// Prepare and send the success response
 	p.res.Err = false
 	p.res.Message = "Success"
 	p.res.Data = post
