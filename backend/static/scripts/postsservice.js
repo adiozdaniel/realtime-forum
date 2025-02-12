@@ -23,9 +23,6 @@ PostService.prototype.fetchPosts = async function () {
 
 // Method to create a new post
 PostService.prototype.createPost = async function (postData) {
-	console.log(postData);
-	console.log(this.userData);
-
 	if (!this.userData?.user_id) {
 		return {
 			error: true,
@@ -55,11 +52,11 @@ PostService.prototype.createPost = async function (postData) {
 	}
 
 	const formData = {
-		"post_title" : postData.PostTitle,
-		"post_content" : postData.PostContent,
-		"user_id" : this.userData.user_id,
-		"post_category" : postData.PostCategory,
-		"post_author" : this.userData.user_name
+		post_title: postData.PostTitle,
+		post_content: postData.PostContent,
+		user_id: this.userData.user_id,
+		post_category: postData.PostCategory,
+		post_author: this.userData.user_name,
 	};
 
 	try {
@@ -67,14 +64,12 @@ PostService.prototype.createPost = async function (postData) {
 			method: "POST",
 			body: JSON.stringify(formData),
 			headers: {
-				"Content-Type": "application/json"
-			}
+				"Content-Type": "application/json",
+			},
 		});
 
 		const newPost = await response.json();
-		if (!response.ok) {
-			throw new Error("Failed to create post");
-		}
+
 		return newPost;
 	} catch (error) {
 		if (error) {
@@ -83,7 +78,6 @@ PostService.prototype.createPost = async function (postData) {
 				message: "You need to login to create a post!",
 			};
 		}
-		throw new Error("Failed to create post");
 	}
 };
 
@@ -97,13 +91,10 @@ PostService.prototype.updatePost = async function (postId, postData) {
 			},
 			body: JSON.stringify(postData), // Convert post data to JSON
 		});
-		if (!response.ok) {
-			throw new Error("Failed to update post");
-		}
+
 		const updatedPost = await response.json(); // Parse response as JSON
 		return updatedPost;
 	} catch (error) {
-		console.error("Error updating post:", error);
 		return null; // Return null on failure
 	}
 };
@@ -114,12 +105,9 @@ PostService.prototype.deletePost = async function (postId) {
 		const response = await fetch(`${this.apiEndpoints.deletepost}/${postId}`, {
 			method: "DELETE",
 		});
-		if (!response.ok) {
-			throw new Error("Failed to delete post");
-		}
+
 		return true; // Return true if deletion is successful
 	} catch (error) {
-		console.error("Error deleting post:", error);
 		return false; // Return false on failure
 	}
 };
@@ -131,14 +119,13 @@ PostService.prototype.likePost = async function (postId) {
 			method: "POST",
 			body: JSON.stringify(postId),
 			headers: {
-				"Content-Type" : "application/json"
-			}
+				"Content-Type": "application/json",
+			},
 		});
 
 		const updatedPost = await response.json();
 		return updatedPost;
 	} catch (error) {
-		console.error("Error liking post:", error);
 		return null; // Return null on failure
 	}
 };
@@ -150,10 +137,10 @@ PostService.prototype.dislikePost = async function (postId) {
 			method: "POST",
 			body: JSON.stringify(postId),
 			headers: {
-				"Content-Type" : "application/json"
-			}
+				"Content-Type": "application/json",
+			},
 		});
-		
+
 		const updatedPost = await response.json();
 		return updatedPost;
 	} catch (error) {
