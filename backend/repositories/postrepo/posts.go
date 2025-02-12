@@ -39,7 +39,7 @@ func (p *PostsRepo) CreatePost(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err = p.post.CreatePost(&req)
+	post, err := p.post.CreatePost(&req)
 	if err != nil {
 		p.res.SetError(w, err, http.StatusInternalServerError)
 		return
@@ -47,7 +47,7 @@ func (p *PostsRepo) CreatePost(w http.ResponseWriter, r *http.Request) {
 
 	p.res.Err = false
 	p.res.Message = "Success"
-	p.res.Data = req
+	p.res.Data = post
 	p.res.WriteJSON(w, *p.res, http.StatusOK)
 }
 
@@ -58,11 +58,15 @@ func (p *PostsRepo) AddLike(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Extract form values
-	userID := r.FormValue("user_id")
-	postID := r.FormValue("post_id")
+	var req PostLike
 
-	post, err := p.post.AddLike(postID, userID)
+	err := json.NewDecoder(r.Body).Decode(&req)
+	if err != nil {
+		p.res.SetError(w, err, http.StatusInternalServerError)
+		return
+	}
+
+	post, err := p.post.AddLike(&req)
 	if err != nil {
 		p.res.SetError(w, err, http.StatusInternalServerError)
 		return

@@ -1,4 +1,4 @@
-import { PostService } from './postsservice.js';
+import { PostService } from "./postsservice.js";
 
 // API Endpoints
 window.API_ENDPOINTS = {
@@ -26,18 +26,17 @@ window.API_ENDPOINTS = {
 
 // ResData object
 window.RESDATA = {
-    userData: (() => {
-        try {
-            const data = localStorage.getItem('res');
-            return data ? JSON.parse(data) : null;
-        } catch (error) {
-            console.error("Error parsing localStorage data:", error);
-            return null;
-        }
-    })(),
-    profileImageElement: null
+	userData: (() => {
+		try {
+			const data = localStorage.getItem("res");
+			return data ? JSON.parse(data) : null;
+		} catch (error) {
+			console.error("Error parsing localStorage data:", error);
+			return null;
+		}
+	})(),
+	profileImageElement: null,
 };
-
 
 // Constants
 window.CONSTANTS = {
@@ -185,7 +184,7 @@ const likeState = {
 const postService = new PostService();
 
 // Handle like button click for both posts and comments
-const handleLike = async(e) => {
+const handleLike = async (e) => {
 	const button = e.currentTarget.closest(".like-button");
 	if (!button) return;
 	const isComment = button.hasAttribute("data-comment-id");
@@ -212,39 +211,43 @@ const handleLike = async(e) => {
 	// Simulate current user ID (in real app, get from auth)
 	if (!window.RESDATA?.userData) {
 		window.location.href = "http://localhost:4000/auth";
-		return
-	};
+		return;
+	}
 	const currentUserId = window.RESDATA.userData.user_id;
 
 	// Toggle like
 	if (likeData.likedBy.has(currentUserId)) {
-		const res = await postService.dislikePost(postId);
+		const res = await postService.dislikePost({
+			postId: postId,
+			UserId: currentUserId,
+		});
 		console.log("disliking post....");
 		console.log(res);
 
 		if (res.error) {
 			alert(res.message);
-			return
-		};
+			return;
+		}
 
-			likeData.count--;
-			likeData.likedBy.delete(currentUserId);
-			button.classList.remove("liked", "text-blue-600");
-		
+		likeData.count--;
+		likeData.likedBy.delete(currentUserId);
+		button.classList.remove("liked", "text-blue-600");
 	} else {
-		const res = await postService.likePost(postId);
+		const res = await postService.likePost({
+			PostId: postId,
+			UserId: currentUserId,
+		});
 		console.log("liking post ...");
 		console.log(res);
 
 		if (res.error) {
 			alert(res.message);
-			return
-		};
+			return;
+		}
 
-			likeData.count++;
-			likeData.likedBy.add(currentUserId);
-			button.classList.add("liked", "text-blue-600");
-		
+		likeData.count++;
+		likeData.likedBy.add(currentUserId);
+		button.classList.add("liked", "text-blue-600");
 	}
 
 	// Update UI
@@ -262,10 +265,10 @@ const handleLike = async(e) => {
 	// 	} likes:`,
 	// 	{ count: likeData.count, isLiked: likeData.likedBy.has(currentUserId) }
 	// );
-}
+};
 
 // Initialize
-const init = async() => {
+const init = async () => {
 	const postService = new PostService();
 	const posts = await postService.fetchPosts();
 
@@ -284,7 +287,7 @@ const init = async() => {
 
 	// Initial render
 	if (postsContainer) renderPosts();
-}
+};
 
 // Start the application
 document.addEventListener("DOMContentLoaded", init);

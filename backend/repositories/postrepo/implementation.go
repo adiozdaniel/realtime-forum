@@ -17,11 +17,11 @@ type Post struct {
 	PostAuthor   string    `json:"post_author"`
 	PostTitle    string    `json:"post_title"`
 	PostContent  string    `json:"post_content"`
-	PostImage    string    `json:"post_image, omitempty"`
-	PostVideo    string    `json:"post_video, omitempty"`
+	PostImage    string    `json:"post_image,omitempty"`
+	PostVideo    string    `json:"post_video,omitempty"`
 	PostCategory string    `json:"post_category"`
 	PostLikes    int       `json:"post_likes"`
-	HasComments  bool      `json:"post_hasComments`
+	HasComments  bool      `json:"post_hasComments"`
 	CreatedAt    time.Time `json:"created_at"`
 	UpdatedAt    time.Time `json:"updated_at"`
 }
@@ -37,11 +37,11 @@ func NewPostRepository(db *sql.DB) *PostRepository {
 }
 
 // CreatePost inserts a new post into the database
-func (r *PostRepository) CreatePost(post *Post) error {
+func (r *PostRepository) CreatePost(post *Post) (*Post, error) {
 	query := `INSERT INTO posts (post_id, user_id, post_author, post_title, post_content, post_image, post_video, post_category, post_likes, post_hasComments, created_at, updated_at)
 	          VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
 	_, err := r.DB.Exec(query, post.PostID, post.UserID, post.PostAuthor, post.PostTitle, post.PostContent, post.PostImage, post.PostVideo, post.PostCategory, post.PostLikes, post.HasComments, post.CreatedAt, post.UpdatedAt)
-	return err
+	return post, err
 }
 
 // GetPostByID retrieves a post by its ID
@@ -62,10 +62,10 @@ func (r *PostRepository) GetPostByID(id string) (*Post, error) {
 }
 
 // UpdatePost updates an existing post in the database
-func (r *PostRepository) UpdatePost(post *Post) error {
+func (r *PostRepository) UpdatePost(post *Post) (*Post, error) {
 	query := `UPDATE posts SET post_title = ?, post_content = ?, post_image = ?, post_video = ?, post_category = ?, post_likes = ?, post_hasComments = ?, updated_at = ? WHERE post_id = ?`
 	_, err := r.DB.Exec(query, post.PostTitle, post.PostContent, post.PostImage, post.PostVideo, post.PostCategory, post.PostLikes, post.HasComments, post.UpdatedAt, post.PostID)
-	return err
+	return post, err
 }
 
 // DeletePost removes a post from the database by ID
@@ -105,15 +105,15 @@ func (r *PostRepository) ListPosts() ([]*Post, error) {
 }
 
 // AddLike adds a like to a post
-func (r *PostRepository) AddLike(id string) error {
+func (r *PostRepository) AddLike(postlike *PostLike) (*PostLike, error) {
 	query := `UPDATE posts SET post_likes = post_likes + 1 WHERE post_id = ?`
-	_, err := r.DB.Exec(query, id)
-	return err
+	_, err := r.DB.Exec(query, postlike.PostID)
+	return postlike, err
 }
 
 // DisLike removes a like from a post
-func (r *PostRepository) DisLike(id string) error {
+func (r *PostRepository) DisLike(postdislike *PostLike) (*PostLike, error) {
 	query := `UPDATE posts SET post_likes = post_likes - 1 WHERE post_id = ?`
-	_, err := r.DB.Exec(query, id)
-	return err
+	_, err := r.DB.Exec(query, postdislike.PostID)
+	return postdislike, err
 }
