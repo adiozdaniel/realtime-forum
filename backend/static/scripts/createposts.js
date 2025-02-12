@@ -1,3 +1,5 @@
+import {PostService} from './postsservice.js'
+
 document.addEventListener('DOMContentLoaded', () => { 
     
     // Initialize Lucide icons 
@@ -20,6 +22,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const MAX_FILE_SIZE = 20 * 1024 * 1024; // 20MB in bytes 
     const ALLOWED_TYPES = ['image/jpeg', 'image/png', 'image/gif']; 
     const uploadError = document.getElementById('uploadError'); 
+
+	// Initialize PostService
+	const postService = new PostService;
     
     // Open modal 
     createPostBtn.addEventListener('click', () => { 
@@ -125,15 +130,14 @@ document.addEventListener('DOMContentLoaded', () => {
     }); 
 
     // Handle form submission 
-    form.addEventListener('submit', (e) => { 
+    form.addEventListener('submit', async (e) => { 
         e.preventDefault(); 
         const formData = { 
-            title: document.getElementById('postTitle').value, 
-            author: document.getElementById('postAuthor').value, 
-            category: document.getElementById('postCategory').value, 
-            content: document.getElementById('postContent').value, 
-            image: null, 
-            video: videoLink.value || null 
+            PostTitle: document.getElementById('postTitle').value,
+            PostCategory: document.getElementById('postCategory').value, 
+            PostContent: document.getElementById('postContent').value, 
+            PostImage: null, 
+            PostVideo: videoLink.value || null 
         }; 
 
         // Handle image data 
@@ -147,9 +151,13 @@ document.addEventListener('DOMContentLoaded', () => {
             }; 
         } 
 
-        console.log('Post Data:', formData); 
-
-        closeModal(); 
+		const res = await postService.createPost(formData);
+		
+		console.log(res);
+	
+			if (!res.error) {
+				closeModal(); 
+			}
     }); 
     
     function closeModal() { 

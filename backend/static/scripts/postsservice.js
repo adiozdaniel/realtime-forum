@@ -23,6 +23,9 @@ PostService.prototype.fetchPosts = async function () {
 
 // Method to create a new post
 PostService.prototype.createPost = async function (postData) {
+	console.log(postData);
+	console.log(this.userData);
+
 	if (!this.userData?.user_id) {
 		return {
 			error: true,
@@ -30,41 +33,45 @@ PostService.prototype.createPost = async function (postData) {
 		};
 	}
 
-	if (!postData?.title) {
+	if (!postData?.PostTitle) {
 		return {
 			error: true,
 			message: "Please provide a title for the post!",
 		};
 	}
 
-	if (!postData?.content) {
+	if (!postData?.PostContent) {
 		return {
 			error: true,
 			message: "Please provide a content for the post!",
 		};
 	}
 
-	if (!postData?.category) {
+	if (!postData?.PostCategory) {
 		return {
 			error: true,
 			message: "Please select a category for the post!",
 		};
 	}
 
-	const formData = new URLSearchParams();
-	formData.append("title", postData.title);
-	formData.append("content", postData.content);
-	formData.append("user_id", this.userData.user_id);
-	formData.append("category", postData.category);
-	formData.append("author", this.userData.first_name);
+	const formData = {
+		"post_title" : postData.PostTitle,
+		"post_content" : postData.PostContent,
+		"user_id" : this.userData.user_id,
+		"post_category" : postData.PostCategory,
+		"post_author" : this.userData.user_name
+	};
 
 	try {
 		const response = await fetch(this.apiEndpoints.createpost, {
 			method: "POST",
-			body: formData,
+			body: JSON.stringify(formData),
+			headers: {
+				"Content-Type": "application/json"
+			}
 		});
 
-		const newPost = await response.json(); // Parse response as JSON
+		const newPost = await response.json();
 		if (!response.ok) {
 			throw new Error("Failed to create post");
 		}
