@@ -114,4 +114,19 @@ func TestLogoutHandler(t *testing.T) {
 }
 
 func TestCheckAuth(t *testing.T) {
+	t.Run("missing session cookie", func(t *testing.T) {
+		r := make(map[string]*template.Template)
+		r["home.page.html"] = template.New("home.page.html")
+		tmplcach := &forumapp.TemplateCache{Pages: r}
+		data := []byte(`{"username": "John Doe"}`)
+
+		authrepo := &AuthRepo{app: &forumapp.ForumApp{Tmpls: tmplcach}, res: &shared.JSONRes{}, user: &UserService{}, shared: &shared.SharedConfig{}, Sessions: &Sessions{}}
+
+		req := httptest.NewRequest(http.MethodPost, "/api/auth/check", bytes.NewBuffer(data))
+		w := httptest.NewRecorder()
+		authrepo.CheckAuth(w, req)
+		if _, err := req.Cookie("session_cookie"); err != http.ErrNoCookie {
+			t.Errorf("expected %d got %d", http.ErrNoCookie, w.Code)
+		}
+	})
 }
