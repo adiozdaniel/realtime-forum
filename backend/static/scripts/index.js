@@ -1,4 +1,5 @@
 import { PostService } from "./postsservice.js";
+import { formatTimeAgo } from "./timestamps.js";
 
 // API Endpoints
 window.API_ENDPOINTS = {
@@ -274,6 +275,8 @@ const init = async () => {
 
 	// Initialize like state from SAMPLE_POSTS
 	SAMPLE_POSTS.forEach((post) => {
+		post.post_timeAgo = formatTimeAgo(post.created_at);
+
 		likeState.posts[post.post_id] = {
 			count: post.post_likes,
 			likedBy: new Set(),
