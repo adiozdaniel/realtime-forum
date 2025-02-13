@@ -210,7 +210,7 @@ const handleLike = async (e) => {
 
 	// Simulate current user ID (in real app, get from auth)
 	if (!window.RESDATA?.userData) {
-		window.location.href = "http://localhost:4000/auth";
+		window.location.href = "/auth";
 		return;
 	}
 	const currentUserId = window.RESDATA.userData.user_id;

@@ -51,7 +51,7 @@ allCategoriesBtn.addEventListener('click', (e) => {
 if (profileBtn)
 profileBtn.addEventListener('click', (e) => {
     e.stopPropagation();
-    window.location.href = "http://localhost:4000/api/profile"
+    window.location.href = "/profile"
 });
 
 // Close dropdown when clicking outside
