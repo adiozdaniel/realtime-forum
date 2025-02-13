@@ -1,4 +1,4 @@
-import { renderPosts, SAMPLE_POSTS } from "./index.js";
+import { PostManager, SAMPLE_POSTS } from "./index.js";
 import { sidebar } from "./sidebar.js";
 // DOM Elements
 const menuToggleBtn = document.querySelector("#menuToggle");
@@ -6,101 +6,110 @@ const searchInput = document.querySelector("#searchInput");
 const darkModeToggle = document.querySelector("#darkModeToggle");
 const authButton = document.querySelector(".sign-in-button");
 
-// Toggle mobile menu
-function toggleMobileMenu() {
-	const isVisible = sidebar.style.display === "block";
-	sidebar.style.display = isVisible ? "none" : "block";
-}
+const postManager = new PostManager()
 
-// Search functionality
-function handleSearch(e) {
-	const searchTerm = e.target.value.toLowerCase();
-	const filteredPosts = SAMPLE_POSTS.filter(
-		(post) =>
-			post.title.toLowerCase().includes(searchTerm) ||
-			post.excerpt.toLowerCase().includes(searchTerm)
-	);
-	renderPosts(filteredPosts);
-}
+class Header {
+	constructor() { }
 
-// Toggle dark mode
-function toggleDarkMode() {
-	document.body.classList.toggle("dark-mode");
-	localStorage.setItem(
-		"darkMode",
-		document.body.classList.contains("dark-mode")
-	);
-}
-async function signOutUser() {
-	try {
-		let response = await fetch(window.API_ENDPOINTS.logout, {
-			method: "POST",
-			credentials: "include",
-		});
+	// Toggle mobile menu
+	toggleMobileMenu = () => {
+		const isVisible = sidebar.style.display === "block";
+		sidebar.style.display = isVisible ? "none" : "block";
+	}
 
-		if (!response.ok) console.log("Not logged in");
+	// Search functionality
+	handleSearch(e) {
+		const searchTerm = e.target.value.toLowerCase();
+		const filteredPosts = SAMPLE_POSTS.filter(
+			(post) =>
+				post.title.toLowerCase().includes(searchTerm) ||
+				post.excerpt.toLowerCase().includes(searchTerm)
+		);
+		postManager.renderPosts(filteredPosts);
+	}
 
-		if (response.ok) {
-			console.log("User signed out successfully.");
+	// Toggle dark mode
+	toggleDarkMode() {
+		document.body.classList.toggle("dark-mode");
+		localStorage.setItem(
+			"darkMode",
+			document.body.classList.contains("dark-mode")
+		);
+	}
+
+	async signOutUser() {
+		try {
+			let response = await fetch(window.API_ENDPOINTS.logout, {
+				method: "POST",
+				credentials: "include",
+			});
+
+			if (!response.ok) console.log("Not logged in");
+
+			if (response.ok) {
+				console.log("User signed out successfully.");
+			}
+
+			return response.status === 200;
+		} catch (error) {
+			console.error("Error signing out:", error);
+		}
+	}
+
+	async isSignedIn() {
+		if (!authButton) {
+			console.error("Auth button not found.");
+			return;
 		}
 
-		return response.status === 200;
-	} catch (error) {
-		console.error("Error signing out:", error);
+		try {
+			let response = await fetch(window.API_ENDPOINTS.check, {
+				credentials: "include",
+			});
+			if (!response.ok) {
+				authButton.textContent = "Sign In";
+				throw new Error("Not signed in");
+			}
+			return true;
+		} catch (error) {
+			return false;
+		}
 	}
-}
 
-async function isSignedIn() {
-	if (!authButton) {
-		console.error("Auth button not found.");
-		return;
-	}
+	// Initialize function
+	init() {
+		authButton.textContent = this.isSignedIn() ? "Sign Out" : "Sign In";
 
-	try {
-		let response = await fetch(window.API_ENDPOINTS.check, {
-			credentials: "include",
-		});
-		if (!response.ok) {
+		// Automatically log out if on /auth
+		if (window.location.pathname === "/auth") {
+			this.signOutUser();
 			authButton.textContent = "Sign In";
-			throw new Error("Not signed in");
 		}
-		return true;
-	} catch (error) {
-		return false;
+
+		// Event listeners
+		menuToggleBtn?.addEventListener("click", this.toggleMobileMenu);
+		searchInput?.addEventListener("input", this.handleSearch);
+		darkModeToggle?.addEventListener("click", this.toggleDarkMode);
+		// Check for saved dark mode preference
+		const savedDarkMode = localStorage.getItem("darkMode") === "true";
+		if (savedDarkMode) {
+			document.body.classList.add("dark-mode");
+		}
+
+		// Update profile image
+		// if (
+		// 	window.RESDATA.userData &&
+		// 	window.RESDATA.userData.image &&
+		// 	window.RESDATA.userData.first_name
+		// ) {
+		// 	window.RESDATA.profileImageElement.src = window.RESDATA.userData.image;
+		// 	window.RESDATA.profileImageElement.alt = window.RESDATA.userData.first_name;
+		// }
 	}
+
 }
-
-// Initialize function
-function init() {
-	// handleResize();
-	authButton.textContent = isSignedIn() ? "Sign Out" : "Sign In";
-
-	// Automatically log out if on /auth
-	if (window.location.pathname === "/auth") {
-		signOutUser();
-		authButton.textContent = "Sign In";
-	}
-
-	// Event listeners
-	menuToggleBtn?.addEventListener("click", toggleMobileMenu);
-	searchInput?.addEventListener("input", handleSearch);
-	darkModeToggle?.addEventListener("click", toggleDarkMode);
-	// Check for saved dark mode preference
-	const savedDarkMode = localStorage.getItem("darkMode") === "true";
-	if (savedDarkMode) {
-		document.body.classList.add("dark-mode");
-	}
-
-	// Update profile image
-	// if (
-	// 	window.RESDATA.userData &&
-	// 	window.RESDATA.userData.image &&
-	// 	window.RESDATA.userData.first_name
-	// ) {
-	// 	window.RESDATA.profileImageElement.src = window.RESDATA.userData.image;
-	// 	window.RESDATA.profileImageElement.alt = window.RESDATA.userData.first_name;
-	// }
-}
-
 // Start the application
-document.addEventListener("DOMContentLoaded", init);
+document.addEventListener("DOMContentLoaded", () => {
+	const header = new Header;
+	header.init();
+});
