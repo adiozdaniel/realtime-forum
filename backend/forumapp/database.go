@@ -93,6 +93,7 @@ func (tm *TableManager) CreateTables() error {
 				comment_id TEXT PRIMARY KEY,
 				post_id TEXT NOT NULL,
 				user_id TEXT NOT NULL,
+				user_name TEXT NOT NULL,
 				parent_comment_id TEXT,
 				comment TEXT NOT NULL,
 				created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
