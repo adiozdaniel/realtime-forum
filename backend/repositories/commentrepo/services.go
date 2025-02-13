@@ -16,36 +16,48 @@ func NewCommentService(comment CommentInterface) *CommentService {
 	return &CommentService{comment, shared.NewSharedConfig()}
 }
 
-func (c *CommentService) CreateComment(comment *Comment) error {
-	if comment.Comment == "" {
-		return errors.New("comment cannot be empty")
+func (c *CommentService) CreateComment(comment *Comment) ( *Comment, error) {
+	if comment.Content == "" {
+		return nil, errors.New("comment cannot be empty")
 	}
 	if comment.UserID == "" {
-		return errors.New("user ID cannot be empty")
+		return nil, errors.New("user ID cannot be empty")
 	}
 	if comment.PostID == "" {
-		return errors.New("post ID cannot be empty")
+		return nil, errors.New("post ID cannot be empty")
 	}
 
 	return c.com.CreateComment(comment)
 }
 
-func (s *CommentService) GetCommentByID(id string) (*Comment, error) {
-	return s.com.GetCommentByID(id)
+func (s *CommentService) GetCommentByID(comment *CommentByIDRequest) (*Comment, error) {
+	return s.com.GetCommentByID(comment)
 }
 
-func (s *CommentService) DeleteComment(id string) error {
-	return s.com.DeleteComment(id)
+func (s *CommentService) DeleteComment(comment *CommentByIDRequest) error {
+	return s.com.DeleteComment(comment)
 }
 
-func (s *CommentService) ListCommentsByPost(postID string) ([]*Comment, error) {
-	return s.com.ListCommentsByPost(postID)
+func (s *CommentService) ListCommentsByPost(comment *CommmentRequest) ([]*Comment, error) {
+	if comment.PostID == "" {
+		return nil, errors.New("comment_id cannot be empty")
+	}
+	
+	return s.com.ListCommentsByPost(comment)
 }
 
-func (s *CommentService) AddLike(id string) error {
-	return s.com.AddLike(id)
+func (s *CommentService) AddLike(like *CommentByIDRequest) error {
+	if like.CommentID == "" {
+		return errors.New("comment_id cannot be empty")
+	}
+
+	return s.com.AddLike(like)
 }
 
-func (s *CommentService) DisLike(id string) error {
-	return s.com.DisLike(id)
+func (s *CommentService) DisLike(like *CommentByIDRequest) error {
+	if like.CommentID == "" {
+		return errors.New("comment_id cannot be empty")
+	}
+	
+	return s.com.DisLike(like)
 }
