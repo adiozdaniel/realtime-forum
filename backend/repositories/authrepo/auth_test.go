@@ -96,6 +96,21 @@ func TestLogoutHandler(t *testing.T) {
 			t.Errorf("expected %d got %d", http.ErrNoCookie, w.Code)
 		}
 	})
+	t.Run("method", func(t *testing.T) {
+		r := make(map[string]*template.Template)
+		r["home.page.html"] = template.New("home.page.html")
+		tmplcach := &forumapp.TemplateCache{Pages: r}
+		data := []byte(`{"username": "John Doe"}`)
+
+		authrepo := &AuthRepo{app: &forumapp.ForumApp{Tmpls: tmplcach}, res: &shared.JSONRes{}, user: &UserService{}, shared: &shared.SharedConfig{}, Sessions: &Sessions{}}
+
+		req := httptest.NewRequest(http.MethodGet, "/api/auth/logout", bytes.NewBuffer(data))
+		w := httptest.NewRecorder()
+		authrepo.LogoutHandler(w, req)
+		if w.Code != http.StatusMethodNotAllowed {
+			t.Errorf("expected %d got %d", http.StatusMethodNotAllowed, w.Code)
+		}
+	})
 }
 
 func TestCheckAuth(t *testing.T) {
