@@ -19,9 +19,14 @@ func NewPostService(post PostRepo) *PostService {
 }
 
 func (p *PostService) CreatePost(post *Post) (*Post, error) {
+	if post.UserID == "" {
+		return nil, errors.New("user ID cannot be empty")
+	}
+
 	if post.PostTitle == "" {
 		return nil, errors.New("post title cannot be empty")
 	}
+	
 	if post.PostContent == "" {
 		return nil, errors.New("post content cannot be empty")
 	}
@@ -29,10 +34,7 @@ func (p *PostService) CreatePost(post *Post) (*Post, error) {
 	post.PostID, _ = p.shared.GenerateUUID()
 	post.CreatedAt = time.Now()
 	post.UpdatedAt = time.Now()
-
-	if post.UserID == "" {
-		return nil, errors.New("user ID cannot be empty")
-	}
+	post.HasComments = true
 
 	return p.post.CreatePost(post)
 }
