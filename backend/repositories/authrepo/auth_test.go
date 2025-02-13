@@ -48,6 +48,21 @@ func TestLoginHandler(t *testing.T) {
 			t.Errorf("expected %d got %d", http.StatusMethodNotAllowed, w.Code)
 		}
 	})
+	t.Run("incorrrect or malformed inputs", func(t *testing.T) {
+		r := make(map[string]*template.Template)
+		r["home.page.html"] = template.New("home.page.html")
+		tmplcach := &forumapp.TemplateCache{Pages: r}
+		data := []byte(`{"username": "John Doe"}`)
+
+		authrepo := &AuthRepo{app: &forumapp.ForumApp{Tmpls: tmplcach}, res: &shared.JSONRes{}, user: &UserService{}, shared: &shared.SharedConfig{}, Sessions: &Sessions{}}
+
+		req := httptest.NewRequest(http.MethodPost, "/api/auth/login", bytes.NewBuffer(data))
+		w := httptest.NewRecorder()
+		authrepo.LoginHandler(w, req)
+		if w.Code != http.StatusUnauthorized {
+			t.Errorf("expected %d got %d", http.StatusUnauthorized, w.Code)
+		}
+	})
 }
 
 func TestLogoutHandler(t *testing.T) {
