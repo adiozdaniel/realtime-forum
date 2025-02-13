@@ -39,6 +39,15 @@ func TestRegisterHandler(t *testing.T) {
 }
 
 func TestLoginHandler(t *testing.T) {
+	t.Run("method", func(t *testing.T) {
+		authrepo := &AuthRepo{app: &forumapp.ForumApp{}, res: &shared.JSONRes{}, user: &UserService{}, shared: &shared.SharedConfig{}, Sessions: &Sessions{}}
+		req := httptest.NewRequest(http.MethodPost, "/api/auth/login", nil)
+		w := httptest.NewRecorder()
+		authrepo.LoginHandler(w, req)
+		if req.Method != http.MethodPost {
+			t.Errorf("expected %d got %d", http.StatusMethodNotAllowed, w.Code)
+		}
+	})
 }
 
 func TestLogoutHandler(t *testing.T) {
