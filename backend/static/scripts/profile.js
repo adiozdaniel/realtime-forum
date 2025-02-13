@@ -24,7 +24,6 @@ document.addEventListener('DOMContentLoaded', () => {
     };
     // DOM Elements
     const elements = {
-        backButton: document.getElementById('backButton'),
         profileImage: document.getElementById('profileImage'),
         imageUpload: document.getElementById('imageUpload'),
         bioText: document.getElementById('bioText'),
@@ -52,9 +51,6 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     // Event Listeners
     function setupEventListeners() {
-        elements.backButton.addEventListener('click', function(event) {
-            window.location.href = "http://localhost:4000/"
-        });
         // Dark Mode Toggle
         elements.darkModeToggle.addEventListener('click', toggleDarkMode);
         // Image Upload
