@@ -17,7 +17,7 @@ window.API_ENDPOINTS = {
 	dislikepost: "/api/posts/dislike",
 
 	// comments ENDPOINTS
-	allcomments: "/api/comments",
+	listcommbypost: "/api/comments",
 	createcomment: "/api/comments/create",
 	deletecomment: "/api/comments/delete",
 	updatecomment: "/api/comments/update",
@@ -89,7 +89,7 @@ const SAMPLE_POSTS = [
 ];
 
 // Import comment functions
-import { loadComments, handleCommentSubmit } from "./comment.js";
+import { loadComments, handleCommentSubmit, fetchComments } from "./comment.js";
 
 /// Modified createPostHTML function to include liked state
 function createPostHTML(post) {
@@ -272,6 +272,8 @@ const init = async () => {
 	const postList = Array.isArray(posts) ? posts : posts.data;
 
 	postList.forEach((post) => SAMPLE_POSTS.push(post));
+
+	fetchComments();
 
 	// Initialize like state from SAMPLE_POSTS
 	SAMPLE_POSTS.forEach((post) => {
