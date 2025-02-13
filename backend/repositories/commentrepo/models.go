@@ -1,18 +1,30 @@
 package commentrepo
 
 import (
+	"time"
+
 	"forum/forumapp"
 	"forum/repositories/shared"
-	"time"
 )
+
+// CommentRequest represents comment request
+type CommmentRequest struct {
+	PostID string `json:"post_id"`
+}
+
+// CommentByIDRequest represents comment like requests
+type CommentByIDRequest struct {
+	CommentID string `json:"comment_id"`
+}
 
 // Comment represents a comment in the database
 type Comment struct {
 	CommentID       string    `json:"comment_id"`
 	PostID          string    `json:"post_id"`
 	UserID          string    `json:"user_id"`
+	Author          string    `json:"user_name"`
 	ParentCommentID string    `json:"parent_comment_id,omitempty"`
-	Comment         string    `json:"comment"`
+	Content         string    `json:"content"`
 	Likes           int       `json:"likes"`
 	CreatedAt       time.Time `json:"created_at"`
 	UpdatedAt       time.Time `json:"updated_at"`
