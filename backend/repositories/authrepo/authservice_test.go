@@ -25,4 +25,10 @@ func TestRegister(t *testing.T) {
 }
 
 func TestLogin(t *testing.T) {
+	userserv := &UserService{user: &UserRepository{DB: &sql.DB{}}, shared: &shared.SharedConfig{}}
+	// user := &User{Email: "", Password: "Naaahshshs786$", UserID: "4", UserName: "Abas", CreatedAt: time.Now(), UpdatedAt: time.Now()}
+	_, err := userserv.Login("edu1@gmail.com", "")
+	if err.Error() != "email or password cannot be empty" {
+		t.Errorf("expected: %v Got %v", errors.New("email or password cannot be empty"), err)
+	}
 }
