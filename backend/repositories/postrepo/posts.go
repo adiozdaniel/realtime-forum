@@ -70,7 +70,7 @@ func (p *PostsRepo) AddLike(w http.ResponseWriter, r *http.Request) {
 	// Call the AddLike method to add a like to the post
 	post, err := p.post.AddLike(&req)
 	if err != nil {
-		p.res.SetError(w, fmt.Errorf("failed to add like to post: %v", err), http.StatusInternalServerError)
+		p.res.SetError(w, fmt.Errorf("failed to add like to post: %v", err), http.StatusBadRequest)
 		return
 	}
 
