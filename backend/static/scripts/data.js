@@ -23,18 +23,7 @@ const API_ENDPOINTS = {
 };
 
 // ResData object
-const RESDATA = {
-    userData: (() => {
-        try {
-            const data = localStorage.getItem("res");
-            return data ? JSON.parse(data) : null;
-        } catch (error) {
-            console.error("Error parsing localStorage data:", error);
-            return null;
-        }
-    })(),
-    profileImageElement: null,
-};
+let userData;
 
 // Constants
 const CONSTANTS = {
@@ -141,7 +130,7 @@ const SAMPLE_COMMENTS = {
 };
 
 export {
-    API_ENDPOINTS,RESDATA, SAMPLE_POSTS,
+    API_ENDPOINTS, userData, SAMPLE_POSTS,
     CONSTANTS, commentLikeState, postLikeState,
     SAMPLE_COMMENTS
 };
