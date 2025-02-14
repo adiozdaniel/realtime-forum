@@ -12,7 +12,7 @@ Authmiddleware.prototype.authChecker = async function(){
     const isAuthenticated = await this.authService.isAuthenticated();
     
     if (isAuthenticated.error) console.log(isAuthenticated.message);
-    if (isAuthenticated?.data) userData = isAuthenticated.data;
+    if (isAuthenticated?.data) userData.data = isAuthenticated.data;
 }
 
 document.addEventListener("DOMContentLoaded", async() => {

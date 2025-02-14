@@ -23,7 +23,9 @@ const API_ENDPOINTS = {
 };
 
 // userData holds authenticated user's data
-let userData;
+const userData = () => {
+    data : null
+}
 
 // Constants
 const CONSTANTS = {
