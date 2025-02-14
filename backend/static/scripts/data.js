@@ -22,7 +22,7 @@ const API_ENDPOINTS = {
     dislikecomment: "/api/comments/dislike",
 };
 
-// ResData object
+// userData holds authenticated user's data
 let userData;
 
 // Constants
