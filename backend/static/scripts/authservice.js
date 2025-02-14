@@ -1,4 +1,4 @@
-import {API_ENDPOINTS, userData} from "./data.js";
+import {API_ENDPOINTS} from "./data.js";
 
 // AuthService class for handling authentication-related API requests
 class AuthService {
@@ -25,18 +25,15 @@ AuthService.prototype.login = async function (credentials) {
 			body: JSON.stringify(credentials),
 		});
 
-		const res = response.json();
-		userData = res;
-
-		return res;
+		return response.json();
 	} catch (error) {
 		return error;
 	}
 };
 
 // Method to register a new user
-AuthService.prototype.register = async function (userData) {
-	if (!userData?.email || !userData?.password || !userData?.user_name) {
+AuthService.prototype.register = async function (formData) {
+	if (!formData?.email || !formData?.password || !formData?.user_name) {
 		return (data = {
 			error: true,
 			message: "Please provide all required fields!",
@@ -46,16 +43,13 @@ AuthService.prototype.register = async function (userData) {
 	try {
 		const response = await fetch(this.apiEndpoints.register, {
 			method: "POST",
-			body: JSON.stringify(userData),
+			body: JSON.stringify(formData),
 			headers: {
 				"Content-Type": "application/json",
 			},
 		});
 
-		const res = response.json();
-		userData = res;
-
-		return res;
+		return response.json();
 	} catch (error) {
 		return error;
 	}
