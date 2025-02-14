@@ -1,8 +1,9 @@
+import {API_ENDPOINTS, userData} from "./data.js";
+
 // AuthService class for handling authentication-related API requests
 class AuthService {
 	constructor() {
-		this.apiEndpoints = window.API_ENDPOINTS;
-		this.userData = window.RESDATA?.userData || null;
+		this.apiEndpoints = API_ENDPOINTS;
 	}
 }
 
@@ -24,11 +25,12 @@ AuthService.prototype.login = async function (credentials) {
 			body: JSON.stringify(credentials),
 		});
 
-		localStorage.setItem('res', JSON.stringify(response));
+		const res = response.json();
+		userData = res;
 
-		return response.json();
+		return res;
 	} catch (error) {
-		throw new Error(response.message || "Failed to log in");
+		return error;
 	}
 };
 
@@ -50,11 +52,12 @@ AuthService.prototype.register = async function (userData) {
 			},
 		});
 
-		localStorage.setItem('res', JSON.stringify(response));
+		const res = response.json();
+		userData = res;
 
-		return response.json();
+		return res;
 	} catch (error) {
-		throw new Error(response.message || "Failed to register");
+		return error;
 	}
 };
 
@@ -67,7 +70,7 @@ AuthService.prototype.logout = async function () {
 
 		return response.json();
 	} catch (error) {
-		throw new Error(response.message || "Failed to log out");
+		return error;
 	}
 };
 
@@ -80,9 +83,7 @@ AuthService.prototype.isAuthenticated = async function () {
 
 		return response.json();
 	} catch (error) {
-		throw new Error(
-			response.message || "Failed to check authentication status"
-		);
+		return error;
 	}
 };
 
