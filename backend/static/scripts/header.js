@@ -65,9 +65,6 @@ Header.prototype.signOutUser = async function() {
 
 // Initialize function
 Header.prototype.init = function() {
-	console.log(userData.data);
-	this.authButton.textContent = userData.data ? "Sign Out" : "Sign In";
-
 	// Automatically log out if on /auth
 	if (window.location.pathname === "/auth") {
 		this.signOutUser();

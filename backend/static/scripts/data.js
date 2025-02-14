@@ -23,9 +23,17 @@ const API_ENDPOINTS = {
 };
 
 // userData holds authenticated user's data
-const userData = () => {
-    data : null
-}
+const userData = {
+    data:(() => {
+        try {
+            const user = localStorage.getItem('userdata');
+            return user ? JSON.parse(user) : null;
+        } catch (error) {
+            console.error("Error retrieving user data:", error);
+            return null;
+        }
+    })()
+};
 
 // Constants
 const CONSTANTS = {

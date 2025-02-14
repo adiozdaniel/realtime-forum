@@ -1,9 +1,9 @@
 import { AuthService } from "./authservice.js"
-import { userData } from "./data.js";
 
 class Authmiddleware {
     constructor(){
         this.authService = new AuthService();
+        this.authButton = document.querySelector(".sign-in-button");
     }
 }
 
@@ -12,11 +12,13 @@ Authmiddleware.prototype.authChecker = async function(){
     const isAuthenticated = await this.authService.isAuthenticated();
     
     if (isAuthenticated.error) console.log(isAuthenticated.message);
-    if (isAuthenticated?.data) userData.data = isAuthenticated.data;
+
+    if (isAuthenticated?.data) {
+        localStorage.setItem('userdata', isAuthenticated.data);
+        this.authButton.textContent = isAuthenticated.data ? "Sign Out" : "Sign In";
+    };
 }
 
-document.addEventListener("DOMContentLoaded", async() => {
-    const authmiddleware = new Authmiddleware();
+const authmiddleware = new Authmiddleware();
 
-    await authmiddleware.authChecker();
-});
+await authmiddleware.authChecker();
