@@ -5,6 +5,8 @@
  * See the LICENSE file in the root directory of this source tree.
  */
 
+document.addEventListener("DOMContentLoaded", () => lucide.createIcons());
+
 (function (a, i) {
 	typeof exports == "object" && typeof module < "u"
 		? i(exports)
