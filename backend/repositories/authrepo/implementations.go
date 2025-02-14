@@ -41,11 +41,10 @@ func (r *UserRepository) DeleteUser(id string) error {
 	return err
 }
 
-func (r *UserRepository) GetUserByID(id string) (*User, error) {
+func (r *UserRepository) GetUserByID(user *User) (*User, error) {
 	query := `SELECT user_id, email, password, user_name, image, role, created_at, updated_at FROM users WHERE user_id = ?`
-	row := r.DB.QueryRow(query, id)
+	row := r.DB.QueryRow(query, user.UserID)
 
-	user := &User{}
 	err := row.Scan(&user.UserID, &user.Email, &user.Password, &user.UserName, &user.Image, &user.Role, &user.CreatedAt, &user.UpdatedAt)
 	if err != nil {
 		return nil, err

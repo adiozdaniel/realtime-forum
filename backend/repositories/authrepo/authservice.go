@@ -66,3 +66,11 @@ func (u *UserService) Login(email, password string) (*User, error) {
 
 	return user, nil
 }
+
+func (u *UserService) GetUserByID(user *User) (*User, error) {
+	if user.UserID == "" {
+		return nil, errors.New("bad request")
+	}
+
+	return u.user.GetUserByID(user)
+}

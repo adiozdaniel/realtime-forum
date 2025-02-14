@@ -151,25 +151,25 @@ func (h *AuthRepo) CheckAuth(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Check if the session exists
-	var found bool
-	h.Sessions.Sess.Range(func(_, value interface{}) bool {
-		if token, ok := value.(*http.Cookie); ok && token.Value == cookie.Value {
-			found = true
-			return false // Stop iteration
-		}
-		return true
-	})
-
-	if !found {
+	// Check if session exists in the map
+	_, exists := h.Sessions.Sess.Load(cookie.Value)
+	if !exists {
 		h.res.SetError(w, errors.New("not logged in: invalid session"), http.StatusUnauthorized)
+		return
+	}
+
+	// Retrieve user data
+	req := User{UserID: cookie.Value}
+	user, err := h.user.GetUserByID(&req)
+	if err != nil {
+		h.res.SetError(w, errors.New("oops, something went wrong"), http.StatusInternalServerError)
 		return
 	}
 
 	// User is authenticated
 	h.res.Err = false
 	h.res.Message = "User is logged in"
-	h.res.Data = map[string]bool{"signedIn": true}
+	h.res.Data = user
 
 	if err := h.res.WriteJSON(w, *h.res, http.StatusOK); err != nil {
 		h.res.SetError(w, err, http.StatusInternalServerError)
