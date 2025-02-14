@@ -1,4 +1,5 @@
-import { handleLike } from "./index.js";
+import { CommentService } from "./commentservice.js";
+import { handleLike, SAMPLE_POSTS } from "./index.js";
 
 const likeState = {
     comments: {}
@@ -269,5 +270,25 @@ document.addEventListener('click', (e) => {
     });
 });
 
+const commentService = new CommentService();
+
+async function fetchComments() {
+    for (const post of SAMPLE_POSTS) {
+        try {
+            const comments = await commentService.listCommentsByPost(post.post_id);
+            console.log(comments);
+
+            if (comments?.error) {
+                console.log(comments.message);
+                continue;
+            }
+
+            post.post_comments = comments.data || [];
+        } catch (error) {
+            console.error("Error fetching comments for post:", post.post_id, error);
+        }
+    }
+}
+
 // Export the functions
-export { loadComments, handleCommentSubmit };
+export { fetchComments, loadComments, handleCommentSubmit };
