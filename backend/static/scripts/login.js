@@ -1,5 +1,5 @@
 import { AuthService } from "./authservice.js";
-import { CONSTANTS, userData } from "./data.js";
+import { CONSTANTS } from "./data.js";
 
 class AuthHandler {
 
@@ -108,7 +108,6 @@ AuthHandler.prototype.handleLogin = async function (e) {
 
 	if (response?.data) {
 		console.log("Login successful:", response.message);
-		userData.data = response.data;
         window.location.href = "/";
 	} else {
         console.error("Login failed:", response.message || "Unknown error");
