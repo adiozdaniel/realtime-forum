@@ -1,113 +1,90 @@
-import { PostManager, SAMPLE_POSTS } from "./index.js";
-import { sidebar } from "./sidebar.js";
-// DOM Elements
-const menuToggleBtn = document.querySelector("#menuToggle");
-const searchInput = document.querySelector("#searchInput");
-const darkModeToggle = document.querySelector("#darkModeToggle");
-const authButton = document.querySelector(".sign-in-button");
+import { API_ENDPOINTS, userData } from "./data.js";
+// import { PostManager, SAMPLE_POSTS } from "./index.js";
+// import { sidebar } from "./sidebar.js";
 
-const postManager = new PostManager()
+// const postManager = new PostManager()
 
 class Header {
-	constructor() { }
+	constructor() {
+		this.endpoints = API_ENDPOINTS;
 
-	// Toggle mobile menu
-	toggleMobileMenu = () => {
-		const isVisible = sidebar.style.display === "block";
-		sidebar.style.display = isVisible ? "none" : "block";
+		// DOM Elements
+		this.menuToggleBtn = document.querySelector("#menuToggle");
+		this.searchInput = document.querySelector("#searchInput");
+		this.darkModeToggle = document.querySelector("#darkModeToggle");
+		this.authButton = document.querySelector(".sign-in-button");
 	}
-
-	// Search functionality
-	handleSearch(e) {
-		const searchTerm = e.target.value.toLowerCase();
-		const filteredPosts = SAMPLE_POSTS.filter(
-			(post) =>
-				post.title.toLowerCase().includes(searchTerm) ||
-				post.excerpt.toLowerCase().includes(searchTerm)
-		);
-		postManager.renderPosts(filteredPosts);
-	}
-
-	// Toggle dark mode
-	toggleDarkMode() {
-		document.body.classList.toggle("dark-mode");
-		localStorage.setItem(
-			"darkMode",
-			document.body.classList.contains("dark-mode")
-		);
-	}
-
-	async signOutUser() {
-		try {
-			let response = await fetch(window.API_ENDPOINTS.logout, {
-				method: "POST",
-				credentials: "include",
-			});
-
-			if (!response.ok) console.log("Not logged in");
-
-			if (response.ok) {
-				console.log("User signed out successfully.");
-			}
-
-			return response.status === 200;
-		} catch (error) {
-			console.error("Error signing out:", error);
-		}
-	}
-
-	async isSignedIn() {
-		if (!authButton) {
-			console.error("Auth button not found.");
-			return;
-		}
-
-		try {
-			let response = await fetch(window.API_ENDPOINTS.check, {
-				credentials: "include",
-			});
-			if (!response.ok) {
-				authButton.textContent = "Sign In";
-				throw new Error("Not signed in");
-			}
-			return true;
-		} catch (error) {
-			return false;
-		}
-	}
-
-	// Initialize function
-	init() {
-		authButton.textContent = this.isSignedIn() ? "Sign Out" : "Sign In";
-
-		// Automatically log out if on /auth
-		if (window.location.pathname === "/auth") {
-			this.signOutUser();
-			authButton.textContent = "Sign In";
-		}
-
-		// Event listeners
-		menuToggleBtn?.addEventListener("click", this.toggleMobileMenu);
-		searchInput?.addEventListener("input", this.handleSearch);
-		darkModeToggle?.addEventListener("click", this.toggleDarkMode);
-		// Check for saved dark mode preference
-		const savedDarkMode = localStorage.getItem("darkMode") === "true";
-		if (savedDarkMode) {
-			document.body.classList.add("dark-mode");
-		}
-
-		// Update profile image
-		// if (
-		// 	window.RESDATA.userData &&
-		// 	window.RESDATA.userData.image &&
-		// 	window.RESDATA.userData.first_name
-		// ) {
-		// 	window.RESDATA.profileImageElement.src = window.RESDATA.userData.image;
-		// 	window.RESDATA.profileImageElement.alt = window.RESDATA.userData.first_name;
-		// }
-	}
-
 }
+
+// Toggle mobile menu
+Header.prototype.toggleMobileMenu =  function() {
+	// const isVisible = sidebar.style.display === "block";
+	// sidebar.style.display = isVisible ? "none" : "block";
+}
+
+// Search functionality
+Header.prototype.handleSearch = (e) => {
+	// const searchTerm = e.target.value.toLowerCase();
+	// const filteredPosts = SAMPLE_POSTS.filter(
+	// 	(post) =>
+	// 		post.title.toLowerCase().includes(searchTerm) ||
+	// 		post.excerpt.toLowerCase().includes(searchTerm)
+	// );
+	// postManager.renderPosts(filteredPosts);
+}
+
+// Toggle dark mode
+Header.prototype.toggleDarkMode = function() {
+	document.body.classList.toggle("dark-mode");
+	localStorage.setItem(
+		"darkMode",
+		document.body.classList.contains("dark-mode")
+	);
+}
+
+Header.prototype.signOutUser = async function() {
+	try {
+		let response = await fetch(this.endpoints.logout, {
+			method: "POST",
+			credentials: "include",
+		});
+
+		if (response.error) {
+			console.log()
+		}
+
+		if (response.ok) {
+			console.log("User signed out successfully.");
+		}
+
+		return response.status === 200;
+	} catch (error) {
+		console.error("Error signing out:", error);
+	}
+}
+
+// Initialize function
+Header.prototype.init = function() {
+	console.log(userData.data);
+	this.authButton.textContent = userData.data ? "Sign Out" : "Sign In";
+
+	// Automatically log out if on /auth
+	if (window.location.pathname === "/auth") {
+		this.signOutUser();
+		this.authButton.textContent = "Sign In";
+	}
+
+	// Event listeners
+	this.menuToggleBtn?.addEventListener("click", this.toggleMobileMenu);
+	this.searchInput?.addEventListener("input", this.handleSearch);
+	this.darkModeToggle?.addEventListener("click", this.toggleDarkMode);
+	// Check for saved dark mode preference
+	const savedDarkMode = localStorage.getItem("darkMode") === "true";
+	if (savedDarkMode) {
+		document.body.classList.add("dark-mode");
+	}
+}
+
 // Start the application
 document.addEventListener("DOMContentLoaded", () => {
 	const header = new Header;
