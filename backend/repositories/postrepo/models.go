@@ -20,8 +20,8 @@ type Post struct {
 	HasComments  bool       `json:"post_hasComments"`
 	CreatedAt    time.Time  `json:"created_at"`
 	UpdatedAt    time.Time  `json:"updated_at"`
-	Likes        []*Like    `json:"likes,omitempty"`
-	Comments     []*Comment `json:"comments,omitempty"`
+	Likes        []*Like    `json:"likes"`
+	Comments     []*Comment `json:"comments"`
 }
 
 // Comment represents a comment in the database

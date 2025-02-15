@@ -1,7 +1,7 @@
 import { PostService } from "./postsservice.js";
 import { formatTimeAgo } from "./timestamps.js";
 // Import comment functions
-import { handleCommentSubmit, fetchComments } from "./comment.js";
+import { handleCommentSubmit, fetchComments, loadComments } from "./comment.js";
 import { API_ENDPOINTS, SAMPLE_POSTS } from "./data.js";
 
 // DOM Elements
@@ -188,7 +188,8 @@ class PostManager {
 
 		SAMPLE_POSTS.forEach((post) => {
 			post.post_timeAgo = formatTimeAgo(post.created_at);
-			post.post_likes = post?.post_likes || post?.likes?.length;
+			post.post_likes = post?.post_likes || post.likes?.length;
+			post.post_comments = post?.post_comments || post.comments?.length || 0;
 
 			post.post_likes = this.likeState.posts[post.post_id] = {
 				count: post?.post_likes || 0,
