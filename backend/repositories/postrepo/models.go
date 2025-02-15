@@ -30,12 +30,12 @@ type Comment struct {
 	PostID          string    `json:"post_id"`
 	UserID          string    `json:"user_id"`
 	Author          string    `json:"user_name"`
-	AuthorImg       string    `json:"author_img,omitempty"`
+	AuthorImg       string    `json:"author_img"`
 	ParentCommentID string    `json:"parent_comment_id,omitempty"`
-	Content         string    `json:"content"`
+	Content         string    `json:"comment"`
 	CreatedAt       time.Time `json:"created_at"`
 	UpdatedAt       time.Time `json:"updated_at"`
-	Likes           []*Like   `json:"likes,omitempty"`
+	Likes           []*Like   `json:"likes"`
 	Replies         []*Reply  `json:"replies,omitempty"`
 }
 
