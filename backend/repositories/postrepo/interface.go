@@ -11,6 +11,7 @@ type PostRepo interface {
 	UpdatePost(post *Post) (*Post, error)
 	DeletePost(id string) error
 	ListPosts() ([]*Post, error)
-	AddLike(req *PostLike) (*PostLike, error)
-	DisLike(req *PostLike) (*PostLike, error)
+	AddLike(like *Like) (*Like, error)
+	DisLike(like *Like) error
+	HasUserLiked(entityID, userID string, entityType string) (string, error)
 }

@@ -210,15 +210,43 @@ func (r *PostRepository) GetLikesByReplyID(replyID string) ([]*Like, error) {
 }
 
 // AddLike adds a like to a post
-func (r *PostRepository) AddLike(postlike *PostLike) (*PostLike, error) {
-	query := `UPDATE posts SET post_likes = post_likes + 1 WHERE post_id = ?`
-	_, err := r.DB.Exec(query, postlike.PostID)
+func (r *PostRepository) AddLike(postlike *Like) (*Like, error) {
+	query := `INSERT INTO likes (like_id, user_id, post_id, comment_id, reply_id, created_at)
+	          VALUES (?, ?, ?, NULLIF(?, ''), NULLIF(?, ''), ?)`
+	_, err := r.DB.Exec(query, postlike.LikeID, postlike.UserID, postlike.PostID, postlike.CommentID, postlike.ReplyID, postlike.CreatedAt)
 	return postlike, err
 }
 
 // DisLike removes a like from a post
-func (r *PostRepository) DisLike(postdislike *PostLike) (*PostLike, error) {
-	query := `UPDATE posts SET post_likes = post_likes - 1 WHERE post_id = ?`
-	_, err := r.DB.Exec(query, postdislike.PostID)
-	return postdislike, err
+func (r *PostRepository) DisLike(postdislike *Like) error {
+	query := `DELETE FROM likes WHERE like_id = ?`
+	_, err := r.DB.Exec(query, postdislike.LikeID)
+	return err
+}
+
+// HasUserLiked checks if a user has liked a specific post, comment, or reply and returns the like ID if it exists
+func (r *PostRepository) HasUserLiked(entityID, userID, entityType string) (string, error) {
+	var query string
+	var likeID string
+
+	switch entityType {
+	case "Post":
+		query = `SELECT like_id FROM likes WHERE post_id = ? AND user_id = ?`
+	case "Comment":
+		query = `SELECT like_id FROM likes WHERE comment_id = ? AND user_id = ?`
+	case "Reply":
+		query = `SELECT like_id FROM likes WHERE reply_id = ? AND user_id = ?`
+	default:
+		return "", errors.New("invalid entity type")
+	}
+
+	err := r.DB.QueryRow(query, entityID, userID).Scan(&likeID)
+	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return "", nil // No like found, return empty string
+		}
+		return "", err
+	}
+
+	return likeID, nil
 }
