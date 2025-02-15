@@ -72,8 +72,8 @@ function createCommentHTML(comment, postId) {
 	return ` 
     <div class="comment" data-comment-id="${comment.id}"> 
         <div class="comment-content"> 
-            <div class="comment-author">${comment.author}</div> 
-            <div class="comment-text">${comment.content}</div> 
+            <div class="comment-author">${comment.user_name}</div> 
+            <div class="comment-text">${comment.comment}</div> 
         </div>
         <div class="comment-footer">
             <div class="comment-actions"> 
