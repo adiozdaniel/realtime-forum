@@ -3,28 +3,11 @@ package postrepo
 import (
 	"database/sql"
 	"errors"
-	"time"
 )
 
 /*
 	These concrete implementations of the interfaces interact with the database.
 */
-
-// Post represents a forum post
-type Post struct {
-	PostID       string    `json:"post_id"`
-	UserID       string    `json:"user_id"`
-	PostAuthor   string    `json:"post_author"`
-	PostTitle    string    `json:"post_title"`
-	PostContent  string    `json:"post_content"`
-	PostImage    string    `json:"post_image,omitempty"`
-	PostVideo    string    `json:"post_video,omitempty"`
-	PostCategory string    `json:"post_category"`
-	PostLikes    int       `json:"post_likes"`
-	HasComments  bool      `json:"post_hasComments"`
-	CreatedAt    time.Time `json:"created_at"`
-	UpdatedAt    time.Time `json:"updated_at"`
-}
 
 // PostRepository handles database operations for posts
 type PostRepository struct {
@@ -38,19 +21,19 @@ func NewPostRepository(db *sql.DB) *PostRepository {
 
 // CreatePost inserts a new post into the database
 func (r *PostRepository) CreatePost(post *Post) (*Post, error) {
-	query := `INSERT INTO posts (post_id, user_id, post_author, post_title, post_content, post_image, post_video, post_category, post_likes, post_hasComments, created_at, updated_at)
+	query := `INSERT INTO posts (post_id, user_id, post_author, author_img, post_title, post_content, post_image, post_video, post_category, post_hasComments, created_at, updated_at)
 	          VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
-	_, err := r.DB.Exec(query, post.PostID, post.UserID, post.PostAuthor, post.PostTitle, post.PostContent, post.PostImage, post.PostVideo, post.PostCategory, post.PostLikes, post.HasComments, post.CreatedAt, post.UpdatedAt)
+	_, err := r.DB.Exec(query, post.PostID, post.UserID, post.PostAuthor, post.AuthorImg, post.PostTitle, post.PostContent, post.PostImage, post.PostVideo, post.PostCategory, post.HasComments, post.CreatedAt, post.UpdatedAt)
 	return post, err
 }
 
 // GetPostByID retrieves a post by its ID
 func (r *PostRepository) GetPostByID(id string) (*Post, error) {
-	query := `SELECT post_id, user_id, post_author, post_title, post_content, post_image, post_video, post_category, post_likes, post_hasComments, created_at, updated_at FROM posts WHERE post_id = ?`
+	query := `SELECT post_id, user_id, post_author, author_img, post_title, post_content, post_image, post_video, post_category, post_hasComments, created_at, updated_at FROM posts WHERE post_id = ?`
 	row := r.DB.QueryRow(query, id)
 
 	post := &Post{}
-	err := row.Scan(&post.PostID, &post.UserID, &post.PostAuthor, &post.PostTitle, &post.PostContent, &post.PostImage, &post.PostVideo, &post.PostCategory, &post.PostLikes, &post.HasComments, &post.CreatedAt, &post.UpdatedAt)
+	err := row.Scan(&post.PostID, &post.UserID, &post.PostAuthor, &post.AuthorImg, &post.PostTitle, &post.PostContent, &post.PostImage, &post.PostVideo, &post.PostCategory, &post.HasComments, &post.CreatedAt, &post.UpdatedAt)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
 			return nil, errors.New("post not found")
@@ -63,8 +46,8 @@ func (r *PostRepository) GetPostByID(id string) (*Post, error) {
 
 // UpdatePost updates an existing post in the database
 func (r *PostRepository) UpdatePost(post *Post) (*Post, error) {
-	query := `UPDATE posts SET post_title = ?, post_content = ?, post_image = ?, post_video = ?, post_category = ?, post_likes = ?, post_hasComments = ?, updated_at = ? WHERE post_id = ?`
-	_, err := r.DB.Exec(query, post.PostTitle, post.PostContent, post.PostImage, post.PostVideo, post.PostCategory, post.PostLikes, post.HasComments, post.UpdatedAt, post.PostID)
+	query := `UPDATE posts SET post_title = ?, post_content = ?, post_image = ?, post_video = ?, post_category = ?, post_hasComments = ?, updated_at = ? WHERE post_id = ?`
+	_, err := r.DB.Exec(query, post.PostTitle, post.PostContent, post.PostImage, post.PostVideo, post.PostCategory, post.HasComments, post.UpdatedAt, post.PostID)
 	return post, err
 }
 
@@ -80,7 +63,7 @@ func (r *PostRepository) DeletePost(id string) error {
 
 // ListPosts retrieves all posts from the database
 func (r *PostRepository) ListPosts() ([]*Post, error) {
-	query := `SELECT post_id, user_id, post_author, post_title, post_content, post_image, post_video, post_category, post_likes, post_hasComments, created_at, updated_at FROM posts`
+	query := `SELECT post_id, user_id, post_author, author_img, post_title, post_content, post_image, post_video, post_category, post_hasComments, created_at, updated_at FROM posts`
 	rows, err := r.DB.Query(query)
 	if err != nil {
 		return nil, err
@@ -90,10 +73,15 @@ func (r *PostRepository) ListPosts() ([]*Post, error) {
 	var posts []*Post
 	for rows.Next() {
 		post := &Post{}
-		err := rows.Scan(&post.PostID, &post.UserID, &post.PostAuthor, &post.PostTitle, &post.PostContent, &post.PostImage, &post.PostVideo, &post.PostCategory, &post.PostLikes, &post.HasComments, &post.CreatedAt, &post.UpdatedAt)
+		err := rows.Scan(&post.PostID, &post.UserID, &post.PostAuthor, &post.AuthorImg, &post.PostTitle, &post.PostContent, &post.PostImage, &post.PostVideo, &post.PostCategory, &post.HasComments, &post.CreatedAt, &post.UpdatedAt)
 		if err != nil {
 			return nil, err
 		}
+
+		// Fetch likes and comments
+		post.Likes, _ = r.GetLikesByPostID(post.PostID)
+		post.Comments, _ = r.GetCommentsByPostID(post.PostID)
+
 		posts = append(posts, post)
 	}
 
@@ -102,6 +90,123 @@ func (r *PostRepository) ListPosts() ([]*Post, error) {
 	}
 
 	return posts, nil
+}
+
+// GetLikesByPostID retrieves all likes for a post by its ID
+func (r *PostRepository) GetLikesByPostID(postID string) ([]*Like, error) {
+	query := `SELECT like_id, user_id FROM likes WHERE post_id = ?`
+	rows, err := r.DB.Query(query, postID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var likes []*Like
+	for rows.Next() {
+		like := &Like{}
+		err := rows.Scan(&like.LikeID, &like.UserID)
+		if err != nil {
+			return nil, err
+		}
+		likes = append(likes, like)
+	}
+	return likes, nil
+}
+
+// GetCommentsByPostID retrieves all comments for a post by its ID
+func (r *PostRepository) GetCommentsByPostID(postID string) ([]*Comment, error) {
+	query := `SELECT comment_id, user_id, user_name, author_img, parent_comment_id, content, created_at, updated_at FROM comments WHERE post_id = ?`
+	rows, err := r.DB.Query(query, postID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var comments []*Comment
+	for rows.Next() {
+		comment := &Comment{}
+		err := rows.Scan(&comment.CommentID, &comment.UserID, &comment.Author, &comment.AuthorImg, &comment.ParentCommentID, &comment.Content, &comment.CreatedAt, &comment.UpdatedAt)
+		if err != nil {
+			return nil, err
+		}
+
+		// Fetch likes for this comment
+		comment.Likes, _ = r.GetLikesByCommentID(comment.CommentID)
+
+		// Fetch replies for this comment
+		comment.Replies, _ = r.GetRepliesByCommentID(comment.CommentID)
+
+		comments = append(comments, comment)
+	}
+
+	return comments, nil
+}
+
+// GetRepliesByCommentID retrieves all replies for a comment by its ID
+func (r *PostRepository) GetRepliesByCommentID(commentID string) ([]*Reply, error) {
+	query := `SELECT reply_id, comment_id, user_id, user_name, author_img, parent_reply_id, content, created_at, updated_at FROM replies WHERE comment_id = ?`
+	rows, err := r.DB.Query(query, commentID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var replies []*Reply
+	for rows.Next() {
+		reply := &Reply{}
+		err := rows.Scan(&reply.ReplyID, &reply.CommentID, &reply.UserID, &reply.Author, &reply.AuthorImg, &reply.ParentReplyID, &reply.Content, &reply.CreatedAt, &reply.UpdatedAt)
+		if err != nil {
+			return nil, err
+		}
+
+		// Fetch likes for this reply
+		reply.Likes, _ = r.GetLikesByReplyID(reply.ReplyID)
+
+		replies = append(replies, reply)
+	}
+	return replies, nil
+}
+
+// GetLikesByCommentID retrieves all likes for a comment by its ID
+func (r *PostRepository) GetLikesByCommentID(commentID string) ([]*Like, error) {
+	query := `SELECT like_id, user_id FROM likes WHERE comment_id = ?`
+	rows, err := r.DB.Query(query, commentID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var likes []*Like
+	for rows.Next() {
+		like := &Like{}
+		err := rows.Scan(&like.LikeID, &like.UserID)
+		if err != nil {
+			return nil, err
+		}
+		likes = append(likes, like)
+	}
+	return likes, nil
+}
+
+// GetLikesByReplyID retrieves all likes for a reply by its ID
+func (r *PostRepository) GetLikesByReplyID(replyID string) ([]*Like, error) {
+	query := `SELECT like_id, user_id FROM likes WHERE reply_id = ?`
+	rows, err := r.DB.Query(query, replyID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var likes []*Like
+	for rows.Next() {
+		like := &Like{}
+		err := rows.Scan(&like.LikeID, &like.UserID)
+		if err != nil {
+			return nil, err
+		}
+		likes = append(likes, like)
+	}
+	return likes, nil
 }
 
 // AddLike adds a like to a post
