@@ -140,15 +140,20 @@ class PostManager {
 			return;
 		}
 
+		let isLiked = false;
+
 		if (res.data) {
 			// Like was added
 			likeData.count++;
 			likeData.likedBy.add(currentUser.user_id);
 			button.classList.add("liked", "text-blue-600");
+			isLiked = true;
 		} else if (res.data === null) {
+			// Like was removed
 			likeData.count = Math.max(0, likeData.count - 1);
 			likeData.likedBy.delete(currentUser.user_id);
 			button.classList.remove("liked", "text-blue-600");
+			isLiked = false;
 		}
 
 		// Update UI
@@ -159,7 +164,6 @@ class PostManager {
 
 		button.classList.add("like-animation");
 		setTimeout(() => button.classList.remove("like-animation"), 300);
-		this.renderPosts();
 	}
 
 	userData() {
