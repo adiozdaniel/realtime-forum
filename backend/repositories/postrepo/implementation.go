@@ -3,6 +3,7 @@ package postrepo
 import (
 	"database/sql"
 	"errors"
+	"fmt"
 )
 
 /*
@@ -115,7 +116,7 @@ func (r *PostRepository) GetLikesByPostID(postID string) ([]*Like, error) {
 
 // GetCommentsByPostID retrieves all comments for a post by its ID
 func (r *PostRepository) GetCommentsByPostID(postID string) ([]*Comment, error) {
-	query := `SELECT comment_id, user_id, user_name, author_img, parent_comment_id, content, created_at, updated_at FROM comments WHERE post_id = ?`
+	query := `SELECT comment_id, post_id, user_id, user_name, author_img, parent_comment_id, comment, created_at, updated_at FROM comments WHERE post_id = ?`
 	rows, err := r.DB.Query(query, postID)
 	if err != nil {
 		return nil, err
@@ -125,8 +126,9 @@ func (r *PostRepository) GetCommentsByPostID(postID string) ([]*Comment, error) 
 	var comments []*Comment
 	for rows.Next() {
 		comment := &Comment{}
-		err := rows.Scan(&comment.CommentID, &comment.UserID, &comment.Author, &comment.AuthorImg, &comment.ParentCommentID, &comment.Content, &comment.CreatedAt, &comment.UpdatedAt)
+		err := rows.Scan(&comment.CommentID, &comment.PostID, &comment.UserID, &comment.Author, &comment.AuthorImg, &comment.ParentCommentID, &comment.Content, &comment.CreatedAt, &comment.UpdatedAt)
 		if err != nil {
+			fmt.Printf("Error scanning row: %v\n", err)
 			return nil, err
 		}
 
