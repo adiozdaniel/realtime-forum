@@ -6,12 +6,6 @@ import (
 	"time"
 )
 
-// PostLike represents a post like request
-type PostLike struct {
-	PostID string `json:"post_id"`
-	UserID string `json:"user_id"`
-}
-
 // Post represents a forum post
 type Post struct {
 	PostID       string     `json:"post_id"`
