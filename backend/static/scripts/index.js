@@ -1,8 +1,8 @@
 import { PostService } from "./postsservice.js";
 import { formatTimeAgo } from "./timestamps.js";
 // Import comment functions
-import { handleCommentSubmit, fetchComments, loadComments } from "./comment.js";
-import { API_ENDPOINTS, SAMPLE_POSTS } from "./data.js";
+import { handleCommentSubmit, loadComments } from "./comment.js";
+import { API_ENDPOINTS, SAMPLE_POSTS, SAMPLE_COMMENTS } from "./data.js";
 
 // DOM Elements
 const postsContainer = document.querySelector("#postsContainer");
@@ -182,7 +182,6 @@ class PostManager {
 		const postList = Array.isArray(posts) ? posts : posts.data;
 
 		postList.forEach((post) => SAMPLE_POSTS.push(post));
-		console.log(SAMPLE_POSTS);
 
 		// fetchComments();
 
@@ -191,11 +190,18 @@ class PostManager {
 			post.post_likes = post?.post_likes || post.likes?.length;
 			post.post_comments = post?.post_comments || post.comments?.length || 0;
 
+			if (post.post_hasComments) {
+				SAMPLE_COMMENTS[post.post_id] = post.comments;
+			}
+
 			post.post_likes = this.likeState.posts[post.post_id] = {
 				count: post?.post_likes || 0,
 				likedBy: new Set(),
 			};
 		});
+
+		console.log(SAMPLE_POSTS);
+		console.log(SAMPLE_COMMENTS);
 
 		if (postsContainer) this.renderPosts();
 	}
