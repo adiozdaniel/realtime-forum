@@ -74,3 +74,23 @@ func (p *PostService) DisLike(dislike *Like) error {
 
 	return p.post.DisLike(dislike)
 }
+
+// CreateComment creates a new comment
+func (p *PostService) CreatePostComment(comment *Comment) (*Comment, error) {
+	if comment.UserID == "" {
+		return nil, errors.New("user ID cannot be empty")
+	}
+
+	if comment.PostID == "" {
+		return nil, errors.New("post ID cannot be empty")
+	}
+
+	if comment.Content == "" {
+		return nil, errors.New("comment content cannot be empty")
+	}
+
+	comment.CommentID, _ = p.shared.GenerateUUID()
+	comment.CreatedAt = time.Now()
+	comment.UpdatedAt = time.Now()
+	return p.post.CreateComment(comment)
+}

@@ -14,4 +14,7 @@ type PostRepo interface {
 	AddLike(like *Like) (*Like, error)
 	DisLike(like *Like) error
 	HasUserLiked(entityID, userID string, entityType string) (string, error)
+
+	// Comments
+	CreateComment(post *Comment) (*Comment, error)
 }

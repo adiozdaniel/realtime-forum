@@ -250,3 +250,12 @@ func (r *PostRepository) HasUserLiked(entityID, userID, entityType string) (stri
 
 	return likeID, nil
 }
+
+// Comments
+// CreateComment creates a new comment
+func (r *PostRepository) CreateComment(comment *Comment) (*Comment, error) {
+	query := `INSERT INTO comments (comment_id, post_id, user_id, user_name, author_img, parent_comment_id, comment, created_at, updated_at)
+	          VALUES (?, ?, ?, ?, ?, NULLIF(?, ''), ?, ?, ?)`
+	_, err := r.DB.Exec(query, comment.CommentID, comment.PostID, comment.UserID, comment.Author, comment.AuthorImg, comment.ParentCommentID, comment.Content, comment.CreatedAt, comment.UpdatedAt)
+	return comment, err
+}

@@ -109,3 +109,30 @@ func (p *PostsRepo) Dislike(w http.ResponseWriter, r *http.Request) {
 	p.res.Data = nil
 	p.res.WriteJSON(w, *p.res, http.StatusOK)
 }
+
+// CreateComment creates a new comment
+func (p *PostsRepo) CreatePostComment(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodPost {
+		http.Error(w, "Oops, didn't understand what you are looking for", http.StatusForbidden)
+		return
+	}
+
+	var req Comment
+
+	err := json.NewDecoder(r.Body).Decode(&req)
+	if err != nil {
+		p.res.SetError(w, err, http.StatusInternalServerError)
+		return
+	}
+
+	post, err := p.post.CreatePostComment(&req)
+	if err != nil {
+		p.res.SetError(w, err, http.StatusInternalServerError)
+		return
+	}
+
+	p.res.Err = false
+	p.res.Message = "Success"
+	p.res.Data = post
+	p.res.WriteJSON(w, *p.res, http.StatusOK)
+}
