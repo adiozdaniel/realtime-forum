@@ -48,7 +48,7 @@ CommentService.prototype.createComment = async function (commentData) {
 		};
 	}
 
-	if (!commentData?.content) {
+	if (!commentData?.comment) {
 		return { error: true, message: "Please provide content for the comment!" };
 	}
 
@@ -58,7 +58,7 @@ CommentService.prototype.createComment = async function (commentData) {
 		user_name: userData.user_name,
 		author_img: userData.image,
 		parent_comment_id: commentData.parent_comment_id,
-		comment: commentData.content,
+		comment: commentData.comment,
 	};
 
 	try {
