@@ -200,9 +200,6 @@ class PostManager {
 			};
 		});
 
-		console.log(SAMPLE_POSTS);
-		console.log(SAMPLE_COMMENTS);
-
 		if (postsContainer) this.renderPosts();
 	}
 }
