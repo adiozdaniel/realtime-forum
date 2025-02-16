@@ -2,6 +2,7 @@ import { CommentService } from "./commentservice.js";
 import { postManager } from "./index.js";
 import { SAMPLE_COMMENTS } from "./data.js";
 import { formatTimeAgo } from "./timestamps.js";
+import { getUserData } from "./authmiddleware.js";
 
 const likeState = {
 	comments: {},
@@ -200,11 +201,17 @@ async function handleCommentSubmit(e) {
 
 	if (!content) return;
 
-	const newComment = {
+	const userData = await getUserData();
+
+	if (!userData) {
+		alert("Please login to comment");
+		window.location.href = "/auth";
+		return;
+	}
+
+	let newComment = {
 		post_id: postId,
-		id: Date.now(),
-		content: content,
-		timeAgo: "Just now",
+		comment: content,
 		likes: 0,
 		replies: [],
 	};
@@ -214,7 +221,7 @@ async function handleCommentSubmit(e) {
 		alert(commentsRes.message);
 		return;
 	} else if (commentsRes.data !== null) {
-		console.log(commentsRes.data);
+		newComment = commentsRes.data;
 	}
 
 	SAMPLE_COMMENTS[postId] = SAMPLE_COMMENTS[postId] || [];
