@@ -216,16 +216,18 @@ async function handleCommentSubmit(e) {
 		replies: [],
 	};
 
+	let res = {};
+
 	const commentsRes = await commentService.createComment(newComment);
 	if (commentsRes.error) {
 		alert(commentsRes.message);
 		return;
 	} else if (commentsRes.data !== null) {
-		newComment = commentsRes.data;
+		res = commentsRes.data;
 	}
 
 	SAMPLE_COMMENTS[postId] = SAMPLE_COMMENTS[postId] || [];
-	SAMPLE_COMMENTS[postId].unshift(newComment);
+	SAMPLE_COMMENTS[postId].push(res);
 	loadComments(postId);
 	input.value = "";
 }
