@@ -169,7 +169,7 @@ document.addEventListener("DOMContentLoaded", function () {
 		// Handle success or error based on the response
 		if (!res.error) {
 			console.log("Registration successful:", res.message);
-			localStorage.setItem("res", JSON.stringify(response.data));
+			localStorage.setItem("res", JSON.stringify(res.data));
 			// Redirect or show a success message
 			window.location.href = "/";
 		} else {
