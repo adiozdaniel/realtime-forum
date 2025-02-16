@@ -1,21 +1,10 @@
-import { API_ENDPOINTS, userData, SAMPLE_POSTS } from "./data.js";
+import { API_ENDPOINTS } from "./data.js";
+import { getUserData } from "./authmiddleware.js";
 
 // CommentService class for handling comment-related API requests
 export class CommentService {
 	constructor() {
 		this.apiEndpoints = API_ENDPOINTS;
-		this.userData = {
-			userDetails: () => localStorage.getItem("userdata"),
-			data: function () {
-				try {
-					passedData = JSON.parse(this.userDetails());
-					return passedData?.data || null;
-				} catch (error) {
-					console.log("error", error);
-					return null;
-				}
-			},
-		};
 	}
 }
 
@@ -37,11 +26,9 @@ CommentService.prototype.listCommentsByPost = async function (postID) {
 
 // Method to create a new comment
 CommentService.prototype.createComment = async function (commentData) {
-	const local = localStorage.getItem("userdata");
-	const userData = JSON.parse(local);
+	const userData = await getUserData();
 
 	if (!userData) {
-		console.log("local storage", JSON.parse(localStorage.getItem("userdata")));
 		return {
 			error: true,
 			message: "You need to login to post a comment!",
