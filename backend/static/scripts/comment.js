@@ -1,6 +1,7 @@
 import { CommentService } from "./commentservice.js";
 import { postManager } from "./index.js";
 import { SAMPLE_COMMENTS } from "./data.js";
+import { formatTimeAgo } from "./timestamps.js";
 
 const likeState = {
 	comments: {},
@@ -70,7 +71,7 @@ function createCommentHTML(comment, postId) {
 	const commentState = likeState.comments[postId]?.[comment.id];
 	const isLiked = commentState?.likedBy.has("current-user");
 	return ` 
-    <div class="comment" data-comment-id="${comment.id}"> 
+    <div class="comment" data-comment-id="${comment.comment_id}"> 
         <div class="comment-content"> 
             <div class="comment-author">${comment.user_name}</div> 
             <div class="comment-text">${comment.comment}</div> 
@@ -79,7 +80,9 @@ function createCommentHTML(comment, postId) {
             <div class="comment-actions"> 
                 <button class="comment-action-button like-button ${
 									isLiked ? "liked text-blue-600" : ""
-								}" data-post-id="${postId}" data-comment-id="${comment.id}"> 
+								}" data-post-id="${postId}" data-comment-id="${
+		comment.comment_id
+	}"> 
                     <i data-lucide="thumbs-up"></i> 
                     <span class="likes-count">${
 											commentState?.count || 0
@@ -92,7 +95,9 @@ function createCommentHTML(comment, postId) {
                 
             </div>
             <div class="comment-meta">
-                <span class="comment-time">${comment.timeAgo}</span> 
+                <span class="comment-time">${formatTimeAgo(
+									comment.created_at
+								)}</span> 
             </div>
         </div>
         ${createRepliesHTML(comment.replies)}
