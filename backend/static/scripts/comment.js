@@ -316,7 +316,7 @@ async function handleCommentLikes(e) {
 // Add like button event listener
 document.addEventListener("click", (e) => {
 	document.querySelectorAll(".like-button").forEach((button) => {
-		button.addEventListener("click", handleCommentLikes.bind(this));
+		button.addEventListener("click", (e) => handleCommentLikes.bind(this)(e));
 	});
 });
 

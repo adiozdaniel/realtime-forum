@@ -92,13 +92,13 @@ class PostManager {
 	// Attach event listeners to post buttons
 	attachPostEventListeners() {
 		document.querySelectorAll(".like-button").forEach((button) => {
-			button.addEventListener("click", this.handlePostLikes.bind(this));
+			button.addEventListener("click", (e) => this.handlePostLikes(e));
 		});
 		document.querySelectorAll(".comment-toggle").forEach((button) => {
-			button.addEventListener("click", this.toggleComments.bind(this));
+			button.addEventListener("click", (e) => this.toggleComments(e));
 		});
 		document.querySelectorAll(".comment-form").forEach((form) => {
-			form.addEventListener("submit", handleCommentSubmit);
+			form.addEventListener("submit", (e) => handleCommentSubmit(e));
 		});
 	}
 
