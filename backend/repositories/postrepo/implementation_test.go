@@ -50,13 +50,19 @@ func TestCreatePost(t *testing.T) {
 func TestGetPostByID(t *testing.T) {
 	db := CreateDb()
 	postrepo := &PostRepository{DB: db}
-	// post := &Post{PostID: "1", PostAuthor: "Makarios", PostTitle: "", PostContent: "", PostCategory: "", UserID: "", HasComments: false, CreatedAt: time.Now(), UpdatedAt: time.Now(), Likes: []*Like{}, Comments: []*Comment{}}
+
 	if _, err := postrepo.GetPostByID(""); err != nil {
 		t.Errorf("expected %v, got %v", nil, err)
 	}
 }
 
 func TestUpdatePost(t *testing.T) {
+	db := CreateDb()
+	postrepo := &PostRepository{DB: db}
+	post := &Post{PostID: "", PostAuthor: "", PostTitle: "", PostContent: "AAH", PostCategory: "", UserID: "", HasComments: false, CreatedAt: time.Now(), UpdatedAt: time.Now(), Likes: []*Like{}, Comments: []*Comment{}}
+	if _, err := postrepo.UpdatePost(post); err != nil {
+		t.Errorf("expected %v, got %v", nil, err)
+	}
 }
 
 func TestDeletePost(t *testing.T) {
