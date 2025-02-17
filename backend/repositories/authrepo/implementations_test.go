@@ -35,6 +35,12 @@ func TestDeleteUser(t *testing.T) {
 }
 
 func TestGetUserByID(t *testing.T) {
+	db := CreateDb()
+	userrepo := &UserRepository{DB: db.Db}
+	_, err := userrepo.GetUserByID("1")
+	if err != nil {
+		t.Errorf("expected %v got %v", nil, err)
+	}
 }
 
 func TestUpdateUser(t *testing.T) {
