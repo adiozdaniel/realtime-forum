@@ -513,7 +513,7 @@ a {
     display: none;
 }
 
-.text-blue-600 {
+.text-blue-600 svg {
     color: var(--primary-color);
 }
 
