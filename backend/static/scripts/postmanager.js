@@ -37,6 +37,9 @@ PostManager.prototype.createPostHTML = function (post) {
             </button>
           </div>
           <div class="post-meta">
+		   <div class="profile-image">
+		  		<img src=${post.author_img || '/static/profiles/avatar.jpg'}/>
+			</div>
             <span>by ${post.post_author}</span>
             <span>•</span>
             <span>${post.post_timeAgo}</span>

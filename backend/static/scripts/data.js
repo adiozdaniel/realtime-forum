@@ -37,6 +37,7 @@ const SAMPLE_POSTS = [
 		post_author: "Jane Cooper",
 		post_category: "Tutorial",
 		post_likes: 42,
+		author_img: "/static/profiles/avatar.jpg",
 		likes: [],
 		comments: [
 			{

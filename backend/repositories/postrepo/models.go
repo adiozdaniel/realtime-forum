@@ -12,7 +12,7 @@ type Post struct {
 	PostID       string     `json:"post_id"`
 	UserID       string     `json:"user_id"`
 	PostAuthor   string     `json:"post_author"`
-	AuthorImg    string     `json:"author_img,omitempty"`
+	AuthorImg    string     `json:"author_img"`
 	PostTitle    string     `json:"post_title"`
 	PostContent  string     `json:"post_content"`
 	PostImage    string     `json:"post_image,omitempty"`

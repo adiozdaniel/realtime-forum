@@ -31,6 +31,7 @@ func (p *PostService) CreatePost(post *Post) (*Post, error) {
 		return nil, errors.New("post content cannot be empty")
 	}
 
+	post.AuthorImg = "/static/profiles/" + post.UserID
 	post.PostID, _ = p.shared.GenerateUUID()
 	post.CreatedAt = time.Now()
 	post.UpdatedAt = time.Now()
@@ -89,6 +90,7 @@ func (p *PostService) CreatePostComment(comment *Comment) (*Comment, error) {
 		return nil, errors.New("comment content cannot be empty")
 	}
 
+	comment.AuthorImg = "/static/profiles/" + comment.UserID
 	comment.CommentID, _ = p.shared.GenerateUUID()
 	comment.CreatedAt = time.Now()
 	comment.UpdatedAt = time.Now()
