@@ -4,6 +4,7 @@ const API_ENDPOINTS = {
 	register: "/api/auth/register",
 	logout: "/api/auth/logout",
 	check: "/api/auth/check",
+	uploadProfilePic: "/api/auth/uploadProfilePic",
 
 	// posts ENDPOINTS
 	allposts: "/api/posts",

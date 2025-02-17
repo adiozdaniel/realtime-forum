@@ -27,7 +27,7 @@ func (r *Routes) RegisterRoutes(mux *http.ServeMux) http.Handler {
 	// === End Comments ===
 
 	// === Auth ===
-
+	mux.Handle("/api/auth/uploadProfilePic", r.auth.AuthMiddleware(http.HandlerFunc(r.authRepo.UploadProfilePic)))
 	// === End Auth ===
 
 	// ===== End Protected RESTFUL API Endpoints ===== //

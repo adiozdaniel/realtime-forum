@@ -175,3 +175,46 @@ func (h *AuthRepo) CheckAuth(w http.ResponseWriter, r *http.Request) {
 		h.res.SetError(w, err, http.StatusInternalServerError)
 	}
 }
+
+// UploadProfilePic uploads a profile picture
+func (h *AuthRepo) UploadProfilePic(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodPost {
+		h.res.SetError(w, errors.New("method not allowed"), http.StatusMethodNotAllowed)
+		return
+	}
+
+	cookie, err := r.Cookie("session_token")
+	if err != nil {
+		h.res.SetError(w, errors.New("not logged in"), http.StatusUnauthorized)
+		return
+	}
+
+	// Check if session exists in the map
+	_, exists := h.Sessions.Sess.Load(cookie.Value)
+	if !exists {
+		h.res.SetError(w, errors.New("not logged in: invalid session"), http.StatusUnauthorized)
+		return
+	}
+
+	image, err := h.shared.SaveImage(r, cookie.Value)
+	if err != nil {
+		h.res.SetError(w, err, http.StatusBadRequest)
+		return
+	}
+
+	req := User{UserID: cookie.Value, Image: image}
+
+	user, err := h.user.UpdateUser(&req)
+	if err != nil {
+		h.res.SetError(w, err, http.StatusBadRequest)
+		return
+	}
+
+	h.res.Err = false
+	h.res.Message = "Profile picture uploaded successfully"
+	h.res.Data = user
+
+	if err := h.res.WriteJSON(w, *h.res, http.StatusOK); err != nil {
+		h.res.SetError(w, err, http.StatusInternalServerError)
+	}
+}

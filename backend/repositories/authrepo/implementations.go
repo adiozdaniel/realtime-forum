@@ -2,7 +2,6 @@ package authrepo
 
 import (
 	"database/sql"
-	"time"
 )
 
 // UserRepository implements UserRepo
@@ -52,8 +51,8 @@ func (r *UserRepository) GetUserByID(user *User) (*User, error) {
 	return user, nil
 }
 
-func (r *UserRepository) UpdateUser(user *User) error {
+func (r *UserRepository) UpdateUser(user *User) (*User, error) {
 	query := `UPDATE users SET email = ?, password = ?, user_name = ?, image = ?, role = ?, updated_at = ? WHERE user_id = ?`
-	_, err := r.DB.Exec(query, user.Email, user.Password, user.UserName, user.Image, user.Role, time.Now(), user.UserID)
-	return err
+	_, err := r.DB.Exec(query, user.Email, user.Password, user.UserName, user.Image, user.Role, user.UpdatedAt, user.UserID)
+	return user, err
 }
