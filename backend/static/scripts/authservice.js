@@ -1,4 +1,4 @@
-import {API_ENDPOINTS} from "./data.js";
+import { API_ENDPOINTS } from "./data.js";
 
 // AuthService class for handling authentication-related API requests
 class AuthService {
@@ -73,6 +73,20 @@ AuthService.prototype.isAuthenticated = async function () {
 	try {
 		const response = await fetch(this.apiEndpoints.check, {
 			method: "GET",
+		});
+
+		return response.json();
+	} catch (error) {
+		return error;
+	}
+};
+
+// Method to upload a profile picture
+AuthService.prototype.uploadProfilePic = async function (formData) {
+	try {
+		const response = await fetch(this.apiEndpoints.uploadProfilePic, {
+			method: "POST",
+			body: formData,
 		});
 
 		return response.json();
