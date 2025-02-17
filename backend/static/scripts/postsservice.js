@@ -1,3 +1,4 @@
+import { getUserData } from "./authmiddleware.js";
 import { API_ENDPOINTS } from "./data.js";
 
 // PostService class for handling post-related API requests
@@ -24,9 +25,8 @@ PostService.prototype.fetchPosts = async function () {
 
 // Method to create a new post
 PostService.prototype.createPost = async function (postData) {
-	const user = localStorage.getItem("userdata");
-	const userData = JSON.parse(user);
-	if (!user) {
+	const userData = await getUserData();
+	if (!userData) {
 		return {
 			error: true,
 			message: "You need to login to create a post!",
