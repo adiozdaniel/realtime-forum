@@ -44,4 +44,11 @@ func TestGetUserByID(t *testing.T) {
 }
 
 func TestUpdateUser(t *testing.T) {
+	db := CreateDb()
+	userrepo := &UserRepository{DB: db.Db}
+	user := &User{Email: "nash@com", Password: "Naaahshshs786$", UserID: "1", UserName: "Abas", CreatedAt: time.Now(), UpdatedAt: time.Now().Add(1 * time.Hour)}
+	err := userrepo.UpdateUser(user)
+	if err != nil {
+		t.Errorf("expected %v got %v", nil, err)
+	}
 }
