@@ -93,6 +93,12 @@ func TestListPosts(t *testing.T) {
 // }
 
 func TestGetCommentsByPostID(t *testing.T) {
+	db := CreateDb()
+	postrepo := &PostRepository{DB: db}
+
+	if _, err := postrepo.GetCommentsByPostID("1"); err != nil {
+		t.Errorf("expected %v, got %v", nil, err)
+	}
 }
 
 func TestGetRepliesByCommentID(t *testing.T) {
