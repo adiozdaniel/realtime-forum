@@ -92,7 +92,7 @@ class PostManager {
 	// Attach event listeners to post buttons
 	attachPostEventListeners() {
 		document.querySelectorAll(".like-button").forEach((button) => {
-			button.addEventListener("click", this.handleLike.bind(this));
+			button.addEventListener("click", this.handlePostLikes.bind(this));
 		});
 		document.querySelectorAll(".comment-toggle").forEach((button) => {
 			button.addEventListener("click", this.toggleComments.bind(this));
@@ -134,6 +134,62 @@ class PostManager {
 		// const isLiked = likeData.likedBy.has(currentUser.user_id);
 
 		// Call API to toggle like
+		const res = await this.postService.likePost(postData);
+		if (res.error) {
+			alert(res.message);
+			return;
+		}
+
+		let isLiked = false;
+
+		if (res.data) {
+			// Like was added
+			likeData.count++;
+			likeData.likedBy.add(currentUser.user_id);
+			button.classList.add("liked", "text-blue-600");
+			isLiked = true;
+		} else if (res.data === null) {
+			// Like was removed
+			likeData.count = Math.max(0, likeData.count - 1);
+			likeData.likedBy.delete(currentUser.user_id);
+			button.classList.remove("liked", "text-blue-600");
+			isLiked = false;
+		}
+
+		// Update UI
+		const likesCount = button.querySelector(".likes-count");
+		if (likesCount) {
+			likesCount.textContent = likeData.count;
+		}
+
+		button.classList.add("like-animation");
+		setTimeout(() => button.classList.remove("like-animation"), 300);
+	}
+
+	async handlePostLikes(e) {
+		const button = e.currentTarget.closest(".like-button");
+		if (!button) return;
+
+		const postId = button.getAttribute("data-post-id");
+		if (!postId) return;
+
+		// Retrieve or initialize like state for the post
+		const likeData = (this.likeState.posts[postId] ??= {
+			count: 0,
+			likedBy: new Set(),
+		});
+
+		// Ensure user is logged in
+		const currentUser = this.userData();
+		if (!currentUser?.user_id) {
+			alert("Please login to like the post");
+			window.location.href = "/auth";
+			return;
+		}
+
+		const postData = { post_id: postId, user_id: currentUser.user_id };
+
+		// Call API to toggle like for the post
 		const res = await this.postService.likePost(postData);
 		if (res.error) {
 			alert(res.message);

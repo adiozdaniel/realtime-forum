@@ -254,10 +254,69 @@ function loadComments(postId) {
 	lucide.createIcons(); // Ensure icons render after loading comments
 }
 
+async function handleCommentLikes(e) {
+	const button = e.currentTarget.closest(".like-button");
+	if (!button) return;
+
+	const postId = button.getAttribute("data-post-id");
+	const commentId = button.getAttribute("data-comment-id");
+	if (!postId || !commentId) return;
+
+	// Retrieve or initialize like state for the comment
+	const likeData = (this.likeState.comments[postId] ??= {});
+	likeData[commentId] ??= { count: 0, likedBy: new Set() };
+
+	// Ensure user is logged in
+	const currentUser = this.userData();
+	if (!currentUser?.user_id) {
+		alert("Please login to like the comment");
+		window.location.href = "/auth";
+		return;
+	}
+
+	const commentData = {
+		post_id: postId,
+		comment_id: commentId,
+		user_id: currentUser.user_id,
+	};
+
+	// Call API to toggle like for the comment
+	const res = await this.commentService.likeComment(commentData);
+	if (res.error) {
+		alert(res.message);
+		return;
+	}
+
+	let isLiked = false;
+
+	if (res.data) {
+		// Like was added
+		likeData[commentId].count++;
+		likeData[commentId].likedBy.add(currentUser.user_id);
+		button.classList.add("liked", "text-blue-600");
+		isLiked = true;
+	} else if (res.data === null) {
+		// Like was removed
+		likeData[commentId].count = Math.max(0, likeData[commentId].count - 1);
+		likeData[commentId].likedBy.delete(currentUser.user_id);
+		button.classList.remove("liked", "text-blue-600");
+		isLiked = false;
+	}
+
+	// Update UI
+	const likesCount = button.querySelector(".likes-count");
+	if (likesCount) {
+		likesCount.textContent = likeData[commentId].count;
+	}
+
+	button.classList.add("like-animation");
+	setTimeout(() => button.classList.remove("like-animation"), 300);
+}
+
 // Add like button event listener
 document.addEventListener("click", (e) => {
 	document.querySelectorAll(".like-button").forEach((button) => {
-		button.addEventListener("click", postManager.handleLike.bind(postManager));
+		button.addEventListener("click", handleCommentLikes.bind(this));
 	});
 });
 
