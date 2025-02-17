@@ -2,6 +2,7 @@ package authrepo
 
 import (
 	"errors"
+
 	"forum/repositories/shared"
 
 	"golang.org/x/crypto/bcrypt"

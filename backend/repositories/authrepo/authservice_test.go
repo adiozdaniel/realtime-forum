@@ -3,20 +3,46 @@ package authrepo
 import (
 	"database/sql"
 	"errors"
+	"fmt"
 	"testing"
 	"time"
 
 	"forum/repositories/shared"
 )
 
-type Db struct {
-	Db User
+type DB struct {
+	Db *sql.DB
+}
+
+func CreateDb() *DB {
+	db, err := sql.Open("sqlite3", "./test.db")
+	if err != nil {
+		return nil
+	}
+	dbString := `
+	CREATE TABLE IF NOT EXISTS users (
+		user_id TEXT PRIMARY KEY,
+		email TEXT UNIQUE NOT NULL,
+		password TEXT NOT NULL,
+		user_name TEXT,
+		image TEXT,
+		role TEXT,
+		created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+		updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
+	);`
+	_, err = db.Exec(dbString)
+	if err != nil {
+		fmt.Println("error creating table")
+	}
+	return &DB{Db: db}
+
 }
 
 func TestRegister(t *testing.T) {
 	// db := &Db{Db: User{Email: "tay@gmail.com", Password: "Naaahshshs786$", UserID: "4", UserName: "Abas", CreatedAt: time.Now(), UpdatedAt: time.Now()}}
+	db := CreateDb()
 
-	userserv := &UserService{user: &UserRepository{DB: &sql.DB{}}, shared: &shared.SharedConfig{}}
+	userserv := &UserService{user: &UserRepository{DB: db.Db}}
 	user := &User{Email: "", Password: "Naaahshshs786$", UserID: "4", UserName: "Abas", CreatedAt: time.Now(), UpdatedAt: time.Now()}
 	err := userserv.Register(user)
 	if err.Error() != "email or password cannot be empty" {
