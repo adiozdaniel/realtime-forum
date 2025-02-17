@@ -70,6 +70,7 @@ PostManager.prototype.renderPosts = function (posts = SAMPLE_POSTS) {
 };
 
 PostManager.prototype.attachPostEventListeners = function () {
+	lucide.createIcons();
 	document.querySelectorAll(".like-button").forEach(button => {
 		button.addEventListener("click", (e) => this.handlePostLikes(e));
 	});

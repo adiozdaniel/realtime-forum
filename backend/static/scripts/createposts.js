@@ -1,28 +1,28 @@
 import { PostService } from './postsservice.js';
 
 class PostModalManager {
-    constructor() {}
-    modal = document.getElementById('createPostModal');
-    createPostBtn = document.getElementById('createPostBtn');
-    cancelBtn = document.getElementById('cancelPost');
-    form = document.getElementById('createPostForm');
-    imageUpload = document.getElementById('imageUpload');
-    imagePreviewContainer = document.getElementById('imagePreviewContainer');
-    imagePreview = document.getElementById('imagePreview');
-    removeImage = document.getElementById('removeImage');
-    videoLink = document.getElementById('videoLink');
-    videoPreviewContainer = document.getElementById('videoPreviewContainer');
-    videoPreview = document.getElementById('videoPreview');
-    removeVideo = document.getElementById('removeVideo');
-    mediaPreview = document.getElementById('mediaPreview');
-    uploadError = document.getElementById('uploadError');
-    MAX_FILE_SIZE = 20 * 1024 * 1024;
-    ALLOWED_TYPES = ['image/jpeg', 'image/png', 'image/gif'];
-    postService = new PostService();
+    constructor() {
+        this.modal = document.getElementById('createPostModal');
+        this.createPostBtn = document.getElementById('createPostBtn');
+        this.cancelBtn = document.getElementById('cancelPost');
+        this.form = document.getElementById('createPostForm');
+        this.imageUpload = document.getElementById('imageUpload');
+        this.imagePreviewContainer = document.getElementById('imagePreviewContainer');
+        this.imagePreview = document.getElementById('imagePreview');
+        this.removeImage = document.getElementById('removeImage');
+        this.videoLink = document.getElementById('videoLink');
+        this.videoPreviewContainer = document.getElementById('videoPreviewContainer');
+        this.videoPreview = document.getElementById('videoPreview');
+        this.removeVideo = document.getElementById('removeVideo');
+        this.mediaPreview = document.getElementById('mediaPreview');
+        this.uploadError = document.getElementById('uploadError');
+        this.MAX_FILE_SIZE = 20 * 1024 * 1024;
+        this.ALLOWED_TYPES = ['image/jpeg', 'image/png', 'image/gif'];
+        this.postService = new PostService();
+    }
 }
 
 PostModalManager.prototype.init = function () {
-    lucide.createIcons();
     this.createPostBtn.addEventListener('click', this.openModal.bind(this));
     this.cancelBtn.addEventListener('click', this.closeModal.bind(this));
     this.modal.addEventListener('click', (e) => {

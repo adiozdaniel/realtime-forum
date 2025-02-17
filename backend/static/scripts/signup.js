@@ -17,9 +17,6 @@ document.addEventListener("DOMContentLoaded", function () {
 	// Initialize AuthService
 	const authService = new AuthService();
 
-	// Initialize Lucide icons
-	lucide.createIcons();
-
 	// Password visibility toggle
 	passwordToggle.addEventListener("click", () => {
 		const type = passwordInput.type === "password" ? "text" : "password";
