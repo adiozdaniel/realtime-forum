@@ -13,7 +13,7 @@
       <div class="profile-header">
         <div class="profile-image-container">
           <img
-            src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=300&h=300&fit=crop"
+            src=""
             alt="Profile"
             id="profileImage"
           />
@@ -23,7 +23,7 @@
           <input type="file" id="imageUpload" accept="image/*" hidden />
         </div>
         <div class="profile-info">
-          <h1>Josie Anderson</h1>
+          <h1 id="username"></h1>
           <div class="bio-container">
             <p id="bioText"></p>
             <button class="edit-bio-button" id="editBioButton">
@@ -82,4 +82,5 @@
     </div>
   </div>
 </div>
+<script type="module" src="/static/scripts/profile.js"></script>
 {{ end }}
