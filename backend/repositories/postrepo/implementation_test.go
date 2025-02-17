@@ -41,7 +41,7 @@ func CreateDb() *sql.DB {
 func TestCreatePost(t *testing.T) {
 	db := CreateDb()
 	postrepo := &PostRepository{DB: db}
-	post := &Post{PostID: "2", PostAuthor: "Makarios", PostTitle: "", PostContent: "", PostCategory: "", UserID: "", HasComments: false, CreatedAt: time.Now(), UpdatedAt: time.Now(), Likes: []*Like{}, Comments: []*Comment{}}
+	post := &Post{PostID: "", PostAuthor: "Makarios", PostTitle: "", PostContent: "", PostCategory: "", UserID: "", HasComments: false, CreatedAt: time.Now(), UpdatedAt: time.Now(), Likes: []*Like{}, Comments: []*Comment{}}
 	if _, err := postrepo.CreatePost(post); err != nil {
 		t.Errorf("expected %v, got %v", nil, err)
 	}
@@ -83,8 +83,14 @@ func TestListPosts(t *testing.T) {
 	}
 }
 
-func TestGetLikesByPostID(t *testing.T) {
-}
+// func TestGetLikesByPostID(t *testing.T) {
+// 	db := CreateDb()
+// 	postrepo := &PostRepository{DB: db}
+
+// 	if _, err := postrepo.GetLikesByPostID(""); err != nil {
+// 		t.Errorf("expected %v, got %v", nil, err)
+// 	}
+// }
 
 func TestGetCommentsByPostID(t *testing.T) {
 }
