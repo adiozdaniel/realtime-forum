@@ -3,6 +3,7 @@ import { formatTimeAgo } from "./timestamps.js";
 import { handleCommentSubmit, loadComments } from "./comment.js";
 import { postLikeState, SAMPLE_POSTS, SAMPLE_COMMENTS } from "./data.js";
 import { getUserData } from "./authmiddleware.js";
+import { PostModalManager } from "./createposts.js";
 
 const postsContainer = document.querySelector("#postsContainer");
 
@@ -118,6 +119,9 @@ PostManager.prototype.handlePostLikes = async function (e) {
 PostManager.prototype.init = async function () {
 	const posts = await this.postService.fetchPosts();
 	const postList = Array.isArray(posts) ? posts : posts.data;
+
+	if (postList === null) return;
+
 	postList.forEach(post => SAMPLE_POSTS.push(post));
 	SAMPLE_POSTS.forEach(post => {
 		post.post_timeAgo = formatTimeAgo(post.created_at);
@@ -137,6 +141,9 @@ PostManager.prototype.init = async function () {
 const postManager = new PostManager();
 document.addEventListener("DOMContentLoaded", () => {
 	postManager.init();
+
+	const postModal = new PostModalManager();
+	postModal.init();
 });
 
 export { postManager, SAMPLE_POSTS };
