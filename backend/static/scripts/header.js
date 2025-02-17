@@ -66,14 +66,20 @@ Header.prototype.signOutUser = async function () {
 	}
 };
 
-// Initialize function
-Header.prototype.init = async function () {
-	// Automatically log out if on /auth
+Header.prototype.handleAuth = async function () {
 	if (window.location.pathname === "/auth") {
-		this.signOutUser();
-		this.authButton.textContent = "Sign In";
+		if (this.authButton.textContent === "Sign In") return;
 	}
 
+	if (this.authButton.textContent === "Sign Out") this.signOutUser();
+
+	if (window.location.pathname !== "/auth") {
+		if(this.authButton.textContent === "Sign In") window.location.href = "/auth"
+	}
+};
+
+// Initialize function
+Header.prototype.init = async function () {
 	const userdata = await getUserData();
 
 	if (userdata) {
@@ -82,10 +88,16 @@ Header.prototype.init = async function () {
 
 	this.authButton.textContent = userdata ? "Sign Out" : "Sign In";
 
+	// Automatically log out if on /auth
+	if (window.location.pathname === "/auth")
+		if (userdata) window.location.href = "/"
+
+
 	// Event listeners
 	this.menuToggleBtn?.addEventListener("click", this.toggleMobileMenu);
 	this.searchInput?.addEventListener("input", this.handleSearch);
 	this.darkModeToggle?.addEventListener("click", this.toggleDarkMode);
+	this.authButton?.addEventListener("click", this.handleAuth.bind(this));
 	// Check for saved dark mode preference
 	const savedDarkMode = localStorage.getItem("darkMode") === "true";
 	if (savedDarkMode) {
