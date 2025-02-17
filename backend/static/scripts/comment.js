@@ -1,5 +1,5 @@
 import { CommentService } from "./commentservice.js";
-import { postManager } from "./index.js";
+import { postManager } from "./postmanager.js";
 import { SAMPLE_COMMENTS } from "./data.js";
 import { formatTimeAgo } from "./timestamps.js";
 import { getUserData } from "./authmiddleware.js";
