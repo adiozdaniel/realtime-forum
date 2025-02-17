@@ -66,6 +66,12 @@ func TestUpdatePost(t *testing.T) {
 }
 
 func TestDeletePost(t *testing.T) {
+	db := CreateDb()
+	postrepo := &PostRepository{DB: db}
+
+	if err := postrepo.DeletePost(""); err != nil {
+		t.Errorf("expected %v, got %v", nil, err)
+	}
 }
 
 func TestListPosts(t *testing.T) {
