@@ -75,6 +75,12 @@ func TestDeletePost(t *testing.T) {
 }
 
 func TestListPosts(t *testing.T) {
+	db := CreateDb()
+	postrepo := &PostRepository{DB: db}
+
+	if _, err := postrepo.ListPosts(); err != nil {
+		t.Errorf("expected %v, got %v", nil, err)
+	}
 }
 
 func TestGetLikesByPostID(t *testing.T) {
