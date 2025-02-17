@@ -1,27 +1,21 @@
 import { PostService } from "./postsservice.js";
 import { formatTimeAgo } from "./timestamps.js";
-// Import comment functions
 import { handleCommentSubmit, loadComments } from "./comment.js";
-import { API_ENDPOINTS, SAMPLE_POSTS, SAMPLE_COMMENTS } from "./data.js";
+import { postLikeState, SAMPLE_POSTS, SAMPLE_COMMENTS } from "./data.js";
+import { getUserData } from "./authmiddleware.js";
 
-// DOM Elements
 const postsContainer = document.querySelector("#postsContainer");
 
-// PostManager class encapsulates post and comment management
 class PostManager {
 	constructor() {
-		this.likeState = {
-			posts: {},
-			comments: {},
-		};
+		this.likeState = postLikeState;
 		this.postService = new PostService();
 	}
+}
 
-	// Create post HTML
-	createPostHTML(post) {
-		const isLiked =
-			this.likeState.posts[post.post_id]?.likedBy.has("current-user");
-		return `
+PostManager.prototype.createPostHTML = function (post) {
+	const isLiked = this.likeState.posts[post.post_id]?.likedBy.has("current-user");
+	return `
       <article class="post-card" data-post-id="${post.post_id}">
         <div class="flex items-start justify-between">
           <div>
@@ -32,17 +26,11 @@ class PostManager {
         </div>
         <div class="post-footer">
           <div class="post-actions">
-            <button class="post-action-button like-button ${
-							isLiked ? "liked text-blue-600" : ""
-						}" data-post-id="${post.post_id}">
+            <button class="post-action-button like-button ${isLiked ? "liked text-blue-600" : ""}" data-post-id="${post.post_id}">
               <i data-lucide="thumbs-up"></i>
-              <span class="likes-count">${
-								this.likeState.posts[post.post_id]?.count || 0
-							}</span>
+              <span class="likes-count">${this.likeState.posts[post.post_id]?.count || 0}</span>
             </button>
-            <button class="post-action-button comment-toggle" data-post-id="${
-							post.post_id
-						}">
+            <button class="post-action-button comment-toggle" data-post-id="${post.post_id}">
               <i data-lucide="message-square"></i>
               <span class="comments-count">${post.post_comments}</span>
             </button>
@@ -62,208 +50,92 @@ class PostManager {
         </div>
       </article>
     `;
+};
+
+PostManager.prototype.toggleComments = function (e) {
+	const commentButton = e.target.closest(".comment-toggle");
+	if (!commentButton) return;
+	const postId = commentButton.dataset.postId;
+	const commentsSection = document.querySelector(`#comments-${postId}`);
+	if (commentsSection.classList.contains("hidden")) {
+		loadComments(postId);
 	}
+	commentsSection.classList.toggle("hidden");
+};
 
-	// Toggle comments section visibility
-	toggleComments(e) {
-		const commentButton = e.target.closest(".comment-toggle");
-		if (!commentButton) return;
+PostManager.prototype.renderPosts = function (posts = SAMPLE_POSTS) {
+	postsContainer.innerHTML = posts.map(post => this.createPostHTML(post)).join("");
+	this.attachPostEventListeners();
+};
 
-		const postId = commentButton.dataset.postId;
-		const commentsSection = document.querySelector(`#comments-${postId}`);
+PostManager.prototype.attachPostEventListeners = function () {
+	document.querySelectorAll(".like-button").forEach(button => {
+		button.addEventListener("click", (e) => this.handlePostLikes(e));
+	});
+	document.querySelectorAll(".comment-toggle").forEach(button => {
+		button.addEventListener("click", (e) => this.toggleComments(e));
+	});
+	document.querySelectorAll(".comment-form").forEach(form => {
+		form.addEventListener("submit", (e) => handleCommentSubmit(e));
+	});
+};
 
-		if (commentsSection.classList.contains("hidden")) {
-			loadComments(postId);
-		}
-
-		commentsSection.classList.toggle("hidden");
+PostManager.prototype.handlePostLikes = async function (e) {
+	const button = e.currentTarget.closest(".like-button");
+	if (!button) return;
+	const postId = button.getAttribute("data-post-id");
+	if (!postId) return;
+	const likeData = (this.likeState.posts[postId] ??= { count: 0, likedBy: new Set() });
+	const currentUser = await getUserData();
+	if (!currentUser?.user_id) {
+		alert("Please login to like the post");
+		window.location.href = "/auth";
+		return;
 	}
-
-	// Render all posts
-	renderPosts(posts = SAMPLE_POSTS) {
-		postsContainer.innerHTML = posts
-			.map((post) => this.createPostHTML(post))
-			.join("");
-		lucide.createIcons();
-
-		this.attachPostEventListeners();
+	const postData = { post_id: postId, user_id: currentUser.user_id };
+	const res = await this.postService.likePost(postData);
+	if (res.error) {
+		alert(res.message);
+		return;
 	}
-
-	// Attach event listeners to post buttons
-	attachPostEventListeners() {
-		document.querySelectorAll(".like-button").forEach((button) => {
-			button.addEventListener("click", (e) => this.handlePostLikes(e));
-		});
-		document.querySelectorAll(".comment-toggle").forEach((button) => {
-			button.addEventListener("click", (e) => this.toggleComments(e));
-		});
-		document.querySelectorAll(".comment-form").forEach((form) => {
-			form.addEventListener("submit", (e) => handleCommentSubmit(e));
-		});
+	if (res.data) {
+		likeData.count++;
+		likeData.likedBy.add(currentUser.user_id);
+		button.classList.add("liked", "text-blue-600");
+	} else if (res.data === null) {
+		likeData.count = Math.max(0, likeData.count - 1);
+		likeData.likedBy.delete(currentUser.user_id);
+		button.classList.remove("liked", "text-blue-600");
 	}
-
-	// Handle like button click for both posts and comments
-	async handleLike(e) {
-		const button = e.currentTarget.closest(".like-button");
-		if (!button) return;
-
-		const postId = button.getAttribute("data-post-id");
-		if (!postId) return;
-
-		const isComment = button.hasAttribute("data-comment-id");
-		const commentId = isComment ? button.getAttribute("data-comment-id") : null;
-
-		// Retrieve or initialize like state
-		const stateRef = isComment
-			? (this.likeState.comments[postId] ??= {})
-			: (this.likeState.posts[postId] ??= { count: 0, likedBy: new Set() });
-
-		const likeData = isComment
-			? (stateRef[commentId] ??= { count: 0, likedBy: new Set() })
-			: stateRef;
-
-		// Ensure user is logged in
-		const currentUser = this.userData();
-		if (!currentUser?.user_id) {
-			alert("Please login to like the post");
-			window.location.href = "/auth";
-			return;
-		}
-
-		const postData = { post_id: postId, user_id: currentUser.user_id };
-		// const isLiked = likeData.likedBy.has(currentUser.user_id);
-
-		// Call API to toggle like
-		const res = await this.postService.likePost(postData);
-		if (res.error) {
-			alert(res.message);
-			return;
-		}
-
-		let isLiked = false;
-
-		if (res.data) {
-			// Like was added
-			likeData.count++;
-			likeData.likedBy.add(currentUser.user_id);
-			button.classList.add("liked", "text-blue-600");
-			isLiked = true;
-		} else if (res.data === null) {
-			// Like was removed
-			likeData.count = Math.max(0, likeData.count - 1);
-			likeData.likedBy.delete(currentUser.user_id);
-			button.classList.remove("liked", "text-blue-600");
-			isLiked = false;
-		}
-
-		// Update UI
-		const likesCount = button.querySelector(".likes-count");
-		if (likesCount) {
-			likesCount.textContent = likeData.count;
-		}
-
-		button.classList.add("like-animation");
-		setTimeout(() => button.classList.remove("like-animation"), 300);
+	const likesCount = button.querySelector(".likes-count");
+	if (likesCount) {
+		likesCount.textContent = likeData.count;
 	}
+	button.classList.add("like-animation");
+	setTimeout(() => button.classList.remove("like-animation"), 300);
+};
 
-	async handlePostLikes(e) {
-		const button = e.currentTarget.closest(".like-button");
-		if (!button) return;
-
-		const postId = button.getAttribute("data-post-id");
-		if (!postId) return;
-
-		// Retrieve or initialize like state for the post
-		const likeData = (this.likeState.posts[postId] ??= {
-			count: 0,
+PostManager.prototype.init = async function () {
+	const posts = await this.postService.fetchPosts();
+	const postList = Array.isArray(posts) ? posts : posts.data;
+	postList.forEach(post => SAMPLE_POSTS.push(post));
+	SAMPLE_POSTS.forEach(post => {
+		post.post_timeAgo = formatTimeAgo(post.created_at);
+		post.post_likes = post?.post_likes || post.likes?.length;
+		post.post_comments = post?.post_comments || post.comments?.length || 0;
+		if (post.post_hasComments) {
+			SAMPLE_COMMENTS[post.post_id] = post.comments;
+		}
+		post.post_likes = this.likeState.posts[post.post_id] = {
+			count: post?.post_likes || 0,
 			likedBy: new Set(),
-		});
-
-		// Ensure user is logged in
-		const currentUser = this.userData();
-		if (!currentUser?.user_id) {
-			alert("Please login to like the post");
-			window.location.href = "/auth";
-			return;
-		}
-
-		const postData = { post_id: postId, user_id: currentUser.user_id };
-
-		// Call API to toggle like for the post
-		const res = await this.postService.likePost(postData);
-		if (res.error) {
-			alert(res.message);
-			return;
-		}
-
-		let isLiked = false;
-
-		if (res.data) {
-			// Like was added
-			likeData.count++;
-			likeData.likedBy.add(currentUser.user_id);
-			button.classList.add("liked", "text-blue-600");
-			isLiked = true;
-		} else if (res.data === null) {
-			// Like was removed
-			likeData.count = Math.max(0, likeData.count - 1);
-			likeData.likedBy.delete(currentUser.user_id);
-			button.classList.remove("liked", "text-blue-600");
-			isLiked = false;
-		}
-
-		// Update UI
-		const likesCount = button.querySelector(".likes-count");
-		if (likesCount) {
-			likesCount.textContent = likeData.count;
-		}
-
-		button.classList.add("like-animation");
-		setTimeout(() => button.classList.remove("like-animation"), 300);
-	}
-
-	userData() {
-		try {
-			const user = localStorage.getItem("userdata");
-			return user ? JSON.parse(user) : null;
-		} catch (error) {
-			console.error("Error retrieving user data:", error);
-			return null;
-		}
-	}
-
-	// Initialize the application
-	async init() {
-		const posts = await this.postService.fetchPosts();
-		const postList = Array.isArray(posts) ? posts : posts.data;
-
-		postList.forEach((post) => SAMPLE_POSTS.push(post));
-
-		// fetchComments();
-
-		SAMPLE_POSTS.forEach((post) => {
-			post.post_timeAgo = formatTimeAgo(post.created_at);
-			post.post_likes = post?.post_likes || post.likes?.length;
-			post.post_comments = post?.post_comments || post.comments?.length || 0;
-
-			if (post.post_hasComments) {
-				SAMPLE_COMMENTS[post.post_id] = post.comments;
-			}
-
-			post.post_likes = this.likeState.posts[post.post_id] = {
-				count: post?.post_likes || 0,
-				likedBy: new Set(),
-			};
-		});
-
-		if (postsContainer) this.renderPosts();
-	}
-}
+		};
+	});
+	if (postsContainer) this.renderPosts();
+};
 
 const postManager = new PostManager();
-// Initialize
 document.addEventListener("DOMContentLoaded", () => {
-	// const postManager = new PostManager();
 	postManager.init();
 });
 
