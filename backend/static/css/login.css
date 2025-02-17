@@ -389,3 +389,63 @@
 .dark-mode .form-group input:focus {
     border-color: var(--primary-color);
 }
+/* Password Strength Colors - Light Mode */
+.bar {
+    height: 4px;
+    flex: 1;
+    background-color: var(--gray-200);
+    border-radius: 2px;
+    transition: background-color 0.2s;
+}
+
+.bar.weak {
+    background-color: #ef4444;  /* Red-500 */
+}
+
+.bar.medium {
+    background-color: #f59e0b;  /* Amber-500 */
+}
+
+.bar.strong {
+    background-color: #10b981;  /* Emerald-500 */
+}
+
+/* Password Strength Colors - Dark Mode */
+.dark-mode .bar {
+    background-color: #333333;  /* Darker base color */
+}
+
+.dark-mode .bar.weak {
+    background-color: #f87171;  /* Red-400 - Brighter for dark mode */
+}
+
+.dark-mode .bar.medium {
+    background-color: #fbbf24;  /* Amber-400 - Brighter for dark mode */
+}
+
+.dark-mode .bar.strong {
+    background-color: #34d399;  /* Emerald-400 - Brighter for dark mode */
+}
+
+/* Strength Text Colors */
+.strength-text {
+    font-size: 0.75rem;
+    color: var(--gray-600);
+    min-width: 100px;
+}
+
+.dark-mode .strength-text {
+    color: #a3a3a3;  /* Better contrast in dark mode */
+}
+
+.dark-mode .strength-text.weak {
+    color: #f87171;  /* Red-400 */
+}
+
+.dark-mode .strength-text.medium {
+    color: #fbbf24;  /* Amber-400 */
+}
+
+.dark-mode .strength-text.strong {
+    color: #34d399;  /* Emerald-400 */
+}
