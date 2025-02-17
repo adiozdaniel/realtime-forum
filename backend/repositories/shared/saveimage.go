@@ -9,7 +9,7 @@ import (
 
 // SaveImage handles file uploads and saves the image to a specified directory.
 // It returns the image path or an error.
-func (s *SharedConfig) SaveImage(r *http.Request) (string, error) {
+func (s *SharedConfig) SaveImage(r *http.Request, fileName string) (string, error) {
 	err := r.ParseMultipartForm(20 << 20) // 20MB max file size
 	if err != nil {
 		return "", errors.New("failed to parse form data")
@@ -18,12 +18,12 @@ func (s *SharedConfig) SaveImage(r *http.Request) (string, error) {
 	var imagePath string
 
 	// Handle file upload
-	file, handler, err := r.FormFile("profileImage")
+	file, _, err := r.FormFile("profileImage")
 	if err == nil {
 		defer file.Close()
 
 		// Save the file to a directory profile
-		imagePath = "./static/profiles/" + handler.Filename
+		imagePath = "./static/profiles/" + fileName
 		dst, err := os.Create(imagePath)
 		if err != nil {
 			return "", errors.New("failed to save image")
