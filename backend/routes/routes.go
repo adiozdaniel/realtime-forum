@@ -15,12 +15,11 @@ func (r *Routes) RegisterRoutes(mux *http.ServeMux) http.Handler {
 	mux.Handle("/api/posts/create", r.auth.AuthMiddleware(http.HandlerFunc(r.postsRepo.CreatePost)))
 	// mux.Handle("/api/posts/delete", r.auth.AuthMiddleware(http.HandlerFunc(r.postsRepo.AllPosts)))
 	// mux.Handle("/api/posts/update", r.auth.AuthMiddleware(http.HandlerFunc(r.postsRepo.AllPosts)))
-	mux.Handle("/api/posts/like", r.auth.AuthMiddleware(http.HandlerFunc(r.postsRepo.AddLike)))
-	mux.Handle("/api/posts/dislike", r.auth.AuthMiddleware(http.HandlerFunc(r.postsRepo.Dislike)))
+	mux.Handle("/api/posts/like", r.auth.AuthMiddleware(http.HandlerFunc(r.postsRepo.PostAddLike)))
 	// === End Posts ===
 
 	// === Comments ===
-	// mux.Handle("/api/comments/create", r.auth.AuthMiddleware(http.HandlerFunc(r.authRepo.AllPosts)))
+	mux.Handle("/api/posts/comments/create", r.auth.AuthMiddleware(http.HandlerFunc(r.postsRepo.CreatePostComment)))
 	// mux.Handle("/api/comments/delete", r.auth.AuthMiddleware(http.HandlerFunc(r.authRepo.AllPosts)))
 	// mux.Handle("/api/comments/update", r.auth.AuthMiddleware(http.HandlerFunc(r.authRepo.AllPosts)))
 	// mux.Handle("/api/comments/like", r.auth.AuthMiddleware(http.HandlerFunc(r.authRepo.AllPosts)))
@@ -28,7 +27,7 @@ func (r *Routes) RegisterRoutes(mux *http.ServeMux) http.Handler {
 	// === End Comments ===
 
 	// === Auth ===
-
+	mux.Handle("/api/auth/uploadProfilePic", r.auth.AuthMiddleware(http.HandlerFunc(r.authRepo.UploadProfilePic)))
 	// === End Auth ===
 
 	// ===== End Protected RESTFUL API Endpoints ===== //

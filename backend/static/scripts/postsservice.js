@@ -1,8 +1,10 @@
+import { getUserData } from "./authmiddleware.js";
+import { API_ENDPOINTS } from "./data.js";
+
 // PostService class for handling post-related API requests
 export class PostService {
 	constructor() {
-		this.apiEndpoints = window.API_ENDPOINTS;
-		this.userData = window.RESDATA.userData;
+		this.apiEndpoints = API_ENDPOINTS;
 	}
 }
 
@@ -23,7 +25,8 @@ PostService.prototype.fetchPosts = async function () {
 
 // Method to create a new post
 PostService.prototype.createPost = async function (postData) {
-	if (!this.userData?.user_id) {
+	const userData = await getUserData();
+	if (!userData) {
 		return {
 			error: true,
 			message: "You need to login to create a post!",
@@ -54,9 +57,9 @@ PostService.prototype.createPost = async function (postData) {
 	const formData = {
 		post_title: postData.PostTitle,
 		post_content: postData.PostContent,
-		user_id: this.userData.user_id,
+		user_id: userData.user_id,
 		post_category: postData.PostCategory,
-		post_author: this.userData.user_name,
+		post_author: userData.user_name,
 	};
 
 	try {
@@ -114,7 +117,13 @@ PostService.prototype.deletePost = async function (postId) {
 
 // Method to like a post by ID
 PostService.prototype.likePost = async function (postData) {
-	console.log("received postData:", postData);
+	if (!postData.user_id) {
+		return {
+			error: true,
+			message: "You need to login to like the post!",
+		};
+	}
+
 	try {
 		const response = await fetch(this.apiEndpoints.likepost, {
 			method: "POST",
@@ -132,11 +141,15 @@ PostService.prototype.likePost = async function (postData) {
 };
 
 // Method to dislike a post by ID
-PostService.prototype.dislikePost = async function (postId) {
+PostService.prototype.dislikePost = async function (postData) {
+	const user = localStorage.getItem("userdata");
+	const userData = JSON.parse(user);
+	postData.user_id = userData.data.user_id;
+
 	try {
 		const response = await fetch(this.apiEndpoints.dislikepost, {
 			method: "POST",
-			body: JSON.stringify(postId),
+			body: JSON.stringify(postData),
 			headers: {
 				"Content-Type": "application/json",
 			},

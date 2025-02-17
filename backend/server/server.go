@@ -61,6 +61,8 @@ func (s *Server) Start(ctx context.Context) {
 	<-ctx.Done()
 	log.Println("Server shutting down...")
 
+	s.app.Db.Close()
+
 	// use a timeout context to shut down the server
 	clsCtx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()

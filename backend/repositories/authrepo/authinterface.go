@@ -4,7 +4,7 @@ package authrepo
 type UserRepo interface {
 	CreateUser(user *User) error
 	GetUserByEmail(email string) (*User, error)
-	GetUserByID(id string) (*User, error)
-	UpdateUser(user *User) error
+	GetUserByID(user *User) (*User, error)
+	UpdateUser(user *User) (*User, error)
 	DeleteUser(id string) error
 }

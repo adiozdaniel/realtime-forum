@@ -1,8 +1,9 @@
+import { API_ENDPOINTS } from "./data.js";
+
 // AuthService class for handling authentication-related API requests
 class AuthService {
 	constructor() {
-		this.apiEndpoints = window.API_ENDPOINTS;
-		this.userData = window.RESDATA?.userData || null;
+		this.apiEndpoints = API_ENDPOINTS;
 	}
 }
 
@@ -24,17 +25,15 @@ AuthService.prototype.login = async function (credentials) {
 			body: JSON.stringify(credentials),
 		});
 
-		localStorage.setItem('res', JSON.stringify(response));
-
 		return response.json();
 	} catch (error) {
-		throw new Error(response.message || "Failed to log in");
+		return error;
 	}
 };
 
 // Method to register a new user
-AuthService.prototype.register = async function (userData) {
-	if (!userData?.email || !userData?.password || !userData?.user_name) {
+AuthService.prototype.register = async function (formData) {
+	if (!formData?.email || !formData?.password || !formData?.user_name) {
 		return (data = {
 			error: true,
 			message: "Please provide all required fields!",
@@ -44,17 +43,15 @@ AuthService.prototype.register = async function (userData) {
 	try {
 		const response = await fetch(this.apiEndpoints.register, {
 			method: "POST",
-			body: JSON.stringify(userData),
+			body: JSON.stringify(formData),
 			headers: {
 				"Content-Type": "application/json",
 			},
 		});
 
-		localStorage.setItem('res', JSON.stringify(response));
-
 		return response.json();
 	} catch (error) {
-		throw new Error(response.message || "Failed to register");
+		return error;
 	}
 };
 
@@ -67,7 +64,7 @@ AuthService.prototype.logout = async function () {
 
 		return response.json();
 	} catch (error) {
-		throw new Error(response.message || "Failed to log out");
+		return error;
 	}
 };
 
@@ -80,9 +77,21 @@ AuthService.prototype.isAuthenticated = async function () {
 
 		return response.json();
 	} catch (error) {
-		throw new Error(
-			response.message || "Failed to check authentication status"
-		);
+		return error;
+	}
+};
+
+// Method to upload a profile picture
+AuthService.prototype.uploadProfilePic = async function (formData) {
+	try {
+		const response = await fetch(this.apiEndpoints.uploadProfilePic, {
+			method: "POST",
+			body: formData,
+		});
+
+		return response.json();
+	} catch (error) {
+		return error;
 	}
 };
 

@@ -4,6 +4,7 @@ import (
 	"errors"
 
 	"forum/repositories/shared"
+	"time"
 
 	"golang.org/x/crypto/bcrypt"
 )
@@ -66,4 +67,34 @@ func (u *UserService) Login(email, password string) (*User, error) {
 	}
 
 	return user, nil
+}
+
+func (u *UserService) GetUserByID(user *User) (*User, error) {
+	if user.UserID == "" {
+		return nil, errors.New("bad request")
+	}
+
+	return u.user.GetUserByID(user)
+}
+
+func (u *UserService) UpdateUser(user *User) (*User, error) {
+	if user.UserID == "" {
+		return nil, errors.New("bad request")
+	}
+
+	if user.Image == "" {
+		return nil, errors.New("bad request")
+	}
+
+	image := user.Image
+
+	updatedUser, err := u.GetUserByID(user)
+	if err != nil {
+		return nil, errors.New("this user does not exist")
+	}
+
+	updatedUser.Image = image
+	updatedUser.UpdatedAt = time.Now()
+
+	return u.user.UpdateUser(updatedUser)
 }

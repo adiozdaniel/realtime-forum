@@ -17,9 +17,6 @@ document.addEventListener("DOMContentLoaded", function () {
 	// Initialize AuthService
 	const authService = new AuthService();
 
-	// Initialize Lucide icons
-	lucide.createIcons();
-
 	// Password visibility toggle
 	passwordToggle.addEventListener("click", () => {
 		const type = passwordInput.type === "password" ? "text" : "password";
@@ -169,7 +166,7 @@ document.addEventListener("DOMContentLoaded", function () {
 		// Handle success or error based on the response
 		if (!res.error) {
 			console.log("Registration successful:", res.message);
-			localStorage.setItem("res", JSON.stringify(response.data));
+			localStorage.setItem("res", JSON.stringify(res.data));
 			// Redirect or show a success message
 			window.location.href = "/";
 		} else {

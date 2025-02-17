@@ -1,4 +1,4 @@
-import { PostManager, SAMPLE_POSTS } from "./index.js";
+import { PostManager, SAMPLE_POSTS } from "./postmanager.js";
 const sidebar = document.querySelector("#sidebar");
 const allCategoriesBtn = document.querySelector("#allCategories");
 const categoryDropdown = document.querySelector("#categoryDropdown");

@@ -26,7 +26,7 @@ func (p *PostService) CreatePost(post *Post) (*Post, error) {
 	if post.PostTitle == "" {
 		return nil, errors.New("post title cannot be empty")
 	}
-	
+
 	if post.PostContent == "" {
 		return nil, errors.New("post content cannot be empty")
 	}
@@ -47,24 +47,50 @@ func (p *PostService) ListPosts() ([]*Post, error) {
 	return posts, nil
 }
 
-func (p *PostService) AddLike(req *PostLike) (*PostLike, error) {
-	if req.PostID == "" {
-		return nil, errors.New("post ID cannot be empty")
-	}
-	if req.UserID == "" {
+func (p *PostService) PostAddLike(like *Like) (*Like, error) {
+	if like.UserID == "" {
 		return nil, errors.New("user ID cannot be empty")
 	}
 
-	return p.post.AddLike(req)
+	haslike, err := p.post.HasUserLiked(like.PostID, like.UserID, "Post")
+	if err != nil {
+		return nil, err
+	}
+
+	if haslike != "" {
+		like.LikeID = haslike
+		return nil, p.DisLike(like)
+	}
+
+	like.LikeID, _ = p.shared.GenerateUUID()
+	like.CreatedAt = time.Now()
+	return p.post.AddLike(like)
 }
 
-func (p *PostService) DisLike(req *PostLike) (*PostLike, error) {
-	if req.PostID == "" {
-		return nil, errors.New("post ID cannot be empty")
+func (p *PostService) DisLike(dislike *Like) error {
+	if dislike.LikeID == "" {
+		return errors.New("like ID cannot be empty")
 	}
-	if req.UserID == "" {
+
+	return p.post.DisLike(dislike)
+}
+
+// CreateComment creates a new comment
+func (p *PostService) CreatePostComment(comment *Comment) (*Comment, error) {
+	if comment.UserID == "" {
 		return nil, errors.New("user ID cannot be empty")
 	}
 
-	return p.post.DisLike(req)
+	if comment.PostID == "" {
+		return nil, errors.New("post ID cannot be empty")
+	}
+
+	if comment.Content == "" {
+		return nil, errors.New("comment content cannot be empty")
+	}
+
+	comment.CommentID, _ = p.shared.GenerateUUID()
+	comment.CreatedAt = time.Now()
+	comment.UpdatedAt = time.Now()
+	return p.post.CreateComment(comment)
 }

@@ -22,9 +22,9 @@ type User struct {
 	UserID    string    `json:"user_id"`
 	Email     string    `json:"email"`
 	Password  string    `json:"password"`
-	UserName string    `json:"user_name"`
-	Image     string    `json:"image,omitempty"`
-	Role      string    `json:"role,omitempty"`
+	UserName  string    `json:"user_name"`
+	Image     string    `json:"image"`
+	Role      string    `json:"role"`
 	CreatedAt time.Time `json:"created_at"`
 	UpdatedAt time.Time `json:"updated_at"`
 }
