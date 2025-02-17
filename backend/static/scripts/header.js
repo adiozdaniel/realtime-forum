@@ -1,4 +1,4 @@
-import { API_ENDPOINTS, userData } from "./data.js";
+import { API_ENDPOINTS } from "./data.js";
 // import { PostManager, SAMPLE_POSTS } from "./index.js";
 // import { sidebar } from "./sidebar.js";
 
@@ -68,7 +68,6 @@ Header.prototype.signOutUser = async function () {
 
 // Initialize function
 Header.prototype.init = async function () {
-	console.log("initializing data");
 	// Automatically log out if on /auth
 	if (window.location.pathname === "/auth") {
 		this.signOutUser();

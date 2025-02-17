@@ -23,19 +23,6 @@ const API_ENDPOINTS = {
 	dislikecomment: "/api/comments/dislike",
 };
 
-// userData holds authenticated user's data
-const userData = {
-	data: (() => {
-		try {
-			const user = localStorage.getItem("userdata");
-			return user ? JSON.parse(user) : null;
-		} catch (error) {
-			console.error("Error retrieving user data:", error);
-			return null;
-		}
-	})(),
-};
-
 // Constants
 const CONSTANTS = {
 	MIN_PASSWORD_LENGTH: 8,
@@ -148,7 +135,6 @@ const SAMPLE_COMMENTS = {};
 
 export {
 	API_ENDPOINTS,
-	userData,
 	SAMPLE_POSTS,
 	CONSTANTS,
 	commentLikeState,

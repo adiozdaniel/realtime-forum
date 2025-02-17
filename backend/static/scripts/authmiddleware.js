@@ -3,7 +3,6 @@ import { AuthService } from "./authservice.js";
 class Authmiddleware {
 	constructor() {
 		this.authService = new AuthService();
-		this.authButton = document.querySelector(".sign-in-button");
 	}
 
 	// Authchecker method to check if the user is authenticated
@@ -15,15 +14,10 @@ class Authmiddleware {
 			return null;
 		}
 
-		localStorage.removeItem("userdata");
-
 		if (isAuthenticated?.data) {
-			localStorage.setItem("userdata", JSON.stringify(isAuthenticated.data));
-			this.authButton.textContent = "Sign Out";
 			return isAuthenticated.data;
 		}
 
-		this.authButton.textContent = "Sign In";
 		return null;
 	}
 }
