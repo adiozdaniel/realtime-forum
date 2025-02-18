@@ -139,9 +139,6 @@ CommentManager.prototype.handleCommentSubmit = async function (e) {
 };
 
 CommentManager.prototype.attachEventListeners = function () {
-	document.querySelectorAll(".comment-form").forEach((form) => {
-		form.addEventListener("submit", this.handleCommentSubmit.bind(this));
-	});
 	document.querySelectorAll(".comments-section").forEach((section) => {
 		const postId = section.id.replace("comments-", "");
 		this.loadComments(postId);
