@@ -83,11 +83,11 @@ Header.prototype.handleAuth = async function () {
 Header.prototype.init = async function () {
 	const userdata = await getUserData();
 
-	if (userdata) {
-		this.profileImage.src = userdata.image;
-	} else {
-		this.profileImage.src = "/static/profiles/avatar.jpg";
-	}
+	// Set the profile image with a fallback in case of error
+	this.profileImage.src = userdata?.image;
+	this.profileImage.onerror = () => {
+		this.profileImage.src = '/static/profiles/avatar.jpg';
+	};
 
 	this.authButton.textContent = userdata ? "Sign Out" : "Sign In";
 
