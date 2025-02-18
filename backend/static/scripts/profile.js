@@ -195,7 +195,7 @@ ProfileDashboard.prototype.handleImageUpload = async function (e) {
 
 	// Upload the file to the server
 	const formData = new FormData();
-	formData.append("profileImage", file);
+	formData.append("image", file);
 
 	try {
 		const user = await this.authService.uploadProfilePic(formData);

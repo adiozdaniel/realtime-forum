@@ -18,7 +18,7 @@ func (s *SharedConfig) SaveImage(r *http.Request, fileName string) (string, erro
 	var imagePath string
 
 	// Handle file upload
-	file, _, err := r.FormFile("profileImage")
+	file, _, err := r.FormFile("image")
 	if err == nil {
 		defer file.Close()
 
