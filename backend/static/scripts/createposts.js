@@ -19,6 +19,9 @@ class PostModalManager {
         this.MAX_FILE_SIZE = 20 * 1024 * 1024;
         this.ALLOWED_TYPES = ['image/jpeg', 'image/png', 'image/gif'];
         this.postService = new PostService();
+
+        // Temporary storage for uploaded image data
+        this.tempImageData = null;
     }
 }
 
@@ -48,9 +51,11 @@ PostModalManager.prototype.closeModal = function () {
     this.mediaPreview.classList.add('hidden');
     this.uploadError.classList.add('hidden');
     this.uploadError.textContent = '';
+    this.tempImageData = null;
 };
 
-PostModalManager.prototype.handleImageUpload = function (e) {
+// Handle image upload
+PostModalManager.prototype.handleImageUpload = async function (e) {
     const file = e.target.files[0];
     this.uploadError.textContent = '';
     this.uploadError.classList.add('hidden');
@@ -82,6 +87,21 @@ PostModalManager.prototype.handleImageUpload = function (e) {
         this.imageUpload.value = '';
     };
     reader.readAsDataURL(file);
+
+    const formData = new FormData();
+    formData.append("image", file);
+
+    try {
+        const imgRes = await this.postService.uploadPostImg(formData);
+
+        if (imgRes.error) alert(imgRes.message);
+
+        if (imgRes.data !== null) this.tempImageData = imgRes.data;
+        console.log(imgRes);
+    } catch (error) {
+        this.showUploadError('Error uploading image. Please try again.');
+        this.imageUpload.value = '';
+    }
 };
 
 PostModalManager.prototype.handleVideoLink = function (e) {
@@ -107,6 +127,7 @@ PostModalManager.prototype.removeImagePreview = function () {
     if (this.videoPreviewContainer.classList.contains('hidden')) {
         this.mediaPreview.classList.add('hidden');
     }
+    this.tempImageData = null;
 };
 
 PostModalManager.prototype.removeVideoPreview = function () {
@@ -119,25 +140,25 @@ PostModalManager.prototype.removeVideoPreview = function () {
 
 PostModalManager.prototype.handleSubmit = async function (e) {
     e.preventDefault();
+
     const formData = {
         PostTitle: document.getElementById('postTitle').value,
         PostCategory: document.getElementById('postCategory').value,
         PostContent: document.getElementById('postContent').value,
-        PostImage: null,
+        PostImage: this.tempImageData.img,
+        PostID: this.tempImageData.post_id, 
         PostVideo: this.videoLink.value || null
     };
-    const imageFile = this.imageUpload.files[0];
-    if (imageFile) {
-        formData.image = {
-            name: imageFile.name,
-            type: imageFile.type,
-            size: imageFile.size
-        };
-    }
-    const res = await this.postService.createPost(formData);
-    console.log(res);
-    if (!res.error) {
-        this.closeModal();
+
+    try {
+        const res = await this.postService.createPost(formData);
+        console.log(res);
+        if (!res.error) {
+            this.closeModal();
+        }
+    } catch (error) {
+        console.error('Error creating post:', error);
+        this.showUploadError('Error creating post. Please try again.');
     }
 };
 
@@ -163,4 +184,4 @@ PostModalManager.prototype.getEmbedUrl = function (url) {
     return null;
 };
 
-export {PostModalManager};
+export { PostModalManager };

@@ -60,6 +60,9 @@ PostService.prototype.createPost = async function (postData) {
 		user_id: userData.user_id,
 		post_category: postData.PostCategory,
 		post_author: userData.user_name,
+		post_image: postData.PostImage,
+		post_id: postData.PostID,
+		post_video: postData.PostVideo
 	};
 
 	try {
@@ -160,5 +163,19 @@ PostService.prototype.dislikePost = async function (postData) {
 	} catch (error) {
 		console.error("Error disliking post:", error);
 		return null; // Return null on failure
+	}
+};
+
+// Method to upload a profile picture
+PostService.prototype.uploadPostImg = async function (formData) {
+	try {
+		const response = await fetch(this.apiEndpoints.uploadPostImg, {
+			method: "POST",
+			body: formData,
+		});
+
+		return response.json();
+	} catch (error) {
+		return error;
 	}
 };

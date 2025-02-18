@@ -2,8 +2,9 @@ package postrepo
 
 import (
 	"errors"
-	"forum/repositories/shared"
 	"time"
+
+	"forum/repositories/shared"
 )
 
 // PostService manages post operations
@@ -31,8 +32,11 @@ func (p *PostService) CreatePost(post *Post) (*Post, error) {
 		return nil, errors.New("post content cannot be empty")
 	}
 
+	if post.PostID == "" {
+		post.PostID, _ = p.shared.GenerateUUID()
+	}
+
 	post.AuthorImg = "/static/profiles/" + post.UserID
-	post.PostID, _ = p.shared.GenerateUUID()
 	post.CreatedAt = time.Now()
 	post.UpdatedAt = time.Now()
 	post.HasComments = true

@@ -16,6 +16,7 @@ func (r *Routes) RegisterRoutes(mux *http.ServeMux) http.Handler {
 	// mux.Handle("/api/posts/delete", r.auth.AuthMiddleware(http.HandlerFunc(r.postsRepo.AllPosts)))
 	// mux.Handle("/api/posts/update", r.auth.AuthMiddleware(http.HandlerFunc(r.postsRepo.AllPosts)))
 	mux.Handle("/api/posts/like", r.auth.AuthMiddleware(http.HandlerFunc(r.postsRepo.PostAddLike)))
+	mux.Handle("/api/posts/image", r.auth.AuthMiddleware(http.HandlerFunc(r.postsRepo.UploadPostImage)))
 	// === End Posts ===
 
 	// === Comments ===

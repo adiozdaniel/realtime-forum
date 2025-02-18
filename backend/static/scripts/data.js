@@ -13,6 +13,7 @@ const API_ENDPOINTS = {
 	updatepost: "/api/posts/update",
 	likepost: "/api/posts/like",
 	dislikepost: "/api/posts/dislike",
+	uploadPostImg: "/api/posts/image",
 
 	// comments ENDPOINTS
 	listcommbypost: "/api/comments",

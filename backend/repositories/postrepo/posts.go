@@ -2,6 +2,7 @@ package postrepo
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"net/http"
 )
@@ -134,5 +135,30 @@ func (p *PostsRepo) CreatePostComment(w http.ResponseWriter, r *http.Request) {
 	p.res.Err = false
 	p.res.Message = "Success"
 	p.res.Data = post
+	p.res.WriteJSON(w, *p.res, http.StatusOK)
+}
+
+// Posts image uploads a post image and stores on the server
+func (p *PostsRepo) UploadPostImage(w http.ResponseWriter, r *http.Request){
+	if r.Method != http.MethodPost {
+		p.res.SetError(w, errors.New("wrong format"), http.StatusBadRequest)
+		return
+	}
+
+	postId, _ := p.shared.GenerateUUID()
+	image, err := p.shared.SaveImage(r, postId)
+	if err != nil {
+		p.res.SetError(w, err, http.StatusBadRequest)
+		return
+	}
+
+	data := map[string]string{
+		"img" : image,
+		"post_id": postId,
+	}
+
+	p.res.Err = false
+	p.res.Message = "Success"
+	p.res.Data = data
 	p.res.WriteJSON(w, *p.res, http.StatusOK)
 }
