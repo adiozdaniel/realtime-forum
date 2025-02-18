@@ -72,6 +72,26 @@ func (p *PostService) PostAddLike(like *Like) (*Like, error) {
 	return p.post.AddLike(like)
 }
 
+func (p *PostService) CommentAddLike(like *Like) (*Like, error) {
+	if like.UserID == "" {
+		return nil, errors.New("user ID cannot be empty")
+	}
+
+	haslike, err := p.post.HasUserLiked(like.CommentID, like.UserID, "Comment")
+	if err != nil {
+		return nil, err
+	}
+
+	if haslike != "" {
+		like.LikeID = haslike
+		return nil, p.DisLike(like)
+	}
+
+	like.LikeID, _ = p.shared.GenerateUUID()
+	like.CreatedAt = time.Now()
+	return p.post.AddLike(like)
+}
+
 func (p *PostService) DisLike(dislike *Like) error {
 	if dislike.LikeID == "" {
 		return errors.New("like ID cannot be empty")

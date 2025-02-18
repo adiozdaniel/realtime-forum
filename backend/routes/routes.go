@@ -23,7 +23,7 @@ func (r *Routes) RegisterRoutes(mux *http.ServeMux) http.Handler {
 	mux.Handle("/api/posts/comments/create", r.auth.AuthMiddleware(http.HandlerFunc(r.postsRepo.CreatePostComment)))
 	// mux.Handle("/api/comments/delete", r.auth.AuthMiddleware(http.HandlerFunc(r.authRepo.AllPosts)))
 	// mux.Handle("/api/comments/update", r.auth.AuthMiddleware(http.HandlerFunc(r.authRepo.AllPosts)))
-	// mux.Handle("/api/comments/like", r.auth.AuthMiddleware(http.HandlerFunc(r.authRepo.AllPosts)))
+	mux.Handle("/api/comments/like", r.auth.AuthMiddleware(http.HandlerFunc(r.postsRepo.CommentAddLike)))
 	// mux.Handle("/api/comments/dislike", r.auth.AuthMiddleware(http.HandlerFunc(r.authRepo.AllPosts)))
 	// === End Comments ===
 

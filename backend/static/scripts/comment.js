@@ -107,6 +107,18 @@ CommentManager.prototype.loadComments = function (postId) {
 	if (form) {
 		form.addEventListener("submit", (e) => this.handleCommentSubmit(e));
 	}
+
+	document.querySelectorAll(".comments-section").forEach((section) => {
+		section.addEventListener("click", (event) => {
+			const likeButton = event.target.closest(".like-button");
+
+			if (!likeButton) return;
+			if (!likeButton.dataset.commentId) return;
+
+			this.handleCommentLikes(event);
+		});
+	});
+
 	lucide.createIcons();
 };
 
@@ -116,12 +128,14 @@ CommentManager.prototype.handleCommentSubmit = async function (e) {
 	const input = e.target.querySelector(".comment-input");
 	const content = input.value.trim();
 	if (!content) return;
+
 	const userData = await getUserData();
 	if (!userData) {
 		alert("Please login to comment");
 		window.location.href = "/auth";
 		return;
 	}
+
 	let newComment = {
 		post_id: postId,
 		comment: content,
@@ -133,9 +147,60 @@ CommentManager.prototype.handleCommentSubmit = async function (e) {
 		alert(commentsRes.message);
 		return;
 	}
+
+	if (!SAMPLE_COMMENTS[postId]) SAMPLE_COMMENTS[postId] = [];
+
 	SAMPLE_COMMENTS[postId].push(commentsRes.data);
 	this.loadComments(postId);
 	input.value = "";
+};
+
+CommentManager.prototype.handleCommentLikes = async function (event) {
+	const likeButton = event.target.closest(".like-button");
+	if (!likeButton) return;
+
+	const commentId = likeButton.dataset.commentId;
+	const postId = likeButton.dataset.postId;
+
+	if (!commentId || !postId) return;
+
+	// Get current user (this should be an authenticated user)
+	const userData = await getUserData();
+	if (!userData) {
+		alert("Please log in to like comments.");
+		window.location.href = "/auth";
+		return;
+	}
+
+	// Get current like state
+	const commentState = this.likeState.comments[commentId] || {
+		count: 0,
+		likedBy: new Set(),
+	};
+
+	const likeData = {
+		user_id: userData.user_id,
+		post_id: postId,
+		comment_id: commentId,
+	};
+
+	// Send request to backend
+	const res = await this.commentService.likeComment(likeData);
+
+	if (res.error) {
+		alert(res.message);
+		return;
+	}
+
+	if (res.data) {
+		commentState.count++;
+		likeButton.classList.add("liked", "text-blue-600");
+	} else if (res.data === null) {
+		commentState.count = Math.max(0, likeData.count - 1);
+		likeButton.classList.remove("liked", "text-blue-600");
+	}
+
+	likeButton.querySelector(".likes-count").textContent = commentState.count;
 };
 
 CommentManager.prototype.attachEventListeners = function () {
