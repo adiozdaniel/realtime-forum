@@ -21,6 +21,11 @@ PostManager.prototype.createPostHTML = function (post) {
 		this.likeState.posts[post.post_id]?.likedBy.has("current-user");
 	return `
       <article class="post-card" data-post-id="${post.post_id}">
+	  	${post.post_image ? `
+			<div class="post-img">
+			<img src="${post.post_image}" alt="Post Image"/>
+			</div>` : ''
+		}
         <div class="flex items-start justify-between">
           <div>
             <span class="post-category">${post.post_category}</span>
