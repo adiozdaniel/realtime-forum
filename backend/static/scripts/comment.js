@@ -87,7 +87,8 @@ CommentManager.prototype.loadComments = function (postId) {
 	if (!commentsSection) return;
 
 	// Generate comment HTML without form
-	const commentsHTML = SAMPLE_COMMENTS[postId]
+	const comment = SAMPLE_COMMENTS[postId] || [];
+	const commentsHTML = comment
 		.map((comment) => this.createCommentHTML(comment, postId))
 		.join("");
 
