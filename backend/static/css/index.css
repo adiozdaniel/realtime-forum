@@ -460,6 +460,10 @@ a {
     background-color: #333;
 }
 
+.dark-mode .section-title {
+    color: #e5e5e5;
+}
+
 .dark-mode .search-container input {
     color: #e5e5e5;
 }
@@ -472,6 +476,22 @@ a {
 .dark-mode .post-meta,
 .dark-mode .post-action-button {
     color: #999;
+}
+
+.dark-mode .icon-button {
+    color: #ffffff;
+}
+
+.dark-mode .menu-button {
+    color: #ffffff;
+}
+
+.dark-mode .category-button {
+    color: #ffffff;
+}
+
+.dark-mode .category-list {
+    color: #ffffff;
 }
 
 .dark-mode .icon-button:hover,
@@ -524,6 +544,13 @@ a {
     padding-top: 1rem;
 }
 
+.dark-mode .sidebar-content{
+    color: #e5e5e5;
+}
+
 .dark-mode .post-card .comments-section {
     border-color: #333;
+}
+dark-mode .sidebar-content{
+    color: #e5e5e5;
 }

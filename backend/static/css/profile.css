@@ -31,7 +31,10 @@
     color: var(--gray-600);
 }
 
-/* Profile Page Styling */
+.dark-mode .sidebar-item {
+    color: #ffffff;
+}
+
 #profileContent {
     max-width: 800px;
     margin: 0 auto;
@@ -41,44 +44,60 @@
     gap: 20px;
 }
 
-/* Back Home Button */
 .back-button {
+    background-color: #3b82f6;
+    width: 120px;  /* Changed from 40px to be wider */
+    height: 40px;
+    border-radius: 8px;
     display: flex;
     align-items: center;
-    gap: 8px;
+    justify-content: center;
     cursor: pointer;
-    font-size: 16px;
-    color: var(--primary-color);
-}
-.back-button i {
-    font-size: 18px;
+    transition: background-color 0.2s ease;
 }
 
-/* Profile Card */
+.back-button i {
+    color: white;  /* Explicitly set icon color to white */
+    font-size: 24px;  /* Increased from 20px for slightly larger icon */
+}
+
+.back-button:hover {
+    background-color: #2563eb;
+}
 .profile-card {
     background: var(--background-light);
     padding: 20px;
     border-radius: 10px;
     box-shadow: var(--shadow);
 }
+
 .profile-header {
     display: flex;
     align-items: center;
     gap: 20px;
 }
 
-/* Profile Image */
 .profile-image-container {
-    position: relative;
+    position: relative;  /* This is already correct */
     margin-bottom: 1rem;
     border: 2px solid var(--border-color);
-}
-.profile-image-container img {
+    border-radius: 50%;
     width: 8rem;
     height: 8rem;
+    background-color: var(--card-bg);
+    overflow: visible;  /* Change from hidden to visible */
+}
+
+.profile-image-container img {
+    position: relative;  /* Add this */
+    z-index: 1;  /* Add this */
+    width: 100%;
+    height: 100%;
     border-radius: 50%;
     object-fit: cover;
+    background-color: var(--card-bg);
 }
+
 .upload-button {
     position: absolute;
     bottom: 0;
@@ -88,18 +107,35 @@
     padding: 0.5rem;
     cursor: pointer;
     color: var(--white);
+    z-index: 2;  /* Increase this value */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 2rem;
+    height: 2rem;
+    transition: background-color 0.2s ease;
 }
 
-/* Profile Info */
+.upload-button:hover {
+    background-color: var(--primary-hover);
+}
+
+.upload-button i {
+    width: 1.2rem;
+    height: 1.2rem;
+}
+
 .profile-info h1 {
     font-size: 22px;
     margin-bottom: 5px;
 }
+
 .bio-container {
     display: flex;
     align-items: center;
     gap: 10px;
 }
+
 .edit-bio-button {
     background: transparent;
     border: none;
@@ -107,35 +143,40 @@
     color: var(--primary-color);
 }
 
-/* Stats Container */
 .stats-container {
     display: flex;
     gap: 15px;
     margin-top: 10px;
 }
+
 .stat {
     text-align: center;
 }
+
 .stat-value {
     font-size: 18px;
     font-weight: bold;
 }
+
 .stat-label {
     font-size: 14px;
     color: var(--text-light);
 }
+
 .activity-list {
     margin-top: 10px;
     display: flex;
     flex-direction: column;
     gap: 10px;
-} 
+}
+
 .activity-card {
     background-color: var(--card-bg);
     border-radius: 0.5rem;
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
     padding: 1.5rem;
 }
+
 .activity-item {
     display: flex;
     align-items: center;
@@ -144,7 +185,7 @@
     color: var(--text-secondary);
     margin-bottom: 0.75rem;
 }
-/* Posts and Comments Styles */
+
 .post-item, .comment-item {
     background-color: var(--card-bg);
     border: 1px solid var(--border-color);
@@ -153,6 +194,7 @@
     margin-bottom: 1rem;
     position: relative;
 }
+
 .post-actions {
     display: flex;
     align-items: center;
@@ -161,6 +203,7 @@
     color: var(--text-tertiary);
     font-size: 0.875rem;
 }
+
 .delete-button {
     position: absolute;
     top: 1rem;
@@ -168,21 +211,23 @@
     opacity: 0;
     transition: opacity 0.2s ease;
 }
+
 .post-item:hover .delete-button {
     opacity: 1;
 }
 
-/* Settings Section */
 .settings-options {
     display: flex;
     flex-direction: column;
     gap: 15px;
 }
+
 .setting-item {
     display: flex;
     justify-content: space-between;
     align-items: center;
 }
+
 .theme-toggle {
     background: transparent;
     border: none;
@@ -190,7 +235,6 @@
     color: var(--primary-color);
 }
 
-/* Responsive Design */
 @media (max-width: 600px) {
     .profile-header {
         flex-direction: column;
@@ -199,4 +243,20 @@
     .profile-info {
         text-align: center;
     }
+}
+
+.change-password-button {
+    text-decoration: none;
+    margin-left: 0.5rem;
+    padding: 0.5rem 1rem;
+    background-color: var(--primary-color);
+    color: var(--white);
+    border: none;
+    border-radius: 0.5rem;
+    cursor: pointer;
+    transition: var(--transition);
+}
+
+.change-password-button:hover {
+    background-color: var(--primary-hover);
 }
