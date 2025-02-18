@@ -87,7 +87,8 @@ CommentManager.prototype.loadComments = function (postId) {
 	if (!commentsSection) return;
 
 	// Generate comment HTML without form
-	const commentsHTML = SAMPLE_COMMENTS[postId]
+	const comment = SAMPLE_COMMENTS[postId] || [];
+	const commentsHTML = comment
 		.map((comment) => this.createCommentHTML(comment, postId))
 		.join("");
 
@@ -138,9 +139,6 @@ CommentManager.prototype.handleCommentSubmit = async function (e) {
 };
 
 CommentManager.prototype.attachEventListeners = function () {
-	document.querySelectorAll(".comment-form").forEach((form) => {
-		form.addEventListener("submit", this.handleCommentSubmit.bind(this));
-	});
 	document.querySelectorAll(".comments-section").forEach((section) => {
 		const postId = section.id.replace("comments-", "");
 		this.loadComments(postId);
