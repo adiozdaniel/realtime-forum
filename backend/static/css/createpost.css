@@ -220,6 +220,7 @@
     position: fixed;
     inset: 0;
     background-color: #3131321f;
+    overflow-y: scroll;
 }
 
 .create-post-btn {
