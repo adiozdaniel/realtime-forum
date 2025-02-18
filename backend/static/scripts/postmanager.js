@@ -1,11 +1,13 @@
 import { PostService } from "./postsservice.js";
 import { formatTimeAgo } from "./timestamps.js";
-import { handleCommentSubmit, loadComments } from "./comment.js";
+import { CommentManager } from "./comment.js";
 import { postLikeState, SAMPLE_POSTS, SAMPLE_COMMENTS } from "./data.js";
 import { getUserData } from "./authmiddleware.js";
 import { PostModalManager } from "./createposts.js";
 
 const postsContainer = document.querySelector("#postsContainer");
+
+const commentManager = new CommentManager();
 
 class PostManager {
 	constructor() {
@@ -56,10 +58,6 @@ PostManager.prototype.createPostHTML = function (post) {
         </div>
         <div class="comments-section hidden" id="comments-${post.post_id}">
           <div class="comments-container"></div>
-          <form class="comment-form" data-post-id="${post.post_id}">
-            <textarea placeholder="Write your comment..." class="comment-input"></textarea>
-            <button type="submit" class="comment-submit">Post Comment</button>
-          </form>
         </div>
       </article>
     `;
@@ -71,7 +69,7 @@ PostManager.prototype.toggleComments = function (e) {
 	const postId = commentButton.dataset.postId;
 	const commentsSection = document.querySelector(`#comments-${postId}`);
 	if (commentsSection.classList.contains("hidden")) {
-		loadComments(postId);
+		commentManager.loadComments(postId);
 	}
 	commentsSection.classList.toggle("hidden");
 };
@@ -90,9 +88,6 @@ PostManager.prototype.attachPostEventListeners = function () {
 	});
 	document.querySelectorAll(".comment-toggle").forEach((button) => {
 		button.addEventListener("click", (e) => this.toggleComments(e));
-	});
-	document.querySelectorAll(".comment-form").forEach((form) => {
-		form.addEventListener("submit", (e) => handleCommentSubmit(e));
 	});
 };
 

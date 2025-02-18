@@ -1,326 +1,174 @@
 import { CommentService } from "./commentservice.js";
-import { postManager } from "./postmanager.js";
-import { SAMPLE_COMMENTS } from "./data.js";
 import { formatTimeAgo } from "./timestamps.js";
 import { getUserData } from "./authmiddleware.js";
+import { SAMPLE_COMMENTS } from "./data.js";
 
-const likeState = {
-	comments: {},
-};
+class CommentManager {
+	constructor() {
+		this.likeState = { comments: {} };
+		this.commentService = new CommentService();
+	}
+}
 
-const commentService = new CommentService();
-
-//  HTML for a single reply
-function createReplyHTML(reply) {
-	const replyState = likeState.comments[reply.id] || {
+CommentManager.prototype.createReplyHTML = function (reply) {
+	const replyState = this.likeState.comments[reply.id] || {
 		count: 0,
 		likedBy: new Set(),
 	};
 	const isLiked = replyState.likedBy.has("current-user");
-
 	return `
-        <div class="reply" data-reply-id="${reply.id}">
-            <div class="comment-header">
-                <span class="comment-author">${reply.author}</span>
+            <div class="reply" data-reply-id="${reply.id}">
+                <div class="comment-header">
+                    <span class="comment-author">${reply.author}</span>
+                </div>
+                <p class="comment-content">${reply.content}</p>
+                <div class="comment-footer">
+                    <div class="comment-actions">
+                        <button class="comment-action-button like-button ${
+													isLiked ? "liked text-blue-600" : ""
+												}" 
+                            data-comment-id="${reply.id}">
+                            <i data-lucide="thumbs-up"></i>
+                            <span class="likes-count">${replyState.count}</span>
+                        </button>
+                    </div>
+                    <div class="comment-meta">
+                        <span class="comment-time">${reply.timeAgo}</span>
+                    </div>
+                </div>
+            </div>`;
+};
+
+CommentManager.prototype.createCommentHTML = function (comment, postId) {
+	const commentState = this.likeState.comments[comment.id] || {
+		count: 0,
+		likedBy: new Set(),
+	};
+	const isLiked = commentState.likedBy.has("current-user");
+	return `
+        <div class="comment" data-comment-id="${comment.comment_id}"> 
+            <div class="comment-content"> 
+                <div class="profile-image">
+                    <img src="${comment.author_img}" 
+                         onerror="this.onerror=null;this.src='/static/profiles/avatar.jpg';"/>
+                </div>
+                <div>
+                    <div class="comment-author">${comment.user_name}</div> 
+                    <div class="comment-text">${comment.comment}</div> 
+                </div>
             </div>
-            <p class="comment-content">${reply.content}</p>
             <div class="comment-footer">
-                <div class="comment-actions">
+                <div class="comment-actions"> 
                     <button class="comment-action-button like-button ${
 											isLiked ? "liked text-blue-600" : ""
 										}" 
-                        data-comment-id="${reply.id}">
-                        <i data-lucide="thumbs-up"></i>
-                        <span class="likes-count">${replyState.count}</span>
-                    </button>
-                </div>
-                <div class="comment-meta">
-                    <span class="comment-time">${reply.timeAgo}</span>
-                </div>
-            </div>
-        </div>`;
-}
-
-//  HTML for replies container
-function createRepliesHTML(replies) {
-	if (!replies || replies.length === 0) return "";
-	return `
-        <div class="replies-container hidden">
-            ${replies.map((reply) => createReplyHTML(reply)).join("")}
-        </div>`;
-}
-
-// Initialize like state from SAMPLE_COMMENTS
-Object.keys(SAMPLE_COMMENTS).forEach((postId) => {
-	SAMPLE_COMMENTS[postId].forEach((comment) => {
-		likeState.comments[comment.id] = {
-			count: comment.likes,
-			likedBy: new Set(), // Track users who liked
-		};
-
-		comment.replies.forEach((reply) => {
-			likeState.comments[reply.id] = {
-				count: reply.likes,
-				likedBy: new Set(),
-			};
-		});
-	});
-});
-
-// Helper function to create comment HTML with like button
-function createCommentHTML(comment, postId) {
-	const commentState = likeState.comments[postId]?.[comment.id];
-	const isLiked = commentState?.likedBy.has("current-user");
-	return ` 
-    <div class="comment" data-comment-id="${comment.comment_id}"> 
-        <div class="comment-content"> 
-						<div class="profile-image">
-		  				<img src="${
-								comment.author_img
-							}" onerror="this.onerror=null;this.src='/static/profiles/avatar.jpg';"/>
-						</div>
-						<div>
-							<div class="comment-author">${comment.user_name}</div> 
-							<div class="comment-text">${comment.comment}</div> 
-						</div>
-        </div>
-        <div class="comment-footer">
-            <div class="comment-actions"> 
-                <button class="comment-action-button like-button ${
-									isLiked ? "liked text-blue-600" : ""
-								}" data-post-id="${postId}" data-comment-id="${
+                        data-post-id="${postId}" data-comment-id="${
 		comment.comment_id
 	}"> 
-                    <i data-lucide="thumbs-up"></i> 
-                    <span class="likes-count">${
-											commentState?.count || 0
-										}</span> 
-                </button>
-                <button class="comment-action-button reply-button">
-                    <i data-lucide="reply"></i> 
-                    <span>Reply</span>
-                </button>  
-                
+                        <i data-lucide="thumbs-up"></i> 
+                        <span class="likes-count">${commentState.count}</span> 
+                    </button>
+                    <button class="comment-action-button reply-button">
+                        <i data-lucide="reply"></i> 
+                        <span>Reply</span>
+                    </button>  
+                </div>
+                <div class="comment-meta">
+                    <span class="comment-time">${formatTimeAgo(
+											comment.created_at
+										)}</span> 
+                </div>
             </div>
-            <div class="comment-meta">
-                <span class="comment-time">${formatTimeAgo(
-									comment.created_at
-								)}</span> 
-            </div>
-        </div>
-        ${createRepliesHTML(comment.replies)}
-        <div class="reply-form hidden">
-            <textarea class="reply-input" placeholder="Write your reply..."></textarea>
-            <div class="reply-form-actions">
-                <button type="button" class="reply-submit">Reply</button>
-                <button type="button" class="reply-cancel">Cancel</button>
-            </div>
-        </div>
+        </div>`;
+};
 
-    </div>`;
-}
-// Handle reply button click
-function handleReplyClick(e) {
-	const replyButton = e.target.closest(".reply-button");
-	if (!replyButton) return;
+CommentManager.prototype.loadComments = function (postId) {
+	const commentsSection = document.querySelector(`#comments-${postId}`);
+	if (!commentsSection) return;
 
-	const comment = replyButton.closest(".comment");
-	const repliesContainer = comment.querySelector(".replies-container");
-	const replyForm = comment.querySelector(".reply-form");
+	// Generate comment HTML without form
+	const commentsHTML = SAMPLE_COMMENTS[postId]
+		.map((comment) => this.createCommentHTML(comment, postId))
+		.join("");
 
-	// Toggle replies container
-	if (repliesContainer) {
-		repliesContainer.classList.toggle("hidden");
+	// Ensure only one form per post
+	const formHTML = `
+        <form class="comment-form" data-post-id="${postId}">
+            <textarea placeholder="Write your comment..." class="comment-input"></textarea>
+            <button type="submit" class="comment-submit">Post Comment</button>
+        </form>`;
+
+	// Set innerHTML with comments and single form
+	commentsSection.innerHTML = commentsHTML + formHTML;
+
+	// Attach event listener to the form
+	const form = commentsSection.querySelector(".comment-form");
+	if (form) {
+		form.addEventListener("submit", (e) => this.handleCommentSubmit(e));
 	}
+	lucide.createIcons();
+};
 
-	// Show reply form and focus input
-	replyForm.classList.toggle("hidden");
-	replyForm.querySelector(".reply-input").focus();
-}
-
-// Handle reply submission
-function handleReplySubmit(e) {
-	const submitButton = e.target.closest(".reply-submit");
-	if (!submitButton) return;
-
-	const replyForm = submitButton.closest(".reply-form");
-	const comment = replyForm.closest(".comment");
-	const commentId = parseInt(comment.dataset.commentId);
-	const postId = comment
-		.closest(".comments-section")
-		.id.replace("comments-", "");
-	const replyInput = replyForm.querySelector(".reply-input");
-	const content = replyInput.value.trim();
-
-	if (!content) return;
-
-	const newReply = {
-		id: Date.now(),
-		author: "Current User",
-		content: content,
-		timeAgo: "Just now",
-		likes: 0,
-	};
-
-	// Add reply to the comment data
-	const commentIndex = SAMPLE_COMMENTS[postId].findIndex(
-		(c) => c.id === commentId
-	);
-	if (commentIndex === -1) return;
-
-	SAMPLE_COMMENTS[postId][commentIndex].replies.push(newReply);
-
-	// Append new reply to the existing replies section
-	const repliesContainer = comment.querySelector(".replies-container");
-	if (!repliesContainer) {
-		const newRepliesContainer = document.createElement("div");
-		newRepliesContainer.classList.add("replies-container");
-		comment.appendChild(newRepliesContainer);
-		newRepliesContainer.innerHTML = createReplyHTML(newReply);
-	} else {
-		repliesContainer.innerHTML += createReplyHTML(newReply);
-	}
-
-	// Reset input field and hide form
-	replyForm.classList.add("hidden");
-	replyInput.value = "";
-}
-
-// Handle reply cancellation
-function handleReplyCancel(e) {
-	const cancelButton = e.target.closest(".reply-cancel");
-	if (!cancelButton) return;
-
-	const replyForm = cancelButton.closest(".reply-form");
-	replyForm.classList.add("hidden");
-	replyForm.querySelector(".reply-input").value = "";
-}
-
-// Handle comment submission
-async function handleCommentSubmit(e) {
+CommentManager.prototype.handleCommentSubmit = async function (e) {
 	e.preventDefault();
 	const postId = e.target.dataset.postId;
 	const input = e.target.querySelector(".comment-input");
 	const content = input.value.trim();
-
 	if (!content) return;
-
 	const userData = await getUserData();
-
 	if (!userData) {
 		alert("Please login to comment");
 		window.location.href = "/auth";
 		return;
 	}
-
 	let newComment = {
 		post_id: postId,
 		comment: content,
 		likes: 0,
 		replies: [],
 	};
-
-	let res = {};
-
-	const commentsRes = await commentService.createComment(newComment);
+	const commentsRes = await this.commentService.createComment(newComment);
 	if (commentsRes.error) {
 		alert(commentsRes.message);
 		return;
-	} else if (commentsRes.data !== null) {
-		res = commentsRes.data;
 	}
-
-	SAMPLE_COMMENTS[postId] = SAMPLE_COMMENTS[postId] || [];
-	SAMPLE_COMMENTS[postId].push(res);
-	loadComments(postId);
+	SAMPLE_COMMENTS[postId].push(commentsRes.data);
+	this.loadComments(postId);
 	input.value = "";
-}
+};
 
-// Load comments with replies
-function loadComments(postId) {
-	const commentsSection = document.querySelector(`#comments-${postId}`);
-	if (!commentsSection) return;
-
-	const commentsContainer = commentsSection.querySelector(
-		".comments-container"
-	);
-	const comments = SAMPLE_COMMENTS[postId] || [];
-
-	commentsContainer.innerHTML = comments
-		.map((comment) => createCommentHTML(comment))
-		.join("");
-
-	// Attach event listeners for replies
-	commentsContainer.addEventListener("click", handleReplyClick);
-	commentsContainer.addEventListener("click", handleReplySubmit);
-	commentsContainer.addEventListener("click", handleReplyCancel);
-}
-
-async function handleCommentLikes(e) {
-	const button = e.currentTarget.closest(".like-button");
-	if (!button) return;
-
-	const postId = button.getAttribute("data-post-id");
-	const commentId = button.getAttribute("data-comment-id");
-	if (!postId || !commentId) return;
-
-	// Retrieve or initialize like state for the comment
-	const likeData = (this.likeState.comments[postId] ??= {});
-	likeData[commentId] ??= { count: 0, likedBy: new Set() };
-
-	// Ensure user is logged in
-	const currentUser = this.userData();
-	if (!currentUser?.user_id) {
-		alert("Please login to like the comment");
-		window.location.href = "/auth";
-		return;
-	}
-
-	const commentData = {
-		post_id: postId,
-		comment_id: commentId,
-		user_id: currentUser.user_id,
-	};
-
-	// Call API to toggle like for the comment
-	const res = await this.commentService.likeComment(commentData);
-	if (res.error) {
-		alert(res.message);
-		return;
-	}
-
-	let isLiked = false;
-
-	if (res.data) {
-		// Like was added
-		likeData[commentId].count++;
-		likeData[commentId].likedBy.add(currentUser.user_id);
-		button.classList.add("liked", "text-blue-600");
-		isLiked = true;
-	} else if (res.data === null) {
-		// Like was removed
-		likeData[commentId].count = Math.max(0, likeData[commentId].count - 1);
-		likeData[commentId].likedBy.delete(currentUser.user_id);
-		button.classList.remove("liked", "text-blue-600");
-		isLiked = false;
-	}
-
-	// Update UI
-	const likesCount = button.querySelector(".likes-count");
-	if (likesCount) {
-		likesCount.textContent = likeData[commentId].count;
-	}
-
-	button.classList.add("like-animation");
-	setTimeout(() => button.classList.remove("like-animation"), 300);
-}
-
-// Add like button event listener
-document.addEventListener("click", (e) => {
-	document.querySelectorAll(".like-button").forEach((button) => {
-		button.addEventListener("click", (e) => handleCommentLikes.bind(this)(e));
+CommentManager.prototype.attachEventListeners = function () {
+	document.querySelectorAll(".comment-form").forEach((form) => {
+		form.addEventListener("submit", this.handleCommentSubmit.bind(this));
 	});
+	document.querySelectorAll(".comments-section").forEach((section) => {
+		const postId = section.id.replace("comments-", "");
+		this.loadComments(postId);
+	});
+};
+
+CommentManager.prototype.initLikeState = function (sampleComments) {
+	Object.keys(sampleComments).forEach((postId) => {
+		sampleComments[postId].forEach((comment) => {
+			this.likeState.comments[comment.id] = {
+				count: comment.likes,
+				likedBy: new Set(),
+			};
+			comment.replies.forEach((reply) => {
+				this.likeState.comments[reply.id] = {
+					count: reply.likes,
+					likedBy: new Set(),
+				};
+			});
+		});
+	});
+};
+
+const commentManager = new CommentManager();
+
+window.addEventListener("DOMContentLoaded", () => {
+	commentManager.initLikeState(SAMPLE_COMMENTS);
+	commentManager.attachEventListeners();
 });
 
-// Export the functions
-export { loadComments, handleCommentSubmit };
+export { CommentManager };
