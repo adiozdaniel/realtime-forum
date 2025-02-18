@@ -75,7 +75,9 @@ function createCommentHTML(comment, postId) {
     <div class="comment" data-comment-id="${comment.comment_id}"> 
         <div class="comment-content"> 
 						<div class="profile-image">
-		  				<img src=${comment.author_img}/>
+		  				<img src="${
+								comment.author_img
+							}" onerror="this.onerror=null;this.src='/static/profiles/avatar.jpg';"/>
 						</div>
 						<div>
 							<div class="comment-author">${comment.user_name}</div> 

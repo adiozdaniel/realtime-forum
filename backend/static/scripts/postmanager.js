@@ -15,7 +15,8 @@ class PostManager {
 }
 
 PostManager.prototype.createPostHTML = function (post) {
-	const isLiked = this.likeState.posts[post.post_id]?.likedBy.has("current-user");
+	const isLiked =
+		this.likeState.posts[post.post_id]?.likedBy.has("current-user");
 	return `
       <article class="post-card" data-post-id="${post.post_id}">
         <div class="flex items-start justify-between">
@@ -27,18 +28,26 @@ PostManager.prototype.createPostHTML = function (post) {
         </div>
         <div class="post-footer">
           <div class="post-actions">
-            <button class="post-action-button like-button ${isLiked ? "liked text-blue-600" : ""}" data-post-id="${post.post_id}">
+            <button class="post-action-button like-button ${
+							isLiked ? "liked text-blue-600" : ""
+						}" data-post-id="${post.post_id}">
               <i data-lucide="thumbs-up"></i>
-              <span class="likes-count">${this.likeState.posts[post.post_id]?.count || 0}</span>
+              <span class="likes-count">${
+								this.likeState.posts[post.post_id]?.count || 0
+							}</span>
             </button>
-            <button class="post-action-button comment-toggle" data-post-id="${post.post_id}">
+            <button class="post-action-button comment-toggle" data-post-id="${
+							post.post_id
+						}">
               <i data-lucide="message-square"></i>
               <span class="comments-count">${post.post_comments}</span>
             </button>
           </div>
           <div class="post-meta">
 		   <div class="profile-image">
-		  		<img src=${post.author_img || '/static/profiles/avatar.jpg'}/>
+		  		<img src=${
+						post.author_img
+					} onerror="this.onerror=null;this.src='/static/profiles/avatar.jpg';"/>
 			</div>
             <span>by ${post.post_author}</span>
             <span>•</span>
@@ -68,19 +77,21 @@ PostManager.prototype.toggleComments = function (e) {
 };
 
 PostManager.prototype.renderPosts = function (posts = SAMPLE_POSTS) {
-	postsContainer.innerHTML = posts.map(post => this.createPostHTML(post)).join("");
+	postsContainer.innerHTML = posts
+		.map((post) => this.createPostHTML(post))
+		.join("");
 	this.attachPostEventListeners();
 };
 
 PostManager.prototype.attachPostEventListeners = function () {
 	lucide.createIcons();
-	document.querySelectorAll(".like-button").forEach(button => {
+	document.querySelectorAll(".like-button").forEach((button) => {
 		button.addEventListener("click", (e) => this.handlePostLikes(e));
 	});
-	document.querySelectorAll(".comment-toggle").forEach(button => {
+	document.querySelectorAll(".comment-toggle").forEach((button) => {
 		button.addEventListener("click", (e) => this.toggleComments(e));
 	});
-	document.querySelectorAll(".comment-form").forEach(form => {
+	document.querySelectorAll(".comment-form").forEach((form) => {
 		form.addEventListener("submit", (e) => handleCommentSubmit(e));
 	});
 };
@@ -90,7 +101,10 @@ PostManager.prototype.handlePostLikes = async function (e) {
 	if (!button) return;
 	const postId = button.getAttribute("data-post-id");
 	if (!postId) return;
-	const likeData = (this.likeState.posts[postId] ??= { count: 0, likedBy: new Set() });
+	const likeData = (this.likeState.posts[postId] ??= {
+		count: 0,
+		likedBy: new Set(),
+	});
 	const currentUser = await getUserData();
 	if (!currentUser?.user_id) {
 		alert("Please login to like the post");
@@ -126,8 +140,8 @@ PostManager.prototype.init = async function () {
 
 	if (postList === null) return;
 
-	postList.forEach(post => SAMPLE_POSTS.push(post));
-	SAMPLE_POSTS.forEach(post => {
+	postList.forEach((post) => SAMPLE_POSTS.push(post));
+	SAMPLE_POSTS.forEach((post) => {
 		post.post_timeAgo = formatTimeAgo(post.created_at);
 		post.post_likes = post?.post_likes || post.likes?.length;
 		post.post_comments = post?.post_comments || post.comments?.length || 0;

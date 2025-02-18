@@ -74,7 +74,8 @@ Header.prototype.handleAuth = async function () {
 	if (this.authButton.textContent === "Sign Out") this.signOutUser();
 
 	if (window.location.pathname !== "/auth") {
-		if(this.authButton.textContent === "Sign In") window.location.href = "/auth"
+		if (this.authButton.textContent === "Sign In")
+			window.location.href = "/auth";
 	}
 };
 
@@ -84,14 +85,15 @@ Header.prototype.init = async function () {
 
 	if (userdata) {
 		this.profileImage.src = userdata.image;
+	} else {
+		this.profileImage.src = "/static/profiles/avatar.jpg";
 	}
 
 	this.authButton.textContent = userdata ? "Sign Out" : "Sign In";
 
 	// Automatically log out if on /auth
 	if (window.location.pathname === "/auth")
-		if (userdata) window.location.href = "/"
-
+		if (userdata) window.location.href = "/";
 
 	// Event listeners
 	this.menuToggleBtn?.addEventListener("click", this.toggleMobileMenu);

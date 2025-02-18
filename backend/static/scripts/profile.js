@@ -8,20 +8,60 @@ class ProfileDashboard {
 			currentView: "overview",
 			darkMode: localStorage.getItem("darkMode") === "true",
 			profilePic: "",
-			bio: localStorage.getItem("userBio") || "Hi, I love coding and sharing knowledge with the community!",
+			bio:
+				localStorage.getItem("userBio") ||
+				"Hi, I love coding and sharing knowledge with the community!",
 			posts: [
-				{ id: 1, content: "Just learned about React hooks!", comments: 5, likes: 12, timestamp: "2h ago" },
-				{ id: 2, content: "Working on a new project using TypeScript", comments: 3, likes: 8, timestamp: "5h ago" },
-				{ id: 3, content: "Check out my latest blog post about web performance", comments: 8, likes: 15, timestamp: "1d ago" },
+				{
+					id: 1,
+					content: "Just learned about React hooks!",
+					comments: 5,
+					likes: 12,
+					timestamp: "2h ago",
+				},
+				{
+					id: 2,
+					content: "Working on a new project using TypeScript",
+					comments: 3,
+					likes: 8,
+					timestamp: "5h ago",
+				},
+				{
+					id: 3,
+					content: "Check out my latest blog post about web performance",
+					comments: 8,
+					likes: 15,
+					timestamp: "1d ago",
+				},
 			],
 			userComments: [
-				{ id: 1, postTitle: "Introduction to GraphQL", content: "Great explanation!", likes: 5, timestamp: "3h ago" },
-				{ id: 2, postTitle: "Docker Best Practices", content: "Very effective!", likes: 3, timestamp: "1d ago" },
+				{
+					id: 1,
+					postTitle: "Introduction to GraphQL",
+					content: "Great explanation!",
+					likes: 5,
+					timestamp: "3h ago",
+				},
+				{
+					id: 2,
+					postTitle: "Docker Best Practices",
+					content: "Very effective!",
+					likes: 3,
+					timestamp: "1d ago",
+				},
 			],
 			activities: [
 				{ type: "post", content: "Created a new post", timestamp: "2h ago" },
-				{ type: "comment", content: "Commented on 'Docker Best Practices'", timestamp: "1d ago" },
-				{ type: "like", content: "Liked 'Introduction to GraphQL'", timestamp: "1d ago" },
+				{
+					type: "comment",
+					content: "Commented on 'Docker Best Practices'",
+					timestamp: "1d ago",
+				},
+				{
+					type: "like",
+					content: "Liked 'Introduction to GraphQL'",
+					timestamp: "1d ago",
+				},
 			],
 		};
 	}
@@ -62,15 +102,26 @@ ProfileDashboard.prototype.cacheElements = function () {
 		sidebarItems: document.querySelectorAll(".sidebar-item"),
 	};
 	this.elements.bioText.textContent = this.state.bio;
-    this.elements.profileImage.src = this.userData?.image;
+	this.elements.profileImage.src = this.userData?.image;
 	this.elements.userName.textContent = this.userData?.user_name;
 };
 
 ProfileDashboard.prototype.setupEventListeners = function () {
-	this.elements.darkModeToggle.addEventListener("click", this.toggleDarkMode.bind(this));
-	this.elements.imageUpload.addEventListener("change", this.handleImageUpload.bind(this));
-	this.elements.editBioButton.addEventListener("click", this.editBio.bind(this));
-	this.elements.sidebarItems.forEach(item => item.addEventListener("click", () => this.switchView(item.dataset.view)));
+	this.elements.darkModeToggle.addEventListener(
+		"click",
+		this.toggleDarkMode.bind(this)
+	);
+	this.elements.imageUpload.addEventListener(
+		"change",
+		this.handleImageUpload.bind(this)
+	);
+	this.elements.editBioButton.addEventListener(
+		"click",
+		this.editBio.bind(this)
+	);
+	this.elements.sidebarItems.forEach((item) =>
+		item.addEventListener("click", () => this.switchView(item.dataset.view))
+	);
 };
 
 ProfileDashboard.prototype.switchView = function (view) {
@@ -79,7 +130,9 @@ ProfileDashboard.prototype.switchView = function (view) {
 };
 
 ProfileDashboard.prototype.updateActiveSection = function () {
-	Object.values(this.elements.sections).forEach(section => section.classList.add("hidden"));
+	Object.values(this.elements.sections).forEach((section) =>
+		section.classList.add("hidden")
+	);
 	this.elements.sections[this.state.currentView].classList.remove("hidden");
 };
 
@@ -90,7 +143,10 @@ ProfileDashboard.prototype.toggleDarkMode = function () {
 };
 
 ProfileDashboard.prototype.updateTheme = function () {
-	document.body.setAttribute("data-theme", this.state.darkMode ? "dark" : "light");
+	document.body.setAttribute(
+		"data-theme",
+		this.state.darkMode ? "dark" : "light"
+	);
 	lucide.createIcons();
 };
 
@@ -119,11 +175,14 @@ ProfileDashboard.prototype.handleImageUpload = async function (e) {
 	}
 
 	if (file.size > maxFileSize) {
-		alert(`Image size is too large.Please upload an image less than ${maxFileSize / 1024 / 1024} MB.`);
+		alert(
+			`Image size is too large.Please upload an image less than ${
+				maxFileSize / 1024 / 1024
+			} MB.`
+		);
 		this.elements.imageUpload.value = ""; // Clear the input
 		return;
 	}
-
 
 	// Read the file and display it immediately
 	const reader = new FileReader();
@@ -144,10 +203,10 @@ ProfileDashboard.prototype.handleImageUpload = async function (e) {
 		if (user.error) {
 			alert(user.message);
 		} else if (user.data !== null) {
-			console.log(user);
 			// Update the profile picture URL with the server's response
 			this.state.profilePic = user.data.image;
-			this.elements.profileImage.src = user.data.image;
+			this.elements.profileImage.src =
+				user.data.image || "/static/profiles/avatar.jpg";
 			this.elements.headerImage.src = user.data.image;
 			alert("Profile picture updated successfully!");
 		}
@@ -159,20 +218,30 @@ ProfileDashboard.prototype.handleImageUpload = async function (e) {
 
 ProfileDashboard.prototype.updateStats = function () {
 	document.getElementById("postsCount").textContent = this.state.posts.length;
-	document.getElementById("commentsCount").textContent = this.state.userComments.length;
-	document.getElementById("likesCount").textContent = this.state.posts.reduce((acc, post) => acc + post.likes, 0);
+	document.getElementById("commentsCount").textContent =
+		this.state.userComments.length;
+	document.getElementById("likesCount").textContent = this.state.posts.reduce(
+		(acc, post) => acc + post.likes,
+		0
+	);
 };
 
 ProfileDashboard.prototype.renderActivities = function () {
-	document.getElementById("activityList").innerHTML = this.state.activities.map(activity => `<div>${activity.content} - ${activity.timestamp}</div>`).join(" ");
+	document.getElementById("activityList").innerHTML = this.state.activities
+		.map((activity) => `<div>${activity.content} - ${activity.timestamp}</div>`)
+		.join(" ");
 };
 
 ProfileDashboard.prototype.renderPosts = function () {
-	document.getElementById("postsList").innerHTML = this.state.posts.map(post => `<div>${post.content} - ${post.timestamp}</div>`).join(" ");
+	document.getElementById("postsList").innerHTML = this.state.posts
+		.map((post) => `<div>${post.content} - ${post.timestamp}</div>`)
+		.join(" ");
 };
 
 ProfileDashboard.prototype.renderComments = function () {
-	document.getElementById("commentsList").innerHTML = this.state.userComments.map(comment => `<div>${comment.content} - ${comment.timestamp}</div>`).join(" ");
+	document.getElementById("commentsList").innerHTML = this.state.userComments
+		.map((comment) => `<div>${comment.content} - ${comment.timestamp}</div>`)
+		.join(" ");
 };
 
 const dashboard = new ProfileDashboard();
