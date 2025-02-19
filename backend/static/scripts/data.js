@@ -22,6 +22,9 @@ const API_ENDPOINTS = {
 	updatecomment: "/api/comments/update",
 	likecomment: "/api/comments/like",
 	dislikecomment: "/api/comments/dislike",
+
+	// reply ENDPOINTS
+	createReply: "/api/comments/reply/create",
 };
 
 // Constants

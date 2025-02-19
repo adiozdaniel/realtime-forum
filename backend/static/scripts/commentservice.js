@@ -83,18 +83,30 @@ CommentService.prototype.deleteComment = async function (commentID) {
 };
 
 // Method to like a comment by ID
-CommentService.prototype.likeComment = async function (commentID) {
+CommentService.prototype.likeComment = async function (commentData) {
+	const userData = await getUserData();
+
+	if (!userData) {
+		return {
+			error: true,
+			message: "You need to login to post a comment!",
+		};
+	}
+
 	try {
-		const response = await fetch(this.apiEndpoints.likeComment, {
+		const response = await fetch(this.apiEndpoints.likecomment, {
 			method: "POST",
-			body: JSON.stringify({ comment_id: commentID }),
+			body: JSON.stringify(commentData),
 			headers: { "Content-Type": "application/json" },
 		});
 
 		return await response.json();
 	} catch (error) {
-		console.error("Error liking comment:", error);
-		return null;
+		return {
+			error: true,
+			data: null,
+			message: error,
+		};
 	}
 };
 
@@ -111,5 +123,32 @@ CommentService.prototype.dislikeComment = async function (commentID) {
 	} catch (error) {
 		console.error("Error disliking comment:", error);
 		return null;
+	}
+};
+
+// Method to post a reply
+CommentService.prototype.createReply = async function (replyData) {
+	const userData = await getUserData();
+
+	if (!userData) {
+		return {
+			error: true,
+			message: "You need to login to post a comment!",
+		};
+	}
+
+	try {
+		const response = await fetch(this.apiEndpoints.createReply, {
+			method: "POST",
+			body: JSON.stringify(replyData),
+			headers: { "Content-Type": "application/json" },
+		});
+
+		return await response.json();
+	} catch (error) {
+		return {
+			error: true,
+			message: "Failed to create reply. Please try again.",
+		};
 	}
 };

@@ -63,9 +63,8 @@ func (r *PostRepository) DeletePost(id string) error {
 }
 
 // ListPosts retrieves all posts from the database
-func (r *PostRepository) ListPosts() ([]*Post, error) {
-	query := `SELECT post_id, user_id, post_author, author_img, post_title, post_content, post_image, post_video, post_category, post_hasComments, created_at, updated_at FROM posts`
-	rows, err := r.DB.Query(query)
+func (repo *PostRepository) ListPosts() ([]*Post, error) {
+	rows, err := repo.DB.Query("SELECT post_id, user_id, post_author, author_img, post_title, post_content, post_image, post_video, post_category, created_at, updated_at FROM posts")
 	if err != nil {
 		return nil, err
 	}
@@ -74,22 +73,23 @@ func (r *PostRepository) ListPosts() ([]*Post, error) {
 	var posts []*Post
 	for rows.Next() {
 		post := &Post{}
-		err := rows.Scan(&post.PostID, &post.UserID, &post.PostAuthor, &post.AuthorImg, &post.PostTitle, &post.PostContent, &post.PostImage, &post.PostVideo, &post.PostCategory, &post.HasComments, &post.CreatedAt, &post.UpdatedAt)
-		if err != nil {
+		if err := rows.Scan(&post.PostID, &post.UserID, &post.PostAuthor, &post.AuthorImg, &post.PostTitle, &post.PostContent, &post.PostImage, &post.PostVideo, &post.PostCategory, &post.CreatedAt, &post.UpdatedAt); err != nil {
 			return nil, err
 		}
 
-		// Fetch likes and comments
-		post.Likes, _ = r.GetLikesByPostID(post.PostID)
-		post.Comments, _ = r.GetCommentsByPostID(post.PostID)
+		// Fetch likes
+		post.Likes, _ = repo.GetLikesByPostID(post.PostID)
+
+		// Fetch comments
+		post.Comments, _ = repo.GetCommentsByPostID(post.PostID)
+
+		// Attach replies to comments
+		for _, comment := range post.Comments {
+			comment.Replies, _ = repo.GetRepliesByCommentID(comment.CommentID)
+		}
 
 		posts = append(posts, post)
 	}
-
-	if err = rows.Err(); err != nil {
-		return nil, err
-	}
-
 	return posts, nil
 }
 
@@ -260,4 +260,12 @@ func (r *PostRepository) CreateComment(comment *Comment) (*Comment, error) {
 	          VALUES (?, ?, ?, ?, ?, NULLIF(?, ''), ?, ?, ?)`
 	_, err := r.DB.Exec(query, comment.CommentID, comment.PostID, comment.UserID, comment.Author, comment.AuthorImg, comment.ParentCommentID, comment.Content, comment.CreatedAt, comment.UpdatedAt)
 	return comment, err
+}
+
+// CreateReply creates a new reply
+func (r *PostRepository) CreateReply(reply *Reply) (*Reply, error) {
+	query := `INSERT INTO replies (reply_id, comment_id, user_id, user_name, author_img, parent_reply_id, content, created_at, updated_at)
+	          VALUES (?, ?, ?, ?, ?, NULLIF(?, ''), ?, ?, ?)`
+	_, err := r.DB.Exec(query, reply.ReplyID, reply.CommentID, reply.UserID, reply.Author, reply.AuthorImg, reply.ParentReplyID, reply.Content, reply.CreatedAt, reply.UpdatedAt)
+	return reply, err
 }

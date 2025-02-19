@@ -125,12 +125,7 @@ func (tm *TableManager) CreateTables() error {
 			FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE,
 			FOREIGN KEY (post_id) REFERENCES posts(post_id) ON DELETE CASCADE,
 			FOREIGN KEY (comment_id) REFERENCES comments(comment_id) ON DELETE CASCADE,
-			FOREIGN KEY (reply_id) REFERENCES replies(reply_id) ON DELETE CASCADE,
-			CHECK (
-				(post_id IS NOT NULL AND comment_id IS NULL AND reply_id IS NULL) OR
-				(post_id IS NULL AND comment_id IS NOT NULL AND reply_id IS NULL) OR
-				(post_id IS NULL AND comment_id IS NULL AND reply_id IS NOT NULL)
-			)
+			FOREIGN KEY (reply_id) REFERENCES replies(reply_id) ON DELETE CASCADE
 		);
 		CREATE INDEX IF NOT EXISTS idx_likes_user_id ON likes(user_id);`,
 
@@ -140,8 +135,9 @@ func (tm *TableManager) CreateTables() error {
 			comment_id TEXT NOT NULL,
 			user_id TEXT NOT NULL,
 			user_name TEXT NOT NULL,
+			author_img TEXT NOT NULL,
 			parent_reply_id TEXT,
-			reply TEXT NOT NULL,
+			content TEXT NOT NULL,
 			created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
 			updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
 			FOREIGN KEY (comment_id) REFERENCES comments(comment_id) ON DELETE CASCADE,

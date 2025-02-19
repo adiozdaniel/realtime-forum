@@ -82,6 +82,35 @@ func (p *PostsRepo) PostAddLike(w http.ResponseWriter, r *http.Request) {
 	p.res.WriteJSON(w, *p.res, http.StatusOK)
 }
 
+// AddLike adds a like to a post
+func (p *PostsRepo) CommentAddLike(w http.ResponseWriter, r *http.Request) {
+	// Ensure the request method is POST
+	if r.Method != http.MethodPost {
+		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+		return
+	}
+
+	// Decode the request body into a PostLike struct
+	var req Like
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		p.res.SetError(w, fmt.Errorf("invalid request payload: %v", err), http.StatusBadRequest)
+		return
+	}
+
+	// Call the AddLike method to add a like to the post
+	commentLike, err := p.post.CommentAddLike(&req)
+	if err != nil {
+		p.res.SetError(w, fmt.Errorf("failed to add like to post: %v", err), http.StatusBadRequest)
+		return
+	}
+
+	// Prepare and send the success response
+	p.res.Err = false
+	p.res.Message = "Success"
+	p.res.Data = commentLike
+	p.res.WriteJSON(w, *p.res, http.StatusOK)
+}
+
 // Dislike removes a like from a post
 func (p *PostsRepo) Dislike(w http.ResponseWriter, r *http.Request) {
 	// Ensure the request method is POST
@@ -139,7 +168,7 @@ func (p *PostsRepo) CreatePostComment(w http.ResponseWriter, r *http.Request) {
 }
 
 // Posts image uploads a post image and stores on the server
-func (p *PostsRepo) UploadPostImage(w http.ResponseWriter, r *http.Request){
+func (p *PostsRepo) UploadPostImage(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
 		p.res.SetError(w, errors.New("wrong format"), http.StatusBadRequest)
 		return
@@ -153,12 +182,39 @@ func (p *PostsRepo) UploadPostImage(w http.ResponseWriter, r *http.Request){
 	}
 
 	data := map[string]string{
-		"img" : image,
+		"img":     image,
 		"post_id": postId,
 	}
 
 	p.res.Err = false
 	p.res.Message = "Success"
 	p.res.Data = data
+	p.res.WriteJSON(w, *p.res, http.StatusOK)
+}
+
+// CreateReply creates a new reply
+func (p *PostsRepo) CreatePostReply(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodPost {
+		http.Error(w, "Oops, didn't understand what you are looking for", http.StatusForbidden)
+		return
+	}
+
+	var req Reply
+
+	err := json.NewDecoder(r.Body).Decode(&req)
+	if err != nil {
+		p.res.SetError(w, err, http.StatusBadRequest)
+		return
+	}
+
+	post, err := p.post.CreateCommentReply(&req)
+	if err != nil {
+		p.res.SetError(w, err, http.StatusInternalServerError)
+		return
+	}
+
+	p.res.Err = false
+	p.res.Message = "Success"
+	p.res.Data = post
 	p.res.WriteJSON(w, *p.res, http.StatusOK)
 }
