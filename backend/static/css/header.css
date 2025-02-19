@@ -1,3 +1,4 @@
+/* Header Styles */
 .header {
     position: sticky;
     top: 0;
@@ -14,20 +15,20 @@
     height: 4rem;
     display: flex;
     align-items: center;
-    justify-content: space-between;
+    justify-content: space-between; /* Space out left, middle, and right sections */
 }
 
 .header-left {
     display: flex;
     align-items: center;
     gap: 1rem;
-    flex: 1; /* Allow the left section to grow and take available space */
+    flex: 1; /* Allow left section to grow */
 }
 
 .logo {
     font-size: 1.25rem;
     font-weight: 600;
-    white-space: nowrap; /* Prevent the logo from wrapping */
+    white-space: nowrap; /* Prevent logo text from wrapping */
 }
 
 .search-container {
@@ -37,23 +38,38 @@
     background-color: var(--gray-100);
     padding: 0.5rem 0.75rem;
     border-radius: 0.5rem;
-    flex: 1; /* Allow the search bar to grow and take available space */
-    max-width: 400px; /* Limit the search bar width */
+    flex: 1; /* Allow search bar to grow */
+    max-width: 400px; /* Limit search bar width */
 }
 
 .search-container input {
     background: transparent;
     border: none;
     outline: none;
-    width: 100%; /* Make the input take the full width of the container */
+    width: 100%; /* Make input take full width of container */
     color: var(--gray-700);
+}
+
+.profile-image {
+    width: 2rem;
+    height: 2rem;
+    border-radius: 50%;
+    overflow: hidden;
+    margin: 0 auto; /* Center the profile image */
+}
+
+.profile-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
 }
 
 .header-right {
     display: flex;
     align-items: center;
     gap: 0.5rem;
-    margin-left: auto; /* Push the right section to the far right */
+    flex: 1; /* Allow right section to grow */
+    justify-content: flex-end; /* Push right section to the far right */
 }
 
 /* Button Styles */
@@ -63,7 +79,7 @@
     border: none;
     background: transparent;
     cursor: pointer;
-    display: none; /* Hide the menu button by default */
+    display: none; /* Hide hamburger menu by default */
 }
 
 .icon-button {
@@ -89,45 +105,25 @@
     border-radius: 0.5rem;
     cursor: pointer;
     transition: var(--transition);
-    white-space: nowrap; /* Prevent the button text from wrapping */
+    white-space: nowrap; /* Prevent button text from wrapping */
 }
 
 .sign-in-button:hover {
     background-color: var(--primary-hover);
 }
 
-.profile-image {
-    width: 2rem;
-    height: 2rem;
-    border-radius: 50%;
-    overflow: hidden;
-    margin-left: 1rem;
-}
-
-.profile-image img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-}
-
 /* Responsive Styles */
-@media (max-width: 1024px) {
-    .search-container {
-        max-width: 300px; /* Reduce the search bar width on smaller laptops */
-    }
-}
-
 @media (max-width: 768px) {
     .header-container {
         padding: 0 0.5rem;
     }
 
     .search-container {
-        display: none; /* Hide the search bar on smaller screens */
+        display: none; /* Hide search bar on smaller screens */
     }
 
     .menu-button {
-        display: block; /* Show the menu button on smaller screens */
+        display: block; /* Show hamburger menu on smaller screens */
     }
 
     .header-right {
@@ -145,7 +141,7 @@
 
 @media (max-width: 480px) {
     .logo {
-        font-size: 1rem; /* Reduce the logo size on very small screens */
+        font-size: 1rem; /* Reduce logo size on very small screens */
     }
 
     .icon-button {
@@ -154,19 +150,5 @@
 
     .sign-in-button {
         padding: 0.25rem 0.5rem;
-    }
-}
-
-
-@media (min-width: 769px) {
-    .menu-button {
-        display: none;
-    }
-}
-
-/* Show hamburger menu on small screens */
-@media (max-width: 768px) {
-    .menu-button {
-        display: block;
     }
 }
