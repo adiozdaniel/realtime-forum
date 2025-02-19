@@ -56,7 +56,7 @@ type Reply struct {
 	CommentID     string    `json:"comment_id"`
 	UserID        string    `json:"user_id"`
 	Author        string    `json:"user_name"`
-	AuthorImg     string    `json:"author_img,omitempty"`
+	AuthorImg     string    `json:"author_img"`
 	ParentReplyID string    `json:"parent_reply_id,omitempty"`
 	Content       string    `json:"content"`
 	CreatedAt     time.Time `json:"created_at"`
