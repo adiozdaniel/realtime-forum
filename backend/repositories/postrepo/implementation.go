@@ -64,7 +64,7 @@ func (r *PostRepository) DeletePost(id string) error {
 
 // ListPosts retrieves all posts from the database
 func (repo *PostRepository) ListPosts() ([]*Post, error) {
-	rows, err := repo.DB.Query("SELECT post_id, user_id, post_author, author_img, post_title, post_content, post_image, post_video, post_category, created_at, updated_at FROM posts")
+	rows, err := repo.DB.Query("SELECT post_id, user_id, post_author, author_img, post_title, post_content, post_image, post_video, post_category, post_hasComments, created_at, updated_at FROM posts")
 	if err != nil {
 		return nil, err
 	}
@@ -73,7 +73,7 @@ func (repo *PostRepository) ListPosts() ([]*Post, error) {
 	var posts []*Post
 	for rows.Next() {
 		post := &Post{}
-		if err := rows.Scan(&post.PostID, &post.UserID, &post.PostAuthor, &post.AuthorImg, &post.PostTitle, &post.PostContent, &post.PostImage, &post.PostVideo, &post.PostCategory, &post.CreatedAt, &post.UpdatedAt); err != nil {
+		if err := rows.Scan(&post.PostID, &post.UserID, &post.PostAuthor, &post.AuthorImg, &post.PostTitle, &post.PostContent, &post.PostImage, &post.PostVideo, &post.PostCategory, &post.HasComments, &post.CreatedAt, &post.UpdatedAt); err != nil {
 			return nil, err
 		}
 

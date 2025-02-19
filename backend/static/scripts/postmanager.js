@@ -83,6 +83,8 @@ PostManager.prototype.toggleComments = function (e) {
 };
 
 PostManager.prototype.renderPosts = function (posts = SAMPLE_POSTS) {
+	console.log(posts);
+	
 	posts.forEach((post) => {
 		post.post_timeAgo = formatTimeAgo(post.created_at);
 		post.post_likes = post.likes?.length || 0;
@@ -91,7 +93,7 @@ PostManager.prototype.renderPosts = function (posts = SAMPLE_POSTS) {
 		if (post.post_hasComments) {
 			SAMPLE_COMMENTS[post.post_id] = post.comments;
 		}
-		
+
 		post.post_likes = this.likeState.posts[post.post_id] = {
 			count: post?.post_likes || 0,
 			likedBy: new Set(),
