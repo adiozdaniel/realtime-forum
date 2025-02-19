@@ -207,7 +207,7 @@ func (p *PostsRepo) CreatePostReply(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	post, err := p.post.CreatePostReply(&req)
+	post, err := p.post.CreateCommentReply(&req)
 	if err != nil {
 		p.res.SetError(w, err, http.StatusInternalServerError)
 		return

@@ -122,7 +122,7 @@ func (p *PostService) CreatePostComment(comment *Comment) (*Comment, error) {
 }
 
 // CreateReply creates a new reply
-func (p *PostService) CreatePostReply(reply *Reply) (*Reply, error) {
+func (p *PostService) CreateCommentReply(reply *Reply) (*Reply, error) {
 	if reply.UserID == "" {
 		return nil, errors.New("user ID cannot be empty")
 	}
