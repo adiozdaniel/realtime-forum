@@ -136,6 +136,11 @@ const postLikeState = {
 	comments: {},
 };
 
+const postDislikeState = {
+	posts: {},
+	comments: {},
+};
+
 const SAMPLE_COMMENTS = {};
 
 export {
@@ -144,5 +149,6 @@ export {
 	CONSTANTS,
 	commentLikeState,
 	postLikeState,
+	postDislikeState,
 	SAMPLE_COMMENTS,
 };

@@ -1,7 +1,7 @@
 import { PostService } from "./postsservice.js";
 import { formatTimeAgo } from "./timestamps.js";
 import { CommentManager } from "./comment.js";
-import { postLikeState, SAMPLE_POSTS, SAMPLE_COMMENTS } from "./data.js";
+import { postLikeState, postDislikeState, SAMPLE_POSTS, SAMPLE_COMMENTS } from "./data.js";
 import { getUserData } from "./authmiddleware.js";
 import { PostModalManager } from "./createposts.js";
 
@@ -12,13 +12,14 @@ const commentManager = new CommentManager();
 class PostManager {
 	constructor() {
 		this.likeState = postLikeState;
+		this.dislikeState = postDislikeState;
 		this.postService = new PostService();
 	}
 }
 
 PostManager.prototype.createPostHTML = function (post) {
-	const isLiked =
-		this.likeState.posts[post.post_id]?.likedBy.has("current-user");
+	const isLiked = this.likeState.posts[post.post_id]?.likedBy.has("current-user");
+	const isDisliked = this.dislikeState.posts[post.post_id]?.dislikedBy.has("current-user")
 	return `
       <article class="post-card" data-post-id="${post.post_id}">
 	  	${
@@ -46,6 +47,14 @@ PostManager.prototype.createPostHTML = function (post) {
 								this.likeState.posts[post.post_id]?.count || 0
 							}</span>
             </button>
+			<button class="post-action-button dislike-button ${
+				isDisliked ? "disliked text-red-600" : ""
+			}" data-post-id="${post.post_id}">
+			<i data-lucide="thumbs-down"></i>
+			 <span class="likes-count">${
+								this.dislikeState.posts[post.post_id]?.count || 0
+							}</span>
+			</button>
             <button class="post-action-button comment-toggle" data-post-id="${
 							post.post_id
 						}">
