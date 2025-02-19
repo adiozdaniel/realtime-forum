@@ -52,16 +52,16 @@ type Like struct {
 
 // Replies represents a comment reply
 type Reply struct {
-	ReplyID       string    `json:"reply_id"`
-	CommentID     string    `json:"comment_id"`
-	UserID        string    `json:"user_id"`
-	Author        string    `json:"user_name"`
-	AuthorImg     string    `json:"author_img"`
-	ParentReplyID string    `json:"parent_reply_id,omitempty"`
-	Content       string    `json:"content"`
-	CreatedAt     time.Time `json:"created_at"`
-	UpdatedAt     time.Time `json:"updated_at"`
-	Likes         []*Like   `json:"likes,omitempty"`
+	ReplyID       string         `json:"reply_id"`
+	CommentID     string         `json:"comment_id"`
+	UserID        string         `json:"user_id"`
+	Author        string         `json:"user_name"`
+	AuthorImg     string         `json:"author_img"`
+	ParentReplyID sql.NullString `json:"parent_reply_id,omitempty"`
+	Content       string         `json:"content"`
+	CreatedAt     time.Time      `json:"created_at"`
+	UpdatedAt     time.Time      `json:"updated_at"`
+	Likes         []*Like        `json:"likes,omitempty"`
 }
 
 // PostRepo represents posts repository
