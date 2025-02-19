@@ -194,6 +194,13 @@ func TestGetLikesByReplyID(t *testing.T) {
 }
 
 func TestAddLike(t *testing.T) {
+	db := CreateDb()
+	postrepo := &PostRepository{DB: db}
+	like := &Like{}
+
+	if _, err := postrepo.AddLike(like); err != nil {
+		t.Errorf("expected %v, got %v", nil, err)
+	}
 }
 
 func TestDislike(t *testing.T) {
