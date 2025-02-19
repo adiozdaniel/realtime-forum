@@ -207,8 +207,6 @@ CommentManager.prototype.attachEventListeners = function () {
 CommentManager.prototype.initLikeState = function (comments) {
 	if (!comments) return;
 
-	console.log(comments);
-
 	const commentList = Array.isArray(comments) ? comments : [];
 	if (commentList === null) return;
 

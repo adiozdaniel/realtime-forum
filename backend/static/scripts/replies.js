@@ -17,7 +17,7 @@ ReplyManager.prototype.createReplyHTML = function (reply) {
 	});
 	const isLiked = replyState.likedBy.has("current-user");
 	return `
-        <div class="reply" data-reply-id="${reply.id}">
+        <div class="reply" data-reply-id="${reply.reply_id}">
           <div class="comment-content"> 
             <div class="profile-image">
               <img src="${reply.author_img}" 
@@ -50,10 +50,12 @@ ReplyManager.prototype.showReplyForm = async function (e) {
 
 	const postId = button.getAttribute("data-post-id");
 	const commentId = button.getAttribute("data-comment-id");
-	const commentElement = document.querySelector(
-		`.comment[data-comment-id="${commentId}"]`
-	);
-	if (!commentElement) return;
+
+	// Find the closest replies container
+	const repliesContainer = button
+		.closest(".comment")
+		.querySelector(".replies-container");
+	if (!repliesContainer) return;
 
 	const userData = await getUserData();
 	if (!userData) {
@@ -62,7 +64,7 @@ ReplyManager.prototype.showReplyForm = async function (e) {
 		return;
 	}
 
-	const existingReplyForm = commentElement.querySelector(".reply-form");
+	const existingReplyForm = repliesContainer.querySelector(".reply-form");
 	if (existingReplyForm) {
 		existingReplyForm.remove();
 	} else {
@@ -72,8 +74,10 @@ ReplyManager.prototype.showReplyForm = async function (e) {
         <button type="submit" class="reply-submit">Reply</button>
       </form>`;
 
-		commentElement.insertAdjacentHTML("beforeend", replyFormHTML);
-		const replyForm = commentElement.querySelector(".reply-form");
+		// Insert form at the top of the replies container
+		repliesContainer.insertAdjacentHTML("afterbegin", replyFormHTML);
+
+		const replyForm = repliesContainer.querySelector(".reply-form");
 		if (replyForm) {
 			replyForm.addEventListener("submit", (e) => this.handleReplySubmit(e));
 		}
@@ -127,7 +131,7 @@ ReplyManager.prototype.handleReplySubmit = async function (e) {
 		} else {
 			commentElement.insertAdjacentHTML(
 				"beforeend",
-				`<div class="replies-container">${replyHTML}</div>`
+				`<div class="replies-container data-comment-id="${commentId}">${replyHTML}</div>`
 			);
 		}
 	}
