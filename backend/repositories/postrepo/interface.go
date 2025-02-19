@@ -17,4 +17,7 @@ type PostRepo interface {
 
 	// Comments
 	CreateComment(post *Comment) (*Comment, error)
+
+	// Replies
+	CreateReply(post *Reply) (*Reply, error)
 }

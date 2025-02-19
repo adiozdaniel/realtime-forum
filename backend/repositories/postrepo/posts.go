@@ -191,3 +191,30 @@ func (p *PostsRepo) UploadPostImage(w http.ResponseWriter, r *http.Request) {
 	p.res.Data = data
 	p.res.WriteJSON(w, *p.res, http.StatusOK)
 }
+
+// CreateReply creates a new reply
+func (p *PostsRepo) CreatePostReply(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodPost {
+		http.Error(w, "Oops, didn't understand what you are looking for", http.StatusForbidden)
+		return
+	}
+
+	var req Reply
+
+	err := json.NewDecoder(r.Body).Decode(&req)
+	if err != nil {
+		p.res.SetError(w, err, http.StatusBadRequest)
+		return
+	}
+
+	post, err := p.post.CreatePostReply(&req)
+	if err != nil {
+		p.res.SetError(w, err, http.StatusInternalServerError)
+		return
+	}
+
+	p.res.Err = false
+	p.res.Message = "Success"
+	p.res.Data = post
+	p.res.WriteJSON(w, *p.res, http.StatusOK)
+}

@@ -120,3 +120,24 @@ func (p *PostService) CreatePostComment(comment *Comment) (*Comment, error) {
 	comment.UpdatedAt = time.Now()
 	return p.post.CreateComment(comment)
 }
+
+// CreateReply creates a new reply
+func (p *PostService) CreatePostReply(reply *Reply) (*Reply, error) {
+	if reply.UserID == "" {
+		return nil, errors.New("user ID cannot be empty")
+	}
+
+	if reply.CommentID == "" {
+		return nil, errors.New("comment ID cannot be empty")
+	}
+
+	if reply.Content == "" {
+		return nil, errors.New("reply content cannot be empty")
+	}
+
+	reply.AuthorImg = "/static/profiles/" + reply.UserID
+	reply.ReplyID, _ = p.shared.GenerateUUID()
+	reply.CreatedAt = time.Now()
+	reply.UpdatedAt = time.Now()
+	return p.post.CreateReply(reply)
+}

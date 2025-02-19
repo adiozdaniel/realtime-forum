@@ -261,3 +261,11 @@ func (r *PostRepository) CreateComment(comment *Comment) (*Comment, error) {
 	_, err := r.DB.Exec(query, comment.CommentID, comment.PostID, comment.UserID, comment.Author, comment.AuthorImg, comment.ParentCommentID, comment.Content, comment.CreatedAt, comment.UpdatedAt)
 	return comment, err
 }
+
+// CreateReply creates a new reply
+func (r *PostRepository) CreateReply(reply *Reply) (*Reply, error) {
+	query := `INSERT INTO replies (reply_id, comment_id, user_id, user_name, author_img, parent_reply_id, content, created_at, updated_at)
+	          VALUES (?, ?, ?, ?, ?, NULLIF(?, ''), ?, ?, ?)`
+	_, err := r.DB.Exec(query, reply.ReplyID, reply.CommentID, reply.UserID, reply.Author, reply.AuthorImg, reply.ParentReplyID, reply.Content, reply.CreatedAt, reply.UpdatedAt)
+	return reply, err
+}
