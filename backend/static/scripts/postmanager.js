@@ -94,8 +94,6 @@ PostManager.prototype.toggleComments = function (e) {
 };
 
 PostManager.prototype.renderPosts = function (posts = POSTS) {
-	console.log(posts);
-
 	posts.forEach((post) => {
 		post.post_timeAgo = formatTimeAgo(post.created_at);
 		post.post_likes = post.likes?.length || 0;
