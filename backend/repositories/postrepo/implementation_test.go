@@ -176,6 +176,12 @@ func TestGetRepliesByCommentID(t *testing.T) {
 }
 
 func TestGetLikesByCommentID(t *testing.T) {
+	db := CreateDb()
+	postrepo := &PostRepository{DB: db}
+
+	if _, err := postrepo.GetLikesByCommentID("1"); err != nil {
+		t.Errorf("expected %v, got %v", nil, err)
+	}
 }
 
 func TestGetLikesByReplyID(t *testing.T) {
