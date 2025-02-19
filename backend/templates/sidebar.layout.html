@@ -1,5 +1,5 @@
-{{ define "sidebar"}}
-<aside class="sidebar" id="sidebar">
+{{ define "sidebar" }}
+<aside class="sidebar" id="sidebar" data-sidebar>
     <nav>
         <ul class="category-list">
             <li> 
@@ -17,11 +17,13 @@
                 <button class="category-button"> 
                     <i data-lucide="newspaper"></i>
                     <span>Latest</span>
-                </button> </li>
+                </button> 
+            </li>
             <li> 
                 <button class="category-button"> 
-                    <i data-lucide="star" i></i>
-                    <span>Popular</span> </button>
+                    <i data-lucide="star"></i>
+                    <span>Popular</span> 
+                </button>
             </li>
             <li> 
                 <button class="category-button"> 
@@ -50,4 +52,4 @@
         </ul>
     </nav>
 </aside>
-{{end}}
+{{ end }}
