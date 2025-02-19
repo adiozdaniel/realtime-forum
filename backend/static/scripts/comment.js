@@ -1,20 +1,20 @@
 import { CommentService } from "./commentservice.js";
 import { formatTimeAgo } from "./timestamps.js";
 import { getUserData } from "./authmiddleware.js";
-import { SAMPLE_COMMENTS } from "./data.js";
+import { SAMPLE_COMMENTS, commentLikeState } from "./data.js";
 
 class CommentManager {
 	constructor() {
-		this.likeState = { comments: {} };
+		this.likeState = commentLikeState;
 		this.commentService = new CommentService();
 	}
 }
 
 CommentManager.prototype.createReplyHTML = function (reply) {
-	const replyState = this.likeState.comments[reply.id] || {
+	const replyState = (this.likeState.comments[reply.id] ??= {
 		count: 0,
 		likedBy: new Set(),
-	};
+	});
 	const isLiked = replyState.likedBy.has("current-user");
 	return `
             <div class="reply" data-reply-id="${reply.id}">
@@ -40,11 +40,8 @@ CommentManager.prototype.createReplyHTML = function (reply) {
 };
 
 CommentManager.prototype.createCommentHTML = function (comment, postId) {
-	const commentState = this.likeState.comments[comment.id] || {
-		count: 0,
-		likedBy: new Set(),
-	};
-	const isLiked = commentState.likedBy.has("current-user");
+	const isLiked =
+		this.likeState.comments[comment.comment_id]?.likedBy.has("current-user");
 	return `
         <div class="comment" data-comment-id="${comment.comment_id}"> 
             <div class="comment-content"> 
@@ -66,7 +63,10 @@ CommentManager.prototype.createCommentHTML = function (comment, postId) {
 		comment.comment_id
 	}"> 
                         <i data-lucide="thumbs-up"></i> 
-                        <span class="likes-count">${commentState.count}</span> 
+                        <span class="likes-count">${
+													this.likeState.comments[comment.comment_id]?.count ||
+													0
+												}</span> 
                     </button>
                     <button class="comment-action-button reply-button">
                         <i data-lucide="reply"></i> 
@@ -164,28 +164,27 @@ CommentManager.prototype.handleCommentLikes = async function (event) {
 
 	if (!commentId || !postId) return;
 
+	const likeData = (this.likeState.comments[commentId] ??= {
+		count: 0,
+		likedBy: new Set(),
+	});
+
 	// Get current user (this should be an authenticated user)
-	const userData = await getUserData();
-	if (!userData) {
+	const currentUser = await getUserData();
+	if (!currentUser?.user_id) {
 		alert("Please log in to like comments.");
 		window.location.href = "/auth";
 		return;
 	}
 
-	// Get current like state
-	const commentState = this.likeState.comments[commentId] || {
-		count: 0,
-		likedBy: new Set(),
-	};
-
-	const likeData = {
-		user_id: userData.user_id,
+	const commentData = {
+		user_id: currentUser.user_id,
 		post_id: postId,
 		comment_id: commentId,
 	};
 
 	// Send request to backend
-	const res = await this.commentService.likeComment(likeData);
+	const res = await this.commentService.likeComment(commentData);
 
 	if (res.error) {
 		alert(res.message);
@@ -193,14 +192,21 @@ CommentManager.prototype.handleCommentLikes = async function (event) {
 	}
 
 	if (res.data) {
-		commentState.count++;
+		likeData.count++;
+		likeData.likedBy.add(currentUser.user_id);
 		likeButton.classList.add("liked", "text-blue-600");
 	} else if (res.data === null) {
-		commentState.count = Math.max(0, likeData.count - 1);
+		likeData.count = Math.max(0, likeData.count - 1);
+		likeData.likedBy.delete(currentUser.user_id);
 		likeButton.classList.remove("liked", "text-blue-600");
 	}
 
-	likeButton.querySelector(".likes-count").textContent = commentState.count;
+	const likesCount = likeButton.querySelector(".likes-count");
+
+	if (likesCount) likesCount.textContent = likeData.count;
+
+	likeButton.classList.add("like-animation");
+	setTimeout(() => likeButton.classList.remove("like-animation"), 300);
 };
 
 CommentManager.prototype.attachEventListeners = function () {
@@ -210,16 +216,22 @@ CommentManager.prototype.attachEventListeners = function () {
 	});
 };
 
-CommentManager.prototype.initLikeState = function (sampleComments) {
-	Object.keys(sampleComments).forEach((postId) => {
-		sampleComments[postId].forEach((comment) => {
-			this.likeState.comments[comment.id] = {
-				count: comment.likes,
+CommentManager.prototype.initLikeState = function (comments) {
+	if (!comments) return;
+
+	const commentList = Array.isArray(comments) ? comments : [];
+	if (commentList === null) return;
+
+	Object.keys(comments).forEach((post_id) => {
+		comments[post_id]?.forEach((comments) => {
+			this.likeState.comments[comments.comment_id] = {
+				count: comments.likes?.length || 0,
 				likedBy: new Set(),
 			};
-			comment.replies.forEach((reply) => {
-				this.likeState.comments[reply.id] = {
-					count: reply.likes,
+
+			comments.replies?.forEach((reply) => {
+				this.likeState.comments[reply.reply_id] = {
+					count: reply.likes.length || 0,
 					likedBy: new Set(),
 				};
 			});
@@ -230,8 +242,10 @@ CommentManager.prototype.initLikeState = function (sampleComments) {
 const commentManager = new CommentManager();
 
 window.addEventListener("DOMContentLoaded", () => {
-	commentManager.initLikeState(SAMPLE_COMMENTS);
-	commentManager.attachEventListeners();
+	setTimeout(() => {
+		commentManager.initLikeState(SAMPLE_COMMENTS);
+		commentManager.attachEventListeners();
+	}, 300);
 });
 
 export { CommentManager };
