@@ -39,6 +39,40 @@ CommentManager.prototype.createReplyHTML = function (reply) {
             </div>`;
 };
 
+CommentManager.prototype.showReplyForm = function (e) {
+	const button = e.target.closest(".reply-button");
+	if (!button) return;
+
+	const postId = button.getAttribute("data-post-id");
+	const commentId = button.getAttribute("data-comment-id");
+
+	const commentElement = document.querySelector(
+		`.comment[data-comment-id="${commentId}"]`
+	);
+	if (!commentElement) return;
+
+	// Check if reply form already exists
+	const existingReplyForm = commentElement.querySelector(".reply-form");
+
+	if (existingReplyForm) {
+		existingReplyForm.remove();
+	} else {
+		const replyFormHTML = `
+            <form class="reply-form" data-comment-id="${commentId}" data-post-id="${postId}">
+                <textarea placeholder="Write your reply..." class="reply-input"></textarea>
+                <button type="submit" class="reply-submit">Reply</button>
+            </form>`;
+
+		commentElement.insertAdjacentHTML("beforeend", replyFormHTML);
+
+		// Attach event listener to the new reply form if needed
+		const replyForm = commentElement.querySelector(".reply-form");
+		if (replyForm) {
+			// replyForm.addEventListener("submit", (e) => this.handleReplySubmit(e));
+		}
+	}
+};
+
 CommentManager.prototype.createCommentHTML = function (comment, postId) {
 	const isLiked =
 		this.likeState.comments[comment.comment_id]?.likedBy.has("current-user");
@@ -68,7 +102,11 @@ CommentManager.prototype.createCommentHTML = function (comment, postId) {
 													0
 												}</span> 
                     </button>
-                    <button class="comment-action-button reply-button">
+                    <button 
+											class="comment-action-button reply-button"
+											data-post-id="${postId}"
+											data-comment-id="${comment.comment_id}"
+											>
                         <i data-lucide="reply"></i> 
                         <span>Reply</span>
                     </button>  
@@ -111,11 +149,15 @@ CommentManager.prototype.loadComments = function (postId) {
 	document.querySelectorAll(".comments-section").forEach((section) => {
 		section.addEventListener("click", (event) => {
 			const likeButton = event.target.closest(".like-button");
+			const replyButton = event.target.closest(".reply-button");
 
-			if (!likeButton) return;
-			if (!likeButton.dataset.commentId) return;
+			if (likeButton && likeButton.dataset.commentId) {
+				this.handleCommentLikes(event);
+			}
 
-			this.handleCommentLikes(event);
+			if (replyButton && replyButton.dataset.commentId) {
+				this.showReplyForm(event);
+			}
 		});
 	});
 
