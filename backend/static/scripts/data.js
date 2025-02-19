@@ -34,98 +34,7 @@ const CONSTANTS = {
 };
 
 // Sample Data
-const SAMPLE_POSTS = [
-	{
-		post_id: "01",
-		post_title: "Getting Started with Go and Angular",
-		post_author: "Jane Cooper",
-		post_category: "Tutorial",
-		post_likes: 42,
-		author_img: "/static/profiles/avatar.jpg",
-		likes: [],
-		comments: [
-			{
-				id: 1,
-				author: "walter otieno",
-				content:
-					"Great tutorial! The step-by-step approach really helped me understand the concepts.",
-				timeAgo: "1h ago",
-				likes: 5,
-				replies: [
-					{
-						id: 101,
-						author: "james ochieng",
-						content: "Totally agree! The examples were very clear.",
-						timeAgo: "45m ago",
-						likes: 2,
-					},
-				],
-			},
-			{
-				id: 2,
-				author: "martin shikuku",
-				content:
-					"Would love to see a follow-up tutorial on authentication with Go",
-				timeAgo: "45m ago",
-				likes: 3,
-				replies: [],
-			},
-		],
-		post_comments: 12,
-		post_content:
-			"Learn how to build a modern web application using Go for the backend and Angular for the frontend...",
-		post_timeAgo: "2h ago",
-		post_hasComments: true,
-	},
-	{
-		post_id: "02",
-		post_title: "Best Practices for API Design",
-		post_author: "John Smith",
-		post_category: "Discussion",
-		post_likes: 28,
-		likes: [],
-		comments: [
-			{
-				id: 3,
-				author: "thagruok owino",
-				content:
-					"Versioning is crucial for API design. Good point about maintaining backwards compatibility.",
-				timeAgo: "2h ago",
-				likes: 7,
-				replies: [],
-			},
-		],
-		post_comments: 8,
-		post_content:
-			"Let's discuss the best practices for designing RESTful APIs that are both scalable and maintainable...",
-		post_timeAgo: "4h ago",
-		post_hasComments: true,
-	},
-	{
-		post_id: "03",
-		post_title: "Web Performance Optimization Tips",
-		post_author: "Alice Johnson",
-		post_category: "Guide",
-		post_likes: 35,
-		likes: [],
-		comments: [
-			{
-				id: 4,
-				author: "grace neema",
-				content:
-					"The section about lazy loading really improved my site's performance. Thanks!",
-				timeAgo: "30m ago",
-				likes: 4,
-				replies: [],
-			},
-		],
-		post_comments: 15,
-		post_content:
-			"Essential tips and tricks for optimizing your web application's performance...",
-		post_timeAgo: "6h ago",
-		post_hasComments: true,
-	},
-];
+const POSTS = [];
 
 const commentLikeState = {
 	comments: {},
@@ -141,14 +50,14 @@ const postDislikeState = {
 	comments: {},
 };
 
-const SAMPLE_COMMENTS = {};
+const COMMENTS = [];
 
 export {
 	API_ENDPOINTS,
-	SAMPLE_POSTS,
+	POSTS,
 	CONSTANTS,
 	commentLikeState,
 	postLikeState,
 	postDislikeState,
-	SAMPLE_COMMENTS,
+	COMMENTS,
 };

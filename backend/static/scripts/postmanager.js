@@ -1,7 +1,7 @@
 import { PostService } from "./postsservice.js";
 import { formatTimeAgo } from "./timestamps.js";
 import { CommentManager } from "./comment.js";
-import { postLikeState, postDislikeState, SAMPLE_POSTS, SAMPLE_COMMENTS } from "./data.js";
+import { postLikeState, postDislikeState, POSTS, COMMENTS } from "./data.js";
 import { getUserData } from "./authmiddleware.js";
 import { PostModalManager } from "./createposts.js";
 
@@ -18,8 +18,10 @@ class PostManager {
 }
 
 PostManager.prototype.createPostHTML = function (post) {
-	const isLiked = this.likeState.posts[post.post_id]?.likedBy.has("current-user");
-	const isDisliked = this.dislikeState.posts[post.post_id]?.dislikedBy.has("current-user")
+	const isLiked =
+		this.likeState.posts[post.post_id]?.likedBy.has("current-user");
+	const isDisliked =
+		this.dislikeState.posts[post.post_id]?.dislikedBy.has("current-user");
 	return `
       <article class="post-card" data-post-id="${post.post_id}">
 	  	${
@@ -52,8 +54,8 @@ PostManager.prototype.createPostHTML = function (post) {
 			}" data-post-id="${post.post_id}">
 			<i data-lucide="thumbs-down"></i>
 			 <span class="likes-count">${
-								this.dislikeState.posts[post.post_id]?.count || 0
-							}</span>
+					this.dislikeState.posts[post.post_id]?.count || 0
+				}</span>
 			</button>
             <button class="post-action-button comment-toggle" data-post-id="${
 							post.post_id
@@ -91,16 +93,16 @@ PostManager.prototype.toggleComments = function (e) {
 	commentsSection.classList.toggle("hidden");
 };
 
-PostManager.prototype.renderPosts = function (posts = SAMPLE_POSTS) {
+PostManager.prototype.renderPosts = function (posts = POSTS) {
 	console.log(posts);
-	
+
 	posts.forEach((post) => {
 		post.post_timeAgo = formatTimeAgo(post.created_at);
 		post.post_likes = post.likes?.length || 0;
 		post.post_comments = post.comments?.length || 0;
 
 		if (post.post_hasComments) {
-			SAMPLE_COMMENTS[post.post_id] = post.comments;
+			COMMENTS[post.post_id] = post.comments;
 		}
 
 		post.post_likes = this.likeState.posts[post.post_id] = {
@@ -169,7 +171,7 @@ PostManager.prototype.init = async function () {
 
 	if (postList === null) return;
 
-	postList.forEach((post) => SAMPLE_POSTS.unshift(post));
+	postList.forEach((post) => POSTS.unshift(post));
 	if (postsContainer) this.renderPosts();
 };
 
@@ -181,4 +183,4 @@ document.addEventListener("DOMContentLoaded", () => {
 	postModal.init();
 });
 
-export { postManager, SAMPLE_POSTS };
+export { postManager };

@@ -1,4 +1,4 @@
-import { PostManager, SAMPLE_POSTS } from "./postmanager.js";
+import { PostManager, POSTS } from "./postmanager.js";
 const sidebar = document.querySelector("#sidebar");
 const allCategoriesBtn = document.querySelector("#allCategories");
 const categoryDropdown = document.querySelector("#categoryDropdown");
@@ -23,7 +23,7 @@ class Sidebar {
 	}
 
 	createCategoryDropdown() {
-		const categories = [...new Set(SAMPLE_POSTS.map((post) => post.category))];
+		const categories = [...new Set(POSTS.map((post) => post.category))];
 		if (categoryDropdown) {
 			categoryDropdown.innerHTML = categories
 				.map(
@@ -38,7 +38,10 @@ class Sidebar {
 		allCategoriesLabel.innerHTML = ` <input type="checkbox" class="category-checkbox" value="all" checked> All Posts `;
 
 		if (categoryDropdown) {
-			categoryDropdown.insertBefore(allCategoriesLabel, categoryDropdown.firstChild);
+			categoryDropdown.insertBefore(
+				allCategoriesLabel,
+				categoryDropdown.firstChild
+			);
 		}
 	}
 
@@ -49,8 +52,8 @@ class Sidebar {
 		).map((checkbox) => checkbox.value);
 		const isAllSelected = selectedCategories.includes("all");
 		const filteredPosts = isAllSelected
-			? SAMPLE_POSTS
-			: SAMPLE_POSTS.filter((post) => selectedCategories.includes(post.category));
+			? POSTS
+			: POSTS.filter((post) => selectedCategories.includes(post.category));
 		postManager.renderPosts(filteredPosts);
 	}
 
@@ -98,7 +101,11 @@ class Sidebar {
 
 		// Close dropdown when clicking outside
 		document.addEventListener("click", (e) => {
-			if (categoryDropdown && !categoryDropdown.contains(e.target) && e.target !== allCategoriesBtn) {
+			if (
+				categoryDropdown &&
+				!categoryDropdown.contains(e.target) &&
+				e.target !== allCategoriesBtn
+			) {
 				categoryDropdown.classList.add("hidden");
 			}
 		});

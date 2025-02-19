@@ -1,7 +1,7 @@
 import { CommentService } from "./commentservice.js";
 import { formatTimeAgo } from "./timestamps.js";
 import { getUserData } from "./authmiddleware.js";
-import { SAMPLE_COMMENTS, commentLikeState } from "./data.js";
+import { COMMENTS, commentLikeState } from "./data.js";
 
 class CommentManager {
 	constructor() {
@@ -30,15 +30,18 @@ CommentManager.prototype.createReplyHTML = function (reply) {
             </div>
                 <div class="comment-footer">
                     <div class="comment-actions">
-                        <button class="comment-action-button like-button ${isLiked ? "liked text-blue-600" : ""
-		}" 
+                        <button class="comment-action-button like-button ${
+													isLiked ? "liked text-blue-600" : ""
+												}" 
                             data-comment-id="${reply.id}">
                             <i data-lucide="thumbs-up"></i>
                             <span class="likes-count">${replyState.count}</span>
                         </button>
                     </div>
                     <div class="comment-meta">
-                        <span class="reply-time">${formatTimeAgo(reply.updated_at)}</span>
+                        <span class="reply-time">${formatTimeAgo(
+													reply.updated_at
+												)}</span>
                     </div>
                 </div>
             </div>`;
@@ -139,7 +142,7 @@ CommentManager.prototype.handleReplySubmit = async function (e) {
 	}
 
 	// Update local data
-	SAMPLE_COMMENTS[postId].forEach((comment) => {
+	COMMENTS[postId].forEach((comment) => {
 		if (comment.comment_id === commentId) {
 			comment.replies?.push(res.data);
 		}
@@ -208,7 +211,7 @@ CommentManager.prototype.loadComments = function (postId) {
 	if (!commentsSection) return;
 
 	// Fetch comments including replies
-	const comments = SAMPLE_COMMENTS[postId] || [];
+	const comments = COMMENTS[postId] || [];
 	const commentsHTML = comments
 		.map((comment) => this.createCommentHTML(comment, postId))
 		.join("");
@@ -274,9 +277,9 @@ CommentManager.prototype.handleCommentSubmit = async function (e) {
 		return;
 	}
 
-	if (!SAMPLE_COMMENTS[postId]) SAMPLE_COMMENTS[postId] = [];
+	if (!COMMENTS[postId]) COMMENTS[postId] = [];
 
-	SAMPLE_COMMENTS[postId].push(commentsRes.data);
+	COMMENTS[postId].push(commentsRes.data);
 	this.loadComments(postId);
 	input.value = "";
 };
@@ -369,7 +372,7 @@ const commentManager = new CommentManager();
 
 window.addEventListener("DOMContentLoaded", () => {
 	setTimeout(() => {
-		commentManager.initLikeState(SAMPLE_COMMENTS);
+		commentManager.initLikeState(COMMENTS);
 		commentManager.attachEventListeners();
 	}, 300);
 });

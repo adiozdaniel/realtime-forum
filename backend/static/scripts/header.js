@@ -1,5 +1,5 @@
 import { API_ENDPOINTS } from "./data.js";
-// import { PostManager, SAMPLE_POSTS } from "./index.js";
+// import { PostManager, POSTS } from "./index.js";
 // import { sidebar } from "./sidebar.js";
 
 // const postManager = new PostManager()
@@ -28,7 +28,7 @@ Header.prototype.toggleMobileMenu = function () {
 // Search functionality
 Header.prototype.handleSearch = (e) => {
 	// const searchTerm = e.target.value.toLowerCase();
-	// const filteredPosts = SAMPLE_POSTS.filter(
+	// const filteredPosts = POSTS.filter(
 	// 	(post) =>
 	// 		post.title.toLowerCase().includes(searchTerm) ||
 	// 		post.excerpt.toLowerCase().includes(searchTerm)
@@ -86,7 +86,7 @@ Header.prototype.init = async function () {
 	// Set the profile image with a fallback in case of error
 	this.profileImage.src = userdata?.image;
 	this.profileImage.onerror = () => {
-		this.profileImage.src = '/static/profiles/avatar.jpg';
+		this.profileImage.src = "/static/profiles/avatar.jpg";
 	};
 
 	this.authButton.textContent = userdata ? "Sign Out" : "Sign In";
