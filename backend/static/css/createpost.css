@@ -432,3 +432,37 @@ textarea {
 .post-img img:hover {
     transform: scale(1.05);
 }
+
+
+@media (max-width: 768px) {
+    .modal-content {
+        left: 5%;
+        top: 5%;
+        width: 90%;
+        padding: 1rem;
+    }
+
+    .media-options {
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+
+    .upload-btn {
+        width: 100%;
+        justify-content: center;
+    }
+
+    .video-upload input {
+        width: 100%;
+    }
+
+    .form-actions {
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+
+    .cancel-button,
+    .submit-button {
+        width: 100%;
+    }
+}
