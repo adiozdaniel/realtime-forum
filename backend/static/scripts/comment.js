@@ -39,7 +39,7 @@ CommentManager.prototype.createReplyHTML = function (reply) {
             </div>`;
 };
 
-CommentManager.prototype.showReplyForm = function (e) {
+CommentManager.prototype.showReplyForm = async function (e) {
 	const button = e.target.closest(".reply-button");
 	if (!button) return;
 
@@ -50,6 +50,13 @@ CommentManager.prototype.showReplyForm = function (e) {
 		`.comment[data-comment-id="${commentId}"]`
 	);
 	if (!commentElement) return;
+
+	const userData = await getUserData();
+	if (!userData) {
+		alert("Please login to comment");
+		window.location.href = "/auth";
+		return;
+	}
 
 	// Check if reply form already exists
 	const existingReplyForm = commentElement.querySelector(".reply-form");
@@ -68,9 +75,56 @@ CommentManager.prototype.showReplyForm = function (e) {
 		// Attach event listener to the new reply form if needed
 		const replyForm = commentElement.querySelector(".reply-form");
 		if (replyForm) {
-			// replyForm.addEventListener("submit", (e) => this.handleReplySubmit(e));
+			replyForm.addEventListener("submit", (e) => this.handleReplySubmit(e));
 		}
 	}
+};
+
+CommentManager.prototype.handleReplySubmit = async function (e) {
+	e.preventDefault(); // Prevent form from reloading the page
+
+	const userData = await getUserData();
+	if (!userData) {
+		alert("Please login to comment");
+		window.location.href = "/auth";
+		return;
+	}
+
+	const form = e.target.closest(".reply-form");
+	if (!form) return;
+
+	const postId = form.getAttribute("data-post-id");
+	const commentId = form.getAttribute("data-comment-id");
+	const replyText = form.querySelector(".reply-input").value.trim();
+
+	if (!replyText) {
+		alert("Reply cannot be empty!");
+		return;
+	}
+
+	const replyData = {
+		comment_id: commentId,
+		user_id: userData.user_id,
+		user_name: userData.user_name,
+		content: replyText,
+	};
+
+	const res = await this.commentService.createReply(replyData);
+	if (res.error) {
+		alert(res.message);
+		return;
+	}
+
+	const commentElement = document.querySelector(
+		`.comment[data-comment-id="${commentId}"]`
+	);
+	if (commentElement) {
+		const replyHTML = this.createReplyHTML(res.data);
+		commentElement.insertAdjacentHTML("beforeend", replyHTML);
+	}
+
+	SAMPLE_COMMENTS[postId].replies.push(res.data);
+	form.remove();
 };
 
 CommentManager.prototype.createCommentHTML = function (comment, postId) {
