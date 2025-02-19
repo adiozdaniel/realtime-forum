@@ -141,7 +141,7 @@ CommentManager.prototype.handleReplySubmit = async function (e) {
 	// Update local data
 	SAMPLE_COMMENTS[postId].forEach((comment) => {
 		if (comment.comment_id === commentId) {
-			comment.replies.push(res.data);
+			comment.replies?.push(res.data);
 		}
 	});
 
@@ -154,7 +154,7 @@ CommentManager.prototype.createCommentHTML = function (comment, postId) {
 		this.likeState.comments[comment.comment_id]?.likedBy.has("current-user");
 
 	// Generate replies HTML
-	const repliesHTML = comment.replies
+	const repliesHTML = (comment.replies || [])
 		.map((reply) => this.createReplyHTML(reply))
 		.join("");
 
