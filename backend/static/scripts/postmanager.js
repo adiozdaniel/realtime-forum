@@ -83,6 +83,21 @@ PostManager.prototype.toggleComments = function (e) {
 };
 
 PostManager.prototype.renderPosts = function (posts = SAMPLE_POSTS) {
+	posts.forEach((post) => {
+		post.post_timeAgo = formatTimeAgo(post.created_at);
+		post.post_likes = post.likes?.length || 0;
+		post.post_comments = post.comments?.length || 0;
+
+		if (post.post_hasComments) {
+			SAMPLE_COMMENTS[post.post_id] = post.comments;
+		}
+		
+		post.post_likes = this.likeState.posts[post.post_id] = {
+			count: post?.post_likes || 0,
+			likedBy: new Set(),
+		};
+	});
+
 	postsContainer.innerHTML = posts
 		.map((post) => this.createPostHTML(post))
 		.join("");
@@ -143,19 +158,7 @@ PostManager.prototype.init = async function () {
 
 	if (postList === null) return;
 
-	postList.forEach((post) => SAMPLE_POSTS.push(post));
-	SAMPLE_POSTS.forEach((post) => {
-		post.post_timeAgo = formatTimeAgo(post.created_at);
-		post.post_likes = post?.post_likes || post.likes?.length;
-		post.post_comments = post?.post_comments || post.comments?.length || 0;
-		if (post.post_hasComments) {
-			SAMPLE_COMMENTS[post.post_id] = post.comments;
-		}
-		post.post_likes = this.likeState.posts[post.post_id] = {
-			count: post?.post_likes || 0,
-			likedBy: new Set(),
-		};
-	});
+	postList.forEach((post) => SAMPLE_POSTS.unshift(post));
 	if (postsContainer) this.renderPosts();
 };
 

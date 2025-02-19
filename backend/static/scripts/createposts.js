@@ -1,3 +1,5 @@
+import { SAMPLE_POSTS } from './data.js';
+import { postManager } from './postmanager.js';
 import { PostService } from './postsservice.js';
 
 class PostModalManager {
@@ -19,6 +21,7 @@ class PostModalManager {
         this.MAX_FILE_SIZE = 20 * 1024 * 1024;
         this.ALLOWED_TYPES = ['image/jpeg', 'image/png', 'image/gif'];
         this.postService = new PostService();
+        this.posts = postManager;
 
         // Temporary storage for uploaded image data
         this.tempImageData = null;
@@ -145,17 +148,20 @@ PostModalManager.prototype.handleSubmit = async function (e) {
         PostTitle: document.getElementById('postTitle').value,
         PostCategory: document.getElementById('postCategory').value,
         PostContent: document.getElementById('postContent').value,
-        PostImage: this.tempImageData.img,
-        PostID: this.tempImageData.post_id, 
+        PostImage: this.tempImageData?.img || null,
+        PostID: this.tempImageData?.post_id || null, 
         PostVideo: this.videoLink.value || null
     };
 
     try {
         const res = await this.postService.createPost(formData);
-        console.log(res);
         if (!res.error) {
             this.closeModal();
         }
+        SAMPLE_POSTS.unshift(res.data);
+
+        this.posts.renderPosts();
+
     } catch (error) {
         console.error('Error creating post:', error);
         this.showUploadError('Error creating post. Please try again.');
