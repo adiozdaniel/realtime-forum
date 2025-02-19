@@ -35,7 +35,7 @@
     color: #ffffff;
 }
 
-#profileContent {
+.profileContent {
     max-width: 800px;
     margin: 0 auto;
     padding: 20px;
@@ -43,27 +43,22 @@
     flex-direction: column;
     gap: 20px;
 }
-
-.back-button {
-    background-color: #3b82f6;
-    width: 120px;  /* Changed from 40px to be wider */
-    height: 40px;
-    border-radius: 8px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    transition: background-color 0.2s ease;
+.home-button {
+	text-decoration: none;
+	margin-left: 0.5rem;
+	padding: 0.5rem 1rem;
+	background-color: var(--primary-color);
+	color: var(--white);
+	border: none;
+	border-radius: 0.5rem;
+	cursor: pointer;
+	transition: var(--transition);
+}
+.home-button:hover {
+	background-color: var(--primary-hover);
 }
 
-.back-button i {
-    color: white;  /* Explicitly set icon color to white */
-    font-size: 24px;  /* Increased from 20px for slightly larger icon */
-}
 
-.back-button:hover {
-    background-color: #2563eb;
-}
 .profile-card {
     background: var(--background-light);
     padding: 20px;
@@ -96,6 +91,7 @@
     border-radius: 50%;
     object-fit: cover;
     background-color: var(--card-bg);
+    z-index : 1;
 }
 
 .upload-button {
@@ -170,11 +166,47 @@
     gap: 10px;
 }
 
+.posts-list {
+    margin-top: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.comments-list {
+    margin-top: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+
 .activity-card {
     background-color: var(--card-bg);
     border-radius: 0.5rem;
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
     padding: 1.5rem;
+}
+
+.posts-section-hidden {
+    background-color: var(--card-bg);
+    border-radius: 0.5rem;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    padding: 1.5rem;
+}
+
+.settings-section-hidden {
+    background-color: var(--card-bg);
+    border-radius: 0.5rem;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    padding: 1.5rem;
+}
+
+.comments-section-hidden {
+    background-color: var(--card-bg);
+    border-radius: 0.5rem;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    padding: 1.5rem; 
 }
 
 .activity-item {
