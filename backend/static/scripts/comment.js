@@ -18,22 +18,27 @@ CommentManager.prototype.createReplyHTML = function (reply) {
 	const isLiked = replyState.likedBy.has("current-user");
 	return `
             <div class="reply" data-reply-id="${reply.id}">
-                <div class="comment-header">
-                    <span class="comment-author">${reply.author}</span>
+			<div class="comment-content"> 
+                <div class="profile-image">
+                    <img src="${reply.author_img}" 
+                         onerror="this.onerror=null;this.src='/static/profiles/avatar.jpg';"/>
                 </div>
-                <p class="comment-content">${reply.content}</p>
+                <div>
+                    <div class="comment-author">${reply.user_name}</div> 
+                    <div class="comment-text">${reply.content}</div> 
+                </div>
+            </div>
                 <div class="comment-footer">
                     <div class="comment-actions">
-                        <button class="comment-action-button like-button ${
-													isLiked ? "liked text-blue-600" : ""
-												}" 
+                        <button class="comment-action-button like-button ${isLiked ? "liked text-blue-600" : ""
+		}" 
                             data-comment-id="${reply.id}">
                             <i data-lucide="thumbs-up"></i>
                             <span class="likes-count">${replyState.count}</span>
                         </button>
                     </div>
                     <div class="comment-meta">
-                        <span class="comment-time">${reply.timeAgo}</span>
+                        <span class="reply-time">${formatTimeAgo(reply.updated_at)}</span>
                     </div>
                 </div>
             </div>`;
@@ -81,7 +86,7 @@ CommentManager.prototype.showReplyForm = async function (e) {
 };
 
 CommentManager.prototype.handleReplySubmit = async function (e) {
-	e.preventDefault(); // Prevent form from reloading the page
+	e.preventDefault();
 
 	const userData = await getUserData();
 	if (!userData) {
@@ -115,21 +120,44 @@ CommentManager.prototype.handleReplySubmit = async function (e) {
 		return;
 	}
 
+	// Find the correct comment and insert the reply
 	const commentElement = document.querySelector(
 		`.comment[data-comment-id="${commentId}"]`
 	);
 	if (commentElement) {
+		console.log(res.data);
 		const replyHTML = this.createReplyHTML(res.data);
-		commentElement.insertAdjacentHTML("beforeend", replyHTML);
+		const repliesContainer = commentElement.querySelector(".replies-container");
+		if (repliesContainer) {
+			repliesContainer.insertAdjacentHTML("beforeend", replyHTML);
+		} else {
+			commentElement.insertAdjacentHTML(
+				"beforeend",
+				`<div class="replies-container">${replyHTML}</div>`
+			);
+		}
 	}
 
-	SAMPLE_COMMENTS[postId].replies.push(res.data);
+	// Update local data
+	SAMPLE_COMMENTS[postId].forEach((comment) => {
+		if (comment.comment_id === commentId) {
+			comment.replies.push(res.data);
+		}
+	});
+
 	form.remove();
+	lucide.createIcons();
 };
 
 CommentManager.prototype.createCommentHTML = function (comment, postId) {
 	const isLiked =
 		this.likeState.comments[comment.comment_id]?.likedBy.has("current-user");
+
+	// Generate replies HTML
+	const repliesHTML = comment.replies
+		.map((reply) => this.createReplyHTML(reply))
+		.join("");
+
 	return `
         <div class="comment" data-comment-id="${comment.comment_id}"> 
             <div class="comment-content"> 
@@ -171,6 +199,7 @@ CommentManager.prototype.createCommentHTML = function (comment, postId) {
 										)}</span> 
                 </div>
             </div>
+            <div class="replies-container">${repliesHTML}</div>
         </div>`;
 };
 
@@ -178,28 +207,29 @@ CommentManager.prototype.loadComments = function (postId) {
 	const commentsSection = document.querySelector(`#comments-${postId}`);
 	if (!commentsSection) return;
 
-	// Generate comment HTML without form
-	const comment = SAMPLE_COMMENTS[postId] || [];
-	const commentsHTML = comment
+	// Fetch comments including replies
+	const comments = SAMPLE_COMMENTS[postId] || [];
+	const commentsHTML = comments
 		.map((comment) => this.createCommentHTML(comment, postId))
 		.join("");
 
-	// Ensure only one form per post
+	// Ensure only one comment form per post
 	const formHTML = `
         <form class="comment-form" data-post-id="${postId}">
             <textarea placeholder="Write your comment..." class="comment-input"></textarea>
             <button type="submit" class="comment-submit">Post Comment</button>
         </form>`;
 
-	// Set innerHTML with comments and single form
+	// Set innerHTML with comments and form
 	commentsSection.innerHTML = commentsHTML + formHTML;
 
-	// Attach event listener to the form
+	// Attach event listener to form
 	const form = commentsSection.querySelector(".comment-form");
 	if (form) {
 		form.addEventListener("submit", (e) => this.handleCommentSubmit(e));
 	}
 
+	// Attach event listeners for likes and replies
 	document.querySelectorAll(".comments-section").forEach((section) => {
 		section.addEventListener("click", (event) => {
 			const likeButton = event.target.closest(".like-button");
@@ -325,12 +355,12 @@ CommentManager.prototype.initLikeState = function (comments) {
 				likedBy: new Set(),
 			};
 
-			comments.replies?.forEach((reply) => {
-				this.likeState.comments[reply.reply_id] = {
-					count: reply.likes.length || 0,
-					likedBy: new Set(),
-				};
-			});
+			// comments.replies?.forEach((reply) => {
+			// 	this.likeState.comments[reply.reply_id] = {
+			// 		count: reply.likes.length || 0,
+			// 		likedBy: new Set(),
+			// 	};
+			// });
 		});
 	});
 };
