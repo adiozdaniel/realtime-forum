@@ -1,7 +1,7 @@
 import { CommentService } from "./commentservice.js";
 import { formatTimeAgo } from "./timestamps.js";
 import { getUserData } from "./authmiddleware.js";
-import { COMMENTS, commentLikeState } from "./data.js";
+import { COMMENTS, REPLIES, commentLikeState } from "./data.js";
 import { ReplyManager } from "./replies.js";
 
 class CommentManager {
@@ -16,8 +16,7 @@ CommentManager.prototype.createCommentHTML = function (comment, postId) {
 	const isLiked =
 		this.likeState.comments[comment.comment_id]?.likedBy.has("current-user");
 
-	// Generate replies HTML
-	const repliesHTML = (comment.replies || [])
+	const repliesHTML = (REPLIES[comment.comment_id] || [])
 		.map((reply) => this.replyManager.createReplyHTML(reply))
 		.join("");
 
@@ -208,22 +207,19 @@ CommentManager.prototype.attachEventListeners = function () {
 CommentManager.prototype.initLikeState = function (comments) {
 	if (!comments) return;
 
+	console.log(comments);
+
 	const commentList = Array.isArray(comments) ? comments : [];
 	if (commentList === null) return;
 
 	Object.keys(comments).forEach((post_id) => {
-		comments[post_id]?.forEach((comments) => {
-			this.likeState.comments[comments.comment_id] = {
-				count: comments.likes?.length || 0,
+		comments[post_id]?.forEach((comment) => {
+			this.likeState.comments[comment.comment_id] = {
+				count: comment.likes?.length || 0,
 				likedBy: new Set(),
 			};
 
-			// comments.replies?.forEach((reply) => {
-			// 	this.likeState.comments[reply.reply_id] = {
-			// 		count: reply.likes.length || 0,
-			// 		likedBy: new Set(),
-			// 	};
-			// });
+			REPLIES[comment.comment_id] = comment.replies || [];
 		});
 	});
 };
