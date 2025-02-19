@@ -33,8 +33,10 @@ const CONSTANTS = {
 	MAX_PASSWORD_LENGTH: 35,
 };
 
-// Sample Data
+// Posts Data
 const POSTS = [];
+const COMMENTS = [];
+const REPLIES = [];
 
 const commentLikeState = {
 	comments: {},
@@ -49,8 +51,6 @@ const postDislikeState = {
 	posts: {},
 	comments: {},
 };
-
-const COMMENTS = [];
 
 export {
 	API_ENDPOINTS,
