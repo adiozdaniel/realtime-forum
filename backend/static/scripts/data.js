@@ -35,8 +35,8 @@ const CONSTANTS = {
 
 // Posts Data
 const POSTS = [];
-const COMMENTS = [];
-const REPLIES = [];
+const COMMENTS = {};
+const REPLIES = {};
 
 const commentLikeState = {
 	comments: {},
@@ -60,4 +60,5 @@ export {
 	postLikeState,
 	postDislikeState,
 	COMMENTS,
+	REPLIES,
 };

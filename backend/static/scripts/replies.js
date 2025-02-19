@@ -1,6 +1,6 @@
 import { formatTimeAgo } from "./timestamps.js";
 import { getUserData } from "./authmiddleware.js";
-import { commentLikeState } from "./data.js";
+import { commentLikeState, REPLIES } from "./data.js";
 import { CommentService } from "./commentservice.js";
 
 class ReplyManager {
@@ -113,6 +113,8 @@ ReplyManager.prototype.handleReplySubmit = async function (e) {
 		alert(res.message);
 		return;
 	}
+
+	REPLIES[commentId].push(res.data);
 
 	const commentElement = document.querySelector(
 		`.comment[data-comment-id="${commentId}"]`
