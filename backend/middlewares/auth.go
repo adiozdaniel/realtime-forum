@@ -4,33 +4,12 @@ import (
 	"context"
 	"encoding/json"
 	"net/http"
-
-	"forum/repositories/authrepo"
 )
-
-type contextKey string
-
-const userIDKey contextKey = "userID"
-
-type AuthContext struct {
-	res      *JSONRes
-	Sessions *authrepo.Sessions
-}
-
-// JSONRes represents a JSON response structure.
-type JSONRes struct {
-	Err     bool        `json:"error"`
-	Message string      `json:"message"`
-	Data    interface{} `json:"data,omitempty"`
-}
-
-func NewAuthContext(ses *authrepo.Sessions) *AuthContext {
-	return &AuthContext{res: &JSONRes{}, Sessions: ses}
-}
 
 // SetUserIDInContext adds the user ID to the request context
 func (a *AuthContext) SetUserIDInContext(ctx context.Context, userID string) context.Context {
-	return context.WithValue(ctx, userIDKey, userID)
+	newCtx := context.WithValue(ctx, userIDKey, userID)
+	return newCtx
 }
 
 // GetUserIDFromContext retrieves the user ID from the request context
@@ -50,27 +29,31 @@ func (a *AuthContext) AuthMiddleware(next http.Handler) http.Handler {
 		}
 
 		// Verify session in global store
-		var userID string
-		found := false
-
-		a.Sessions.Sess.Range(func(key, value interface{}) bool {
-			if token, ok := value.(*http.Cookie); ok && token.Value == cookie.Value {
-				userID, _ = key.(string)
-				found = true
-				return false // Stop iteration
-			}
-			return true
-		})
-
-		if !found {
-			sendUnauthorizedResponse(w, "Unauthorized: you need to be logged in to access this resource")
+		userID, found := a.getUserIDByToken(cookie.Value)
+		if !found || !a.ValidateSession(userID, cookie.Value) {
+			sendUnauthorizedResponse(w, "Unauthorized: session expired or replaced by a new login")
 			return
 		}
 
-		// Set user ID in request context for handlers
-		ctx := a.SetUserIDInContext(r.Context(), userID)
-		next.ServeHTTP(w, r.WithContext(ctx))
+		next.ServeHTTP(w, r)
 	})
+}
+
+// getUserIDByToken searches for a user ID based on a session token.
+func (a *AuthContext) getUserIDByToken(token string) (string, bool) {
+	var userID string
+	found := false
+
+	a.Sessions.Range(func(key, value interface{}) bool {
+		if storedToken, ok := value.(string); ok && storedToken == token {
+			userID, _ = key.(string)
+			found = true
+			return false // Stop iteration
+		}
+		return true
+	})
+
+	return userID, found
 }
 
 // Helper function to send unauthorized JSON response

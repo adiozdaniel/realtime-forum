@@ -13,7 +13,7 @@ import (
 
 func TestRegisterHandler(t *testing.T) {
 	t.Run("method", func(t *testing.T) {
-		authrepo := &AuthRepo{app: &forumapp.ForumApp{}, res: &shared.JSONRes{}, user: &UserService{}, shared: &shared.SharedConfig{}, Sessions: &Sessions{}}
+		authrepo := &AuthRepo{app: &forumapp.ForumApp{}, res: &shared.JSONRes{}, user: &UserService{}, shared: &shared.SharedConfig{}}
 		req := httptest.NewRequest(http.MethodPost, "/api/auth/register", nil)
 		w := httptest.NewRecorder()
 		authrepo.RegisterHandler(w, req)
@@ -27,7 +27,7 @@ func TestRegisterHandler(t *testing.T) {
 		tmplcach := &forumapp.TemplateCache{Pages: r}
 		incomplete := []byte(`{"username": "John Doe"}`)
 
-		authrepo := &AuthRepo{app: &forumapp.ForumApp{Tmpls: tmplcach}, res: &shared.JSONRes{}, user: &UserService{}, shared: &shared.SharedConfig{}, Sessions: &Sessions{}}
+		authrepo := &AuthRepo{app: &forumapp.ForumApp{Tmpls: tmplcach}, res: &shared.JSONRes{}, user: &UserService{}, shared: &shared.SharedConfig{}}
 
 		req := httptest.NewRequest(http.MethodPost, "/api/auth/register", bytes.NewBuffer(incomplete))
 		w := httptest.NewRecorder()
@@ -40,7 +40,7 @@ func TestRegisterHandler(t *testing.T) {
 
 func TestLoginHandler(t *testing.T) {
 	t.Run("method", func(t *testing.T) {
-		authrepo := &AuthRepo{app: &forumapp.ForumApp{}, res: &shared.JSONRes{}, user: &UserService{}, shared: &shared.SharedConfig{}, Sessions: &Sessions{}}
+		authrepo := &AuthRepo{app: &forumapp.ForumApp{}, res: &shared.JSONRes{}, user: &UserService{}, shared: &shared.SharedConfig{}}
 		req := httptest.NewRequest(http.MethodPost, "/api/auth/login", nil)
 		w := httptest.NewRecorder()
 		authrepo.LoginHandler(w, req)
@@ -54,7 +54,7 @@ func TestLoginHandler(t *testing.T) {
 		tmplcach := &forumapp.TemplateCache{Pages: r}
 		data := []byte(`{"username": "John Doe"}`)
 
-		authrepo := &AuthRepo{app: &forumapp.ForumApp{Tmpls: tmplcach}, res: &shared.JSONRes{}, user: &UserService{}, shared: &shared.SharedConfig{}, Sessions: &Sessions{}}
+		authrepo := &AuthRepo{app: &forumapp.ForumApp{Tmpls: tmplcach}, res: &shared.JSONRes{}, user: &UserService{}, shared: &shared.SharedConfig{}}
 
 		req := httptest.NewRequest(http.MethodPost, "/api/auth/login", bytes.NewBuffer(data))
 		w := httptest.NewRecorder()
@@ -72,7 +72,7 @@ func TestLogoutHandler(t *testing.T) {
 		tmplcach := &forumapp.TemplateCache{Pages: r}
 		data := []byte(`{"username": "John Doe"}`)
 
-		authrepo := &AuthRepo{app: &forumapp.ForumApp{Tmpls: tmplcach}, res: &shared.JSONRes{}, user: &UserService{}, shared: &shared.SharedConfig{}, Sessions: &Sessions{}}
+		authrepo := &AuthRepo{app: &forumapp.ForumApp{Tmpls: tmplcach}, res: &shared.JSONRes{}, user: &UserService{}, shared: &shared.SharedConfig{}}
 
 		req := httptest.NewRequest(http.MethodPost, "/api/auth/logout", bytes.NewBuffer(data))
 		w := httptest.NewRecorder()
@@ -87,7 +87,7 @@ func TestLogoutHandler(t *testing.T) {
 		tmplcach := &forumapp.TemplateCache{Pages: r}
 		data := []byte(`{"username": "John Doe"}`)
 
-		authrepo := &AuthRepo{app: &forumapp.ForumApp{Tmpls: tmplcach}, res: &shared.JSONRes{}, user: &UserService{}, shared: &shared.SharedConfig{}, Sessions: &Sessions{}}
+		authrepo := &AuthRepo{app: &forumapp.ForumApp{Tmpls: tmplcach}, res: &shared.JSONRes{}, user: &UserService{}, shared: &shared.SharedConfig{}}
 
 		req := httptest.NewRequest(http.MethodGet, "/api/auth/logout", bytes.NewBuffer(data))
 		w := httptest.NewRecorder()
@@ -105,7 +105,7 @@ func TestCheckAuth(t *testing.T) {
 		tmplcach := &forumapp.TemplateCache{Pages: r}
 		data := []byte(`{"username": "John Doe"}`)
 
-		authrepo := &AuthRepo{app: &forumapp.ForumApp{Tmpls: tmplcach}, res: &shared.JSONRes{}, user: &UserService{}, shared: &shared.SharedConfig{}, Sessions: &Sessions{}}
+		authrepo := &AuthRepo{app: &forumapp.ForumApp{Tmpls: tmplcach}, res: &shared.JSONRes{}, user: &UserService{}, shared: &shared.SharedConfig{}}
 
 		req := httptest.NewRequest(http.MethodPost, "/api/auth/check", bytes.NewBuffer(data))
 		w := httptest.NewRecorder()
