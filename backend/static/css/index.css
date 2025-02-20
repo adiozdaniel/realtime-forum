@@ -255,6 +255,8 @@ a {
     top: 4rem;
     border-right: 1px solid var(--gray-200);
     padding: 1rem;
+    transition: transform 0.3s ease-in-out;
+    z-index: 100; 
 }
 
 .category-list {
@@ -288,6 +290,7 @@ a {
     gap: 1rem;
     margin-left: 15%;
     margin-top: 5%;
+    height: fit-content;
 }
 
 /* Main Content Styles */
@@ -604,18 +607,6 @@ dark-mode .sidebar-content{
     .post-meta {
         font-size: 0.75rem;
     }
-}
-
-.sidebar {
-    width: 16rem;
-    height: calc(100vh - 4rem);
-    position: sticky;
-    top: 4rem;
-    border-right: 1px solid var(--gray-200);
-    padding: 1rem;
-    background-color: var(--white);
-    transition: transform 0.3s ease-in-out;
-    z-index: 100; /* Ensure sidebar is above other elements */
 }
 
 @media (max-width: 768px) {

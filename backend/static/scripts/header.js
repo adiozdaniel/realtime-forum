@@ -13,7 +13,6 @@ class Header {
 		this.darkModeToggle = document.querySelector("#darkModeToggle");
 		this.authButton = document.querySelector(".sign-in-button");
 		this.profileImage = document.querySelector("#userProfileImage");
-		
 	}
 }
 

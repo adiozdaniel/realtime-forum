@@ -164,21 +164,28 @@ PostManager.prototype.handlePostLikes = async function (e) {
 };
 
 PostManager.prototype.searchPosts = function (searchTerm = "", selectedCategories = []) {
-	// Normalize search term
-	const lowerCaseSearchTerm = searchTerm.toLowerCase();
+	const term = searchTerm.toLowerCase();
+	const isAllSelected = selectedCategories.includes("all");
 
-	const filteredPosts = POSTS.filter((post) => {
-		const matchesSearch =
-			post.post_title.toLowerCase().includes(lowerCaseSearchTerm) ||
-			post.post_category.toLowerCase().includes(lowerCaseSearchTerm);
+	// Filter posts based on search term
+	if (searchTerm !== ""){
+		const filteredBySearch = POSTS.filter((post) =>
+			!term || post.post_title.toLowerCase().includes(term) || post.post_category.toLowerCase().includes(term)
+		);
 
-		const matchesCategory =
-			selectedCategories.length === 0 || selectedCategories.includes(post.post_category);
+		this.renderPosts(filteredBySearch);
+		return;
+	} else if (selectedCategories){
+		// Filter posts based on categories
+		const filteredByCategory = isAllSelected
+		? POSTS
+		: POSTS.filter((post) => selectedCategories.some(category => post.post_category.toLowerCase().includes(category.toLowerCase())));
 
-		return matchesSearch && matchesCategory;
-	});
-
-	this.renderPosts(filteredPosts);
+		// Merge results without duplicates
+		this.renderPosts(filteredByCategory);
+		return;
+	}
+	this.renderPosts();
 };
 
 PostManager.prototype.init = async function () {

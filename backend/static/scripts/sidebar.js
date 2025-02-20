@@ -1,47 +1,47 @@
+import { POSTS } from "./data.js";
 import { postManager } from "./postmanager.js";
+
 const sidebar = document.querySelector("#sidebar");
 const allCategoriesBtn = document.querySelector("#allCategories");
 const categoryDropdown = document.querySelector("#categoryDropdown");
 const profileBtn = document.querySelector("#profile");
-
 class Sidebar {
-	constructor() {
-		this.postManager = postManager;
-	}
+	constructor() {}
 }
 
-// Sidebar.prototype.createCategoryDropdown = function () {
-// 	const categories = [...new Set(POSTS.map((post) => post.category))];
-// 	if (categoryDropdown) {
-// 		categoryDropdown.innerHTML = categories
-// 			.map(
-// 				(category) =>
-// 					`<label><input type="checkbox" class="category-checkbox" value="${category}"> ${category}</label>`
-// 			)
-// 			.join("");
-// 	}
+Sidebar.prototype.createCategoryDropdown = function () {
+	// Ensure the dropdown container exists
+	if (!categoryDropdown) return;
 
-// 	const allCategoriesLabel = document.createElement("label");
-// 	allCategoriesLabel.innerHTML = `<input type="checkbox" class="category-checkbox" value="all" checked> All Posts`;
+	// Hardcoded categories
+	const categories = ["tutorial", "discussion", "guide", "question"];
 
-// 	if (categoryDropdown) {
-// 		categoryDropdown.insertBefore(allCategoriesLabel, categoryDropdown.firstChild);
-// 	}
-// };
+	// Populate the category dropdown with checkboxes
+	categoryDropdown.innerHTML = categories
+		.map(
+			(category) =>
+				`<label><input type="checkbox" class="category-checkbox" value="${category}"> ${category}</label>`
+		)
+		.join("");
 
-// Sidebar.prototype.filterPosts = function () {
-// 	const selectedCategories = Array.from(
-// 		document.querySelectorAll(".category-checkbox:checked")
-// 	).map((checkbox) => checkbox.value);
-// 	const isAllSelected = selectedCategories.includes("all");
-// 	const filteredPosts = isAllSelected
-// 		? POSTS
-// 		: POSTS.filter((post) => selectedCategories.includes(post.category));
-// 	postManager.renderPosts(filteredPosts);
-// };
+	// Add "All Posts" option at the top
+	const allCategoriesLabel = document.createElement("label");
+	allCategoriesLabel.innerHTML = `<input type="checkbox" class="category-checkbox" value="all" checked> All Posts`;
+
+	// Ensure "All Posts" appears at the top
+	categoryDropdown.insertBefore(allCategoriesLabel, categoryDropdown.firstChild);
+};
+
+Sidebar.prototype.filterPosts = function () {
+	const selectedCategories = Array.from(
+		document.querySelectorAll(".category-checkbox:checked")
+	).map((checkbox) => checkbox.value);
+
+	postManager.searchPosts("", selectedCategories);
+};
 
 Sidebar.prototype.init = function () {
-	// this.createCategoryDropdown();
+	this.createCategoryDropdown();
 
 	if (allCategoriesBtn) {
 		allCategoriesBtn.addEventListener("click", function (e) {
@@ -91,4 +91,4 @@ document.addEventListener("DOMContentLoaded", function () {
 	sideBar.init();
 });
 
-export { sidebar };
+export {sidebar};
