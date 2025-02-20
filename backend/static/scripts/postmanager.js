@@ -163,23 +163,31 @@ PostManager.prototype.handlePostLikes = async function (e) {
 	setTimeout(() => button.classList.remove("like-animation"), 300);
 };
 
-PostManager.prototype.searchPosts = function (searchTerm) {
-	const filteredPosts = this.postList.filter(
-		(post) =>
-			post.post_title.toLowerCase().includes(searchTerm) ||
-			post.post_category.toLowerCase().includes(searchTerm)
-	);
+PostManager.prototype.searchPosts = function (searchTerm = "", selectedCategories = []) {
+	// Normalize search term
+	const lowerCaseSearchTerm = searchTerm.toLowerCase();
+
+	const filteredPosts = POSTS.filter((post) => {
+		const matchesSearch =
+			post.post_title.toLowerCase().includes(lowerCaseSearchTerm) ||
+			post.post_category.toLowerCase().includes(lowerCaseSearchTerm);
+
+		const matchesCategory =
+			selectedCategories.length === 0 || selectedCategories.includes(post.post_category);
+
+		return matchesSearch && matchesCategory;
+	});
+
 	this.renderPosts(filteredPosts);
 };
 
 PostManager.prototype.init = async function () {
 	const posts = await this.postService.fetchPosts();
-	this.postList = Array.isArray(posts) ? posts : posts.data;
-	console.log(this.postList)
+	const postList = Array.isArray(posts) ? posts : posts.data;
 
-	if (this.postList === null) return;
+	if (postList === null) return;
 
-	this.postList.forEach((post) => POSTS.unshift(post));
+	postList.forEach((post) => POSTS.unshift(post));
 	if (postsContainer) this.renderPosts();
 };
 
