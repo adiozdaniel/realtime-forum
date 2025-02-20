@@ -91,20 +91,18 @@ CommentManager.prototype.loadComments = function (postId) {
 		form.addEventListener("submit", (e) => this.handleCommentSubmit(e));
 	}
 
-	// Attach event listeners for likes and replies
-	document.querySelectorAll(".comments-section").forEach((section) => {
-		section.addEventListener("click", (event) => {
-			const likeButton = event.target.closest(".like-button");
-			const replyButton = event.target.closest(".reply-button");
+	// Use event delegation for like and reply buttons
+	commentsSection.addEventListener("click", (event) => {
+		const likeButton = event.target.closest(".like-button");
+		const replyButton = event.target.closest(".reply-button");
 
-			if (likeButton && likeButton.dataset.commentId) {
-				this.handleCommentLikes(event);
-			}
+		if (likeButton && likeButton.dataset.commentId) {
+			this.handleCommentLikes(event);
+		}
 
-			if (replyButton && replyButton.dataset.commentId) {
-				this.replyManager.showReplyForm(event);
-			}
-		});
+		if (replyButton && replyButton.dataset.commentId) {
+			this.replyManager.showReplyForm(event);
+		}
 	});
 
 	lucide.createIcons();
@@ -199,8 +197,10 @@ CommentManager.prototype.handleCommentLikes = async function (event) {
 
 CommentManager.prototype.attachEventListeners = function () {
 	document.querySelectorAll(".comments-section").forEach((section) => {
+		console.log("adding loader");
 		const postId = section.id.replace("comments-", "");
 		this.loadComments(postId);
+		section.replaceWith(section.cloneNode(true));
 	});
 };
 
@@ -228,7 +228,7 @@ window.addEventListener("DOMContentLoaded", () => {
 	setTimeout(() => {
 		commentManager.initLikeState(COMMENTS);
 		commentManager.attachEventListeners();
-	}, 300);
+	}, 500);
 });
 
 export { CommentManager };

@@ -7,6 +7,7 @@ class ReplyManager {
 	constructor() {
 		this.likeState = commentLikeState;
 		this.commentService = new CommentService();
+		this.replyCall = 0;
 	}
 }
 
@@ -45,13 +46,14 @@ ReplyManager.prototype.createReplyHTML = function (reply) {
 };
 
 ReplyManager.prototype.showReplyForm = async function (e) {
+	e.stopPropagation();
+
 	const button = e.target.closest(".reply-button");
 	if (!button) return;
 
 	const postId = button.getAttribute("data-post-id");
 	const commentId = button.getAttribute("data-comment-id");
 
-	// Find the closest replies container
 	const repliesContainer = button
 		.closest(".comment")
 		.querySelector(".replies-container");
@@ -67,20 +69,20 @@ ReplyManager.prototype.showReplyForm = async function (e) {
 	const existingReplyForm = repliesContainer.querySelector(".reply-form");
 	if (existingReplyForm) {
 		existingReplyForm.remove();
-	} else {
-		const replyFormHTML = `
-      <form class="reply-form" data-comment-id="${commentId}" data-post-id="${postId}">
-        <textarea placeholder="Write your reply..." class="reply-input"></textarea>
-        <button type="submit" class="reply-submit">Reply</button>
-      </form>`;
+		return;
+	}
 
-		// Insert form at the top of the replies container
-		repliesContainer.insertAdjacentHTML("afterbegin", replyFormHTML);
+	const replyFormHTML = `
+        <form class="reply-form" data-comment-id="${commentId}" data-post-id="${postId}">
+            <textarea placeholder="Write your reply..." class="reply-input"></textarea>
+            <button type="submit" class="reply-submit">Reply</button>
+        </form>`;
 
-		const replyForm = repliesContainer.querySelector(".reply-form");
-		if (replyForm) {
-			replyForm.addEventListener("submit", (e) => this.handleReplySubmit(e));
-		}
+	repliesContainer.insertAdjacentHTML("afterbegin", replyFormHTML);
+
+	const replyForm = repliesContainer.querySelector(".reply-form");
+	if (replyForm) {
+		replyForm.addEventListener("submit", (e) => this.handleReplySubmit(e));
 	}
 };
 
