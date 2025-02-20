@@ -1,7 +1,7 @@
 import { API_ENDPOINTS } from "./data.js";
 import { postManager } from "./postmanager.js";
-import { sidebar } from "./sidebar.js";
 import { getUserData } from "./authmiddleware.js";
+import { sidebar} from "./sidebar.js"
 
 class Header {
 	constructor() {
@@ -13,6 +13,7 @@ class Header {
 		this.darkModeToggle = document.querySelector("#darkModeToggle");
 		this.authButton = document.querySelector(".sign-in-button");
 		this.profileImage = document.querySelector("#userProfileImage");
+		
 	}
 }
 
@@ -33,7 +34,7 @@ Header.prototype.handleResize = function () {
 // Search functionality
 Header.prototype.handleSearch = (e) => {
 	const searchTerm = e.target.value.toLowerCase();
-	postManager.searchPosts(searchTerm);
+	postManager.searchPosts(searchTerm, []);
 };
 
 // Toggle dark mode
@@ -121,6 +122,7 @@ Header.prototype.init = async function () {
 	if (savedDarkMode) {
 		document.body.classList.add("dark-mode");
 	}
+	
 	this.handleResize();
 };
 
