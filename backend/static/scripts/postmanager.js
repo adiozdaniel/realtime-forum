@@ -163,13 +163,23 @@ PostManager.prototype.handlePostLikes = async function (e) {
 	setTimeout(() => button.classList.remove("like-animation"), 300);
 };
 
+PostManager.prototype.searchPosts = function (searchTerm) {
+	const filteredPosts = this.postList.filter(
+		(post) =>
+			post.post_title.toLowerCase().includes(searchTerm) ||
+			post.post_category.toLowerCase().includes(searchTerm)
+	);
+	this.renderPosts(filteredPosts);
+};
+
 PostManager.prototype.init = async function () {
 	const posts = await this.postService.fetchPosts();
-	const postList = Array.isArray(posts) ? posts : posts.data;
+	this.postList = Array.isArray(posts) ? posts : posts.data;
+	console.log(this.postList)
 
-	if (postList === null) return;
+	if (this.postList === null) return;
 
-	postList.forEach((post) => POSTS.unshift(post));
+	this.postList.forEach((post) => POSTS.unshift(post));
 	if (postsContainer) this.renderPosts();
 };
 
