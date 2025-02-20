@@ -2,6 +2,7 @@ package authrepo
 
 import (
 	"forum/forumapp"
+	"forum/middlewares"
 	"forum/repositories/shared"
 	"time"
 )
@@ -31,26 +32,25 @@ type User struct {
 
 // AuthRepo represents the repository for authentication
 type AuthRepo struct {
-	app      *forumapp.ForumApp
-	res      *shared.JSONRes
-	user     *UserService
-	shared   *shared.SharedConfig
-	Sessions *Sessions
+	app    *forumapp.ForumApp
+	res    *shared.JSONRes
+	user   *UserService
+	shared *shared.SharedConfig
+	auth   *middlewares.AuthContext
 }
 
 // NewAuthRepo creates a new instance of AuthRepo
-func NewAuthRepo(app *forumapp.ForumApp) *AuthRepo {
+func NewAuthRepo(app *forumapp.ForumApp, auth *middlewares.AuthContext) *AuthRepo {
 	res := shared.NewJSONRes()
 	shared := shared.NewSharedConfig()
-	sessions := &Sessions{}
 	userRepo := NewUserRepo(app.Db.Query)
 	userService := NewUserService(userRepo)
 
 	return &AuthRepo{
-		app:      app,
-		res:      res,
-		user:     userService,
-		shared:   shared,
-		Sessions: sessions,
+		app:    app,
+		res:    res,
+		auth:   auth,
+		shared: shared,
+		user:   userService,
 	}
 }

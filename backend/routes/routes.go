@@ -2,8 +2,6 @@ package routes
 
 import (
 	"net/http"
-
-	"forum/middlewares"
 )
 
 // Register routes
@@ -61,6 +59,6 @@ func (r *Routes) RegisterRoutes(mux *http.ServeMux) http.Handler {
 	mux.HandleFunc("/auth-sign-up", r.rendersRepo.SignUpPageHandler)
 
 	// CORS middleware
-	handler := middlewares.CorsMiddleware(mux)
+	handler := r.auth.CorsMiddleware(r.auth.UserContextMiddleware(mux))
 	return handler
 }

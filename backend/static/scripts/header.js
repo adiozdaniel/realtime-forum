@@ -66,6 +66,7 @@ Header.prototype.signOutUser = async function () {
 
 		if (response.ok) {
 			console.log("User signed out successfully.");
+			this.authButton.textContent = "Sign In";
 		}
 
 		return response.status === 200;
@@ -87,9 +88,23 @@ Header.prototype.handleAuth = async function () {
 	}
 };
 
+Header.prototype.handleUserChange = function (userdata) {
+	// Update profile image
+	this.profileImage.src = userdata?.image || "/static/profiles/avatar.jpg";
+
+	// Update auth button text
+	this.authButton.textContent = userdata ? "Sign Out" : "Sign In";
+
+	// Redirect if needed
+	if (window.location.pathname === "/auth" && userdata) {
+		window.location.href = "/";
+	}
+};
+
 // Initialize function
 Header.prototype.init = async function () {
 	const userdata = await getUserData();
+	this.handleUserChange(userdata);
 
 	// Set the profile image with a fallback in case of error
 	this.profileImage.src = userdata?.image;
