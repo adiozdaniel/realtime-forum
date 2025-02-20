@@ -1,7 +1,6 @@
 package middlewares
 
 import (
-	"log"
 	"net/http"
 )
 
@@ -33,7 +32,6 @@ func (a *AuthContext) UserContextMiddleware(next http.Handler) http.Handler {
 		// Extract session token from cookies
 		cookie, err := r.Cookie("session_token")
 		if err != nil {
-			log.Println("UserContextMiddleware: No session token found")
 			next.ServeHTTP(w, r)
 			return
 		}
@@ -51,7 +49,6 @@ func (a *AuthContext) UserContextMiddleware(next http.Handler) http.Handler {
 		})
 
 		if userID == "" {
-			log.Println("UserContextMiddleware: Session token not found in active sessions")
 			next.ServeHTTP(w, r)
 			return
 		}
@@ -60,7 +57,6 @@ func (a *AuthContext) UserContextMiddleware(next http.Handler) http.Handler {
 		ctx := a.SetUserIDInContext(r.Context(), userID)
 		r = r.WithContext(ctx)
 
-		log.Printf("UserContextMiddleware: User %s found and set in context", userID)
 		next.ServeHTTP(w, r)
 	})
 }
