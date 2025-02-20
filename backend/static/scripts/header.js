@@ -1,6 +1,6 @@
 import { API_ENDPOINTS } from "./data.js";
 // import { PostManager, POSTS } from "./index.js";
-// import { sidebar } from "./sidebar.js";
+import { sidebar } from "./sidebar.js";
 
 // const postManager = new PostManager()
 
@@ -21,9 +21,17 @@ class Header {
 
 // Toggle mobile menu
 Header.prototype.toggleMobileMenu = function () {
-	// const isVisible = sidebar.style.display === "block";
-	// sidebar.style.display = isVisible ? "none" : "block";
+	const isVisible = sidebar.style.display === "block";
+	sidebar.style.display = isVisible ? "none" : "block";
 };
+
+Header.prototype.handleResize = function () {
+	if (window.innerWidth >= 768) {
+		sidebar.style.display = 'block';
+	} else {
+		sidebar.style.display = 'none';
+	}
+}
 
 // Search functionality
 Header.prototype.handleSearch = (e) => {
@@ -99,12 +107,14 @@ Header.prototype.init = async function () {
 	this.menuToggleBtn?.addEventListener("click", this.toggleMobileMenu);
 	this.searchInput?.addEventListener("input", this.handleSearch);
 	this.darkModeToggle?.addEventListener("click", this.toggleDarkMode);
+	window.addEventListener('resize', this.handleResize);
 	this.authButton?.addEventListener("click", this.handleAuth.bind(this));
 	// Check for saved dark mode preference
 	const savedDarkMode = localStorage.getItem("darkMode") === "true";
 	if (savedDarkMode) {
 		document.body.classList.add("dark-mode");
 	}
+	this.handleResize();
 };
 
 // Start the application
