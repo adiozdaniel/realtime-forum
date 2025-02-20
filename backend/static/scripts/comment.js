@@ -197,7 +197,6 @@ CommentManager.prototype.handleCommentLikes = async function (event) {
 
 CommentManager.prototype.attachEventListeners = function () {
 	document.querySelectorAll(".comments-section").forEach((section) => {
-		console.log("adding loader");
 		const postId = section.id.replace("comments-", "");
 		this.loadComments(postId);
 		section.replaceWith(section.cloneNode(true));
