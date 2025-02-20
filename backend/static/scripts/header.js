@@ -1,9 +1,6 @@
 import { API_ENDPOINTS } from "./data.js";
-// import { PostManager, POSTS } from "./index.js";
+import { postManager } from "./postmanager.js";
 import { sidebar } from "./sidebar.js";
-
-// const postManager = new PostManager()
-
 import { getUserData } from "./authmiddleware.js";
 
 class Header {
@@ -35,13 +32,8 @@ Header.prototype.handleResize = function () {
 
 // Search functionality
 Header.prototype.handleSearch = (e) => {
-	// const searchTerm = e.target.value.toLowerCase();
-	// const filteredPosts = POSTS.filter(
-	// 	(post) =>
-	// 		post.title.toLowerCase().includes(searchTerm) ||
-	// 		post.excerpt.toLowerCase().includes(searchTerm)
-	// );
-	// postManager.renderPosts(filteredPosts);
+	const searchTerm = e.target.value.toLowerCase();
+	postManager.searchPosts(searchTerm);
 };
 
 // Toggle dark mode
