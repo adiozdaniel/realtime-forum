@@ -183,11 +183,12 @@ PostManager.prototype.searchPosts = function (searchTerm = "", selectedCategorie
 
 PostManager.prototype.init = async function () {
 	const posts = await this.postService.fetchPosts();
-	const postList = Array.isArray(posts) ? posts : posts.data;
+	this.postList = Array.isArray(posts) ? posts : posts.data;
+	console.log(this.postList)
 
-	if (postList === null) return;
+	if (this.postList === null) return;
 
-	postList.forEach((post) => POSTS.unshift(post));
+	this.postList.forEach((post) => POSTS.unshift(post));
 	if (postsContainer) this.renderPosts();
 };
 
