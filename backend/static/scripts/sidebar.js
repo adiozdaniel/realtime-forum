@@ -1,4 +1,3 @@
-import { POSTS } from "./data.js";
 import { postManager } from "./postmanager.js";
 
 const sidebar = document.querySelector("#sidebar");
