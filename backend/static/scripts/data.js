@@ -39,7 +39,7 @@ const POSTS = [];
 const COMMENTS = {};
 const REPLIES = {};
 
-/*// User Data
+// User Data
 const STATE = {
 	currentView: "overview",
 	darkMode: localStorage.getItem("darkMode") === "true",
@@ -116,7 +116,7 @@ const postLikeState = {
 const postDislikeState = {
 	posts: {},
 	comments: {},
-};*/
+};
 
 export {
 	API_ENDPOINTS,

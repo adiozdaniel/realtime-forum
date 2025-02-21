@@ -28,8 +28,8 @@ ProfileDashboard.prototype.init = async function () {
 
 	if (userData.data) {
 		this.state.profilePic = userData.data.user_info?.image;
-		this.state.posts = userData.data.posts;
-		this.state.userComments = userData.data.comments;
+		this.state.posts = userData.data.posts || [];
+		this.state.userComments = userData.data.comments || [];
 		this.state.activities = userData.data.recent_activity;
 		this.state.likes = userData.data.likes;
 		this.state.dislikes = userData.data.dislikes;
@@ -66,7 +66,7 @@ ProfileDashboard.prototype.cacheElements = function () {
 		sidebarItems: document.querySelectorAll(".sidebar-item"),
 	};
 	this.elements.bioText.textContent = this.state.bio || "Hey there! I'm on forum.";
-	this.elements.profileImage.src = this.state.profilePic;
+	this.elements.profileImage.src = this.state.profilePic || "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%239ca3af'%3E%3Cpath d='M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm0 14.2c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08 1.99 0 5.97 1.09 6 3.08-1.29 1.94-3.5 3.22-6 3.22z'/%3E%3C/svg%3E";
 	this.elements.userName.textContent = toTitleCase(this.state.username);
 };
 
@@ -191,8 +191,8 @@ ProfileDashboard.prototype.handleImageUpload = async function (e) {
 };
 
 ProfileDashboard.prototype.updateStats = function () {
-	document.getElementById("postsCount").textContent = this.state.posts.length || 0;
-	document.getElementById("commentsCount").textContent = this.state.userComments.length || 0;
+	document.getElementById("postsCount").textContent = this.state.posts?.length || 0;
+	document.getElementById("commentsCount").textContent = this.state.userComments?.length || 0;
 	document.getElementById("likesCount").textContent = this.state.likes?.length || 0;
 	document.getElementById("dislikeCount").textContent = this.state.dislikes?.length || 0;
 	document.getElementById("repliesCount").textContent = this.state.replies?.length || 0;
@@ -210,7 +210,7 @@ ProfileDashboard.prototype.renderActivities = function () {
 };
 
 ProfileDashboard.prototype.renderPosts = function () {
-	console.log(this.state.posts);
+	// console.log(this.state.posts);
 	document.getElementById("postsList").innerHTML = this.state.posts?.map((post) => `
 		<div class="post-item">
                 <article class="post-card" data-post-id="${post.post_id}">
@@ -270,8 +270,7 @@ ProfileDashboard.prototype.renderPosts = function () {
 };
 
 ProfileDashboard.prototype.renderComments = function () {
-	document.getElementById("commentsList").innerHTML = this.state.userComments
-		.map((comment) => `
+	document.getElementById("commentsList").innerHTML = this.state.userComments?.map((comment) => `
 		<div class="comment-item">
                 <div class="comment" data-comment-id="${comment.comment_id}"> 
             <div class="comment-content"> 
