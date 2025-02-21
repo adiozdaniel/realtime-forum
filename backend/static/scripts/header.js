@@ -23,6 +23,10 @@ Header.prototype.toggleMobileMenu = function () {
 };
 
 Header.prototype.handleResize = function () {
+	if (!sidebar) {
+		return;
+	}
+
 	if (window.innerWidth >= 768) {
 		sidebar.style.display = "block";
 	} else {

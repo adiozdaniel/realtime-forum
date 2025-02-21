@@ -33,6 +33,7 @@ class PostModalManager {
 }
 
 PostModalManager.prototype.init = function () {
+	if (!this.createPostBtn || !this.cancelBtn || !this.modal) return;
 	this.createPostBtn.addEventListener("click", this.openModal.bind(this));
 	this.cancelBtn.addEventListener("click", this.closeModal.bind(this));
 	this.modal.addEventListener("click", (e) => {
