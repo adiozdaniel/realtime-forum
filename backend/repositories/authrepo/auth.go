@@ -196,3 +196,29 @@ func (h *AuthRepo) UploadProfilePic(w http.ResponseWriter, r *http.Request) {
 		h.res.SetError(w, err, http.StatusInternalServerError)
 	}
 }
+
+// UserDashboard returns a user's dashboard
+func (h *AuthRepo) UserDashboard(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodGet {
+		h.res.SetError(w, errors.New("method not allowed"), http.StatusMethodNotAllowed)
+		return
+	}
+
+	// Get user ID from request
+	userID, ok := h.auth.GetUserIDFromContext(r.Context())
+	if !ok {
+		h.res.SetError(w, errors.New("not logged in"), http.StatusUnauthorized)
+		return
+	}
+
+	data, err := h.user.GetUserDashboard(userID)
+	if err != nil {
+		h.res.SetError(w, err, http.StatusInternalServerError)
+		return
+	}
+
+	h.res.Err = false
+	h.res.Message = "Success"
+	h.res.Data = data
+	h.res.WriteJSON(w, *h.res, http.StatusOK)
+}

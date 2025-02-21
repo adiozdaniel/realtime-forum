@@ -3,6 +3,7 @@ package authrepo
 import (
 	"errors"
 
+	"forum/repositories/postrepo"
 	"forum/repositories/shared"
 	"time"
 
@@ -11,15 +12,17 @@ import (
 
 // UserService manages user operations
 type UserService struct {
-	user   UserRepo
-	shared *shared.SharedConfig
+	user        UserRepo
+	shared      *shared.SharedConfig
+	postService *postrepo.PostService
 }
 
 // NewUserService creates a new instance of UserService
-func NewUserService(user UserRepo) *UserService {
+func NewUserService(user UserRepo, posts *postrepo.PostService) *UserService {
 	return &UserService{
-		user:   user,
-		shared: shared.NewSharedConfig(),
+		user:        user,
+		shared:      shared.NewSharedConfig(),
+		postService: posts,
 	}
 }
 
@@ -97,4 +100,45 @@ func (u *UserService) UpdateUser(user *User) (*User, error) {
 	updatedUser.UpdatedAt = time.Now()
 
 	return u.user.UpdateUser(updatedUser)
+}
+
+// GetUserDashboard retrieves user data
+func (u *UserService) GetUserDashboard(user string) (*UserData, error) {
+	if user == "" {
+		return nil, errors.New("you need to login to access this resource")
+	}
+
+	var userData UserData
+
+	posts, err := u.postService.GetPostsByUserID(user)
+	if err != nil {
+		return nil, err
+	}
+	userData.Posts = posts
+
+	comments, err := u.postService.GetCommentsByUserID(user)
+	if err != nil {
+		return nil, err
+	}
+	userData.Comments = comments
+
+	replies, err := u.postService.GetRepliesByUserID(user)
+	if err != nil {
+		return nil, err
+	}
+	userData.Replies = replies
+
+	likes, err := u.postService.GetLikesByUserID(user)
+	if err != nil {
+		return nil, err
+	}
+	userData.Likes = likes
+
+	dislikes, err := u.postService.GetDislikesByUserID(user)
+	if err != nil {
+		return nil, err
+	}
+	userData.Dislikes = dislikes
+
+	return &userData, nil
 }
