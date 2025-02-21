@@ -94,6 +94,8 @@ PostManager.prototype.toggleComments = function (e) {
 };
 
 PostManager.prototype.renderPosts = function (posts = POSTS) {
+	if (!posts) return;
+
 	posts.forEach((post) => {
 		post.post_timeAgo = formatTimeAgo(post.created_at);
 		post.post_likes = post.likes?.length || 0;
@@ -163,23 +165,33 @@ PostManager.prototype.handlePostLikes = async function (e) {
 	setTimeout(() => button.classList.remove("like-animation"), 300);
 };
 
-PostManager.prototype.searchPosts = function (searchTerm = "", selectedCategories = []) {
+PostManager.prototype.searchPosts = function (
+	searchTerm = "",
+	selectedCategories = []
+) {
 	const term = searchTerm.toLowerCase();
 	const isAllSelected = selectedCategories.includes("all");
 
 	// Filter posts based on search term
-	if (searchTerm !== ""){
-		const filteredBySearch = POSTS.filter((post) =>
-			!term || post.post_title.toLowerCase().includes(term) || post.post_category.toLowerCase().includes(term)
+	if (searchTerm !== "") {
+		const filteredBySearch = POSTS.filter(
+			(post) =>
+				!term ||
+				post.post_title.toLowerCase().includes(term) ||
+				post.post_category.toLowerCase().includes(term)
 		);
 
 		this.renderPosts(filteredBySearch);
 		return;
-	} else if (selectedCategories){
+	} else if (selectedCategories) {
 		// Filter posts based on categories
 		const filteredByCategory = isAllSelected
-		? POSTS
-		: POSTS.filter((post) => selectedCategories.some(category => post.post_category.toLowerCase().includes(category.toLowerCase())));
+			? POSTS
+			: POSTS.filter((post) =>
+					selectedCategories.some((category) =>
+						post.post_category.toLowerCase().includes(category.toLowerCase())
+					)
+			  );
 
 		// Merge results without duplicates
 		this.renderPosts(filteredByCategory);

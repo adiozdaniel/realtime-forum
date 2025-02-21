@@ -161,7 +161,11 @@ PostModalManager.prototype.handleSubmit = async function (e) {
 
 	const formData = {
 		PostTitle: document.getElementById("postTitle").value,
-		PostCategory: document.getElementById("postCategory").value,
+		PostCategory: Array.from(
+			document.querySelectorAll('input[name="postCategory"]:checked')
+		)
+			.map((checkbox) => checkbox.value)
+			.join(" "),
 		PostContent: document.getElementById("postContent").value,
 		PostImage: this.tempImageData?.img || null,
 		PostID: this.tempImageData?.post_id || null,

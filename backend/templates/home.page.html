@@ -1,76 +1,170 @@
-{{template "base" .}} 
-{{define "content"}}
-<div id="createPostModal" class="hidden">
-    <div class="modal-content">
-        <h2>Create a New Post</h2>
-        <form id="createPostForm">
-            <div class="form-group">
-                <label>Title</label>
-                <input type="text" id="postTitle" required>
-            </div>
-            <div class="form-group">
-                <label>Category</label>
-                <select id="postCategory" required>
-                    <option value="">Select a category</option>
-                    <option value="Tutorial">Tutorial</option>
-                    <option value="Discussion">Discussion</option>
-                    <option value="Guide">Guide</option>
-                    <option value="Question">Question</option>
-                </select>
-            </div>
-            <div class="form-group">
-                <label>Content</label>
-                <textarea id="postContent" rows="4" required></textarea>
-            </div>
-            <div class="form-group">
-                <label>Add Media</label>
-                <div class="media-options">
-                    <div class="image-upload">
-                        <label for="imageUpload" class="upload-btn">
-                            <i data-lucide="image"></i> Upload Image
-                        </label>
-                        <input type="file" id="imageUpload" accept=".jpg,.jpeg,.png,.gif,image/jpeg,image/png,image/gif" class="hidden">
-                        <div class="upload-info">
-                            <small>Accepted formats: JPEG, PNG, GIF (max 20MB)</small>
-                            <div id="uploadError" class="upload-error hidden"></div>
-                        </div>
-                    </div>
-                    <div class="video-upload">
-                        <input type="url" id="videoLink" placeholder="Paste video URL (YouTube/Vimeo)">
-                    </div>
-                </div>
-            </div>
-            <div id="mediaPreview" class="media-preview hidden">
-                <div id="imagePreviewContainer" class="image-preview-container hidden">
-                    <img id="imagePreview" src="" alt="Preview">
-                    <button type="button" id="removeImage" class="remove-media">
-                        <i data-lucide="x"></i>
-                    </button>
-                </div>
-                <div id="videoPreviewContainer" class="video-preview-container hidden">
-                    <div id="videoPreview"></div>
-                    <button type="button" id="removeVideo" class="remove-media">
-                        <i data-lucide="x"></i>
-                    </button>
-                </div>
-            </div>
-            <div class="form-actions">
-                <button type="button" id="cancelPost" class="cancel-button">Cancel</button>
-                <button type="submit" class="submit-button">Create Post</button>
-            </div>
-        </form>
-    </div>
+{{template "base" .}} {{define "content"}}
+<div
+	id="createPostModal"
+	class="hidden"
+>
+	<div class="modal-content">
+		<h2>Create a New Post</h2>
+		<form id="createPostForm">
+			<div class="form-group">
+				<label>Title</label>
+				<input
+					type="text"
+					id="postTitle"
+					required
+				/>
+			</div>
+			<div class="form-group">
+				<label>Category</label>
+				<div id="postCategory">
+					<label
+						><input
+							type="checkbox"
+							name="postCategory"
+							value="Tutorial"
+						/>
+						Tutorial</label
+					>
+					<label
+						><input
+							type="checkbox"
+							name="postCategory"
+							value="Discussion"
+						/>
+						Discussion</label
+					>
+					<label
+						><input
+							type="checkbox"
+							name="postCategory"
+							value="Guide"
+						/>
+						Guide</label
+					>
+					<label
+						><input
+							type="checkbox"
+							name="postCategory"
+							value="Question"
+						/>
+						Question</label
+					>
+				</div>
+			</div>
+
+			<div class="form-group">
+				<label>Content</label>
+				<textarea
+					id="postContent"
+					rows="4"
+					required
+				></textarea>
+			</div>
+			<div class="form-group">
+				<label>Add Media</label>
+				<div class="media-options">
+					<div class="image-upload">
+						<label
+							for="imageUpload"
+							class="upload-btn"
+						>
+							<i data-lucide="image"></i> Upload Image
+						</label>
+						<input
+							type="file"
+							id="imageUpload"
+							accept=".jpg,.jpeg,.png,.gif,image/jpeg,image/png,image/gif"
+							class="hidden"
+						/>
+						<div class="upload-info">
+							<small>Accepted formats: JPEG, PNG, GIF (max 20MB)</small>
+							<div
+								id="uploadError"
+								class="upload-error hidden"
+							></div>
+						</div>
+					</div>
+					<div class="video-upload">
+						<input
+							type="url"
+							id="videoLink"
+							placeholder="Paste video URL (YouTube/Vimeo)"
+						/>
+					</div>
+				</div>
+			</div>
+			<div
+				id="mediaPreview"
+				class="media-preview hidden"
+			>
+				<div
+					id="imagePreviewContainer"
+					class="image-preview-container hidden"
+				>
+					<img
+						id="imagePreview"
+						src=""
+						alt="Preview"
+					/>
+					<button
+						type="button"
+						id="removeImage"
+						class="remove-media"
+					>
+						<i data-lucide="x"></i>
+					</button>
+				</div>
+				<div
+					id="videoPreviewContainer"
+					class="video-preview-container hidden"
+				>
+					<div id="videoPreview"></div>
+					<button
+						type="button"
+						id="removeVideo"
+						class="remove-media"
+					>
+						<i data-lucide="x"></i>
+					</button>
+				</div>
+			</div>
+			<div class="form-actions">
+				<button
+					type="button"
+					id="cancelPost"
+					class="cancel-button"
+				>
+					Cancel
+				</button>
+				<button
+					type="submit"
+					class="submit-button"
+				>
+					Create Post
+				</button>
+			</div>
+		</form>
+	</div>
 </div>
 <div id="message"></div>
 <div class="btn-discussions">
-    <h2 class="section-title">Recent Discussions</h2>
-    <button id="createPostBtn" class="create-post-btn">
-        <i data-lucide="plus-circle"></i>
-        Create Post
-    </button>
+	<h2 class="section-title">Recent Discussions</h2>
+	<button
+		id="createPostBtn"
+		class="create-post-btn"
+	>
+		<i data-lucide="plus-circle"></i>
+		Create Post
+	</button>
 </div>
-<div class="posts-container" id="postsContainer">
-    <!-- Posts will be inserted here by JavaScript -->
+<div
+	class="posts-container"
+	id="postsContainer"
+>
+	<!-- Posts will be inserted here by JavaScript -->
 </div>
-<script type="module" src="/static/scripts/postmanager.js"></script>
+<script
+	type="module"
+	src="/static/scripts/postmanager.js"
+></script>
 {{end}}
