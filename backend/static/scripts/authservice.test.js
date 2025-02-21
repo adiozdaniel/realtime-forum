@@ -7,4 +7,10 @@ test("login test",async()=>{
    const data = { error: true, message: "Please provide both email and password!"}
      expect(await auth.login(cred)).toStrictEqual( data)
 })
+test("login wrong creds",async()=>{
+  const auth=new AuthService()
+  const cred={email:'Mamapima@gmaail.com',password:'785757575757'}
+ const data = "wrong email or passsword"
+   expect(await auth.login(cred)).toStrictEqual( data)
+})
 
