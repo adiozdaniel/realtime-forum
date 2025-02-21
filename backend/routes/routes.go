@@ -56,7 +56,7 @@ func (r *Routes) RegisterRoutes(mux *http.ServeMux) http.Handler {
 	// Page routes
 	mux.HandleFunc("/", r.rendersRepo.HomePageHandler)
 	mux.HandleFunc("/auth", r.rendersRepo.LoginPageHandler)
-	mux.HandleFunc("/profile", r.rendersRepo.ProfilePageHandler)
+	mux.HandleFunc("/dashboard", r.rendersRepo.ProfilePageHandler)
 	mux.HandleFunc("/auth-sign-up", r.rendersRepo.SignUpPageHandler)
 
 	// CORS middleware
