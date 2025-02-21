@@ -62,7 +62,7 @@ PostService.prototype.createPost = async function (postData) {
 		post_author: userData.user_name,
 		post_image: postData.PostImage,
 		post_id: postData.PostID,
-		post_video: postData.PostVideo
+		post_video: postData.PostVideo,
 	};
 
 	try {
@@ -145,9 +145,12 @@ PostService.prototype.likePost = async function (postData) {
 
 // Method to dislike a post by ID
 PostService.prototype.dislikePost = async function (postData) {
-	const user = localStorage.getItem("userdata");
-	const userData = JSON.parse(user);
-	postData.user_id = userData.data.user_id;
+	if (!postData.user_id) {
+		return {
+			error: true,
+			message: "You need to login to dislike the post!",
+		};
+	}
 
 	try {
 		const response = await fetch(this.apiEndpoints.dislikepost, {

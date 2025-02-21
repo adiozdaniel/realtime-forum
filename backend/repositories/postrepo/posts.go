@@ -112,7 +112,7 @@ func (p *PostsRepo) CommentAddLike(w http.ResponseWriter, r *http.Request) {
 }
 
 // Dislike removes a like from a post
-func (p *PostsRepo) Dislike(w http.ResponseWriter, r *http.Request) {
+func (p *PostsRepo) PostDislike(w http.ResponseWriter, r *http.Request) {
 	// Ensure the request method is POST
 	if r.Method != http.MethodPost {
 		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
@@ -126,8 +126,8 @@ func (p *PostsRepo) Dislike(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Call the DisLike method to remove the like from the post
-	err := p.post.DisLike(&req)
+	// Call the PostDisLike method to remove dislike a post
+	dislike, err := p.post.PostDisLike(&req)
 	if err != nil {
 		p.res.SetError(w, fmt.Errorf("failed to dislike post: %v", err), http.StatusInternalServerError)
 		return
@@ -136,7 +136,7 @@ func (p *PostsRepo) Dislike(w http.ResponseWriter, r *http.Request) {
 	// Prepare and send the success response
 	p.res.Err = false
 	p.res.Message = "Success"
-	p.res.Data = nil
+	p.res.Data = dislike
 	p.res.WriteJSON(w, *p.res, http.StatusOK)
 }
 
