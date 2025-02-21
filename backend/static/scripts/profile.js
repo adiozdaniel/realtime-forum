@@ -1,9 +1,9 @@
 import { AuthService } from "./authservice.js";
-import { getUserData } from "./authmiddleware.js";
 import { STATE } from "./data.js";
+import { formatTimeAgo } from "./timestamps.js";
 
 function toTitleCase(str) {
-    return str.replace(/\b\w/g, (char) => char.toUpperCase());
+	return str.replace(/\b\w/g, (char) => char.toUpperCase());
 }
 
 class ProfileDashboard {
@@ -89,9 +89,9 @@ ProfileDashboard.prototype.setupEventListeners = function () {
 
 	//temporary handler for deleting posts
 	window.deletePost = (postId) => {
-		state.posts = this.state.posts.filter(post => post.id !== postId);
-		renderPosts();
-		updateStats();
+		this.state.posts = this.state.posts.filter(post => post.id !== postId);
+		this.renderPosts();
+		this.updateStats();
 	};
 };
 
@@ -210,19 +210,61 @@ ProfileDashboard.prototype.renderActivities = function () {
 };
 
 ProfileDashboard.prototype.renderPosts = function () {
-	document.getElementById("postsList").innerHTML = this.state.posts
-		.map((post) => `
+	console.log(this.state.posts);
+	document.getElementById("postsList").innerHTML = this.state.posts?.map((post) => `
 		<div class="post-item">
-                <p>${post.content}</p>
-                <div class="post-actions">
-                    <span><i data-lucide="thumbs-up"></i> ${post.likes}</span>
-                    <span><i data-lucide="message-square"></i> ${post.comments}</span>
-                    <span>${post.timestamp}</span>
-                </div>
-                <button class="delete-button" onclick="deletePost(${post.id})">
-                    <i data-lucide="trash-2"></i>
-                </button>
-            </div>`)
+                <article class="post-card" data-post-id="${post.post_id}">
+	  	${post.post_image
+				? `
+			<div class="post-img">
+			<img src="${post.post_image}" alt="Post Image"/>
+			</div>`
+				: ""
+			}
+        <div class="flex items-start justify-between">
+          <div>
+			<div class="post-categories">
+				${post.post_category
+				.split(" ") // Split multiple categories
+				.map((category) => `<span class="post-category">${category.trim()}</span>`)
+				.join("")}
+			</div>
+            <h3 class="post-title">${post.post_title}</h3>
+            <p class="post-excerpt">${post.post_content}</p>
+          </div>
+        </div>
+        <div class="post-footer">
+          <div class="post-actions">
+            <button class="post-action-button like-button" data-post-id="${post.post_id}">
+              <i data-lucide="thumbs-up"></i>
+              <span class="likes-count">${post.likes?.length || 0 }</span>
+            </button>
+			<button class="post-action-button dislike-button" data-post-id="${post.post_id}">
+			<i data-lucide="thumbs-down"></i>
+			 <span class="likes-count">${post.dislikes?.length || 0 }</span>
+			</button>
+            <button class="post-action-button comment-toggle" data-post-id="${post.post_id
+			}">
+              <i data-lucide="message-square"></i>
+              <span class="comments-count">${post.comments?.length || 0 }</span>
+            </button>
+          </div>
+          <div class="post-meta">
+		   <div class="profile-image">
+		  		<img src=${post.author_img
+			} onerror="this.onerror=null;this.src='/static/profiles/avatar.jpg';"/>
+			</div>
+            <span>by ${post.post_author}</span>
+            <span>•</span>
+            <span>${formatTimeAgo(post.updated_at)}</span>
+          </div>
+        </div>
+        <div class="comments-section hidden" id="comments-${post.post_id}">
+          <div class="comments-container"></div>
+        </div>
+      </article>
+            </div>
+			`)
 		.join(" ");
 	lucide.createIcons();
 };
@@ -231,12 +273,34 @@ ProfileDashboard.prototype.renderComments = function () {
 	document.getElementById("commentsList").innerHTML = this.state.userComments
 		.map((comment) => `
 		<div class="comment-item">
-                <h3>Re: ${comment.postTitle}</h3>
-                <p>${comment.content}</p>
-                <div class="post-actions">
-                    <span><i data-lucide="thumbs-up"></i> ${comment.likes}</span>
-                    <span>${comment.timestamp}</span>
+                <div class="comment" data-comment-id="${comment.comment_id}"> 
+            <div class="comment-content"> 
+                <div class="profile-image">
+                    <img src="${comment.author_img}" 
+                         onerror="this.onerror=null;this.src='/static/profiles/avatar.jpg';"/>
                 </div>
+                <div>
+                    <div class="comment-author">${comment.user_name}</div> 
+                    <div class="comment-text">${comment.comment}</div> 
+                </div>
+            </div>
+            <div class="comment-footer">
+                <div class="comment-actions"> 
+                    <button 
+					class="comment-action-button like-button"
+					data-comment-id="${comment.comment_id}"
+					> 
+                        <i data-lucide="thumbs-up"></i> 
+                        <span class="likes-count">${comment.likes?.length || 0 }</span> 
+                    </button> 
+                </div>
+                <div class="comment-meta">
+                    <span class="comment-time">${formatTimeAgo(
+											comment.created_at
+										)}</span> 
+                </div>
+            </div>
+        </div>
             </div>
 		`)
 		.join(" ");
