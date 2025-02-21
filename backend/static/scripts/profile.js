@@ -72,7 +72,25 @@ ProfileDashboard.prototype.init = async function () {
 
 	if (user) this.userData = user;
 
-	if (!user) window.location.href = "/auth";
+	if (!user) {
+		window.location.href = "/auth";
+		return;
+	}
+
+	const userData = await this.authService.userDashboard();
+
+	if (userData.error) {
+		alert(userData.message);
+		return;
+	}
+
+	console.log(userData);
+	// this.state.profilePic = userData.image;
+	// this.state.bio = userData.bio;
+	if (userData.data.posts) this.state.posts = userData.posts;
+	if (userData.data.userComments)
+		this.state.userComments = userData.userComments;
+	if (userData.data.activities) this.state.activities = userData.activities;
 
 	this.cacheElements();
 	this.setupEventListeners();

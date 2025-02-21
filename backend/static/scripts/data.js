@@ -5,6 +5,7 @@ const API_ENDPOINTS = {
 	logout: "/api/auth/logout",
 	check: "/api/auth/check",
 	uploadProfilePic: "/api/auth/uploadProfilePic",
+	userDashBoard: "/api/user/dashboard",
 
 	// posts ENDPOINTS
 	allposts: "/api/posts",

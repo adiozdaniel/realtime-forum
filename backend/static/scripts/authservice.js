@@ -95,4 +95,19 @@ AuthService.prototype.uploadProfilePic = async function (formData) {
 	}
 };
 
+// Method to get the user's dashboard data
+AuthService.prototype.userDashboard = async function () {
+	if (!this.apiEndpoints) return;
+
+	try {
+		const response = await fetch(this.apiEndpoints.userDashBoard, {
+			method: "GET",
+		});
+
+		return response.json();
+	} catch (error) {
+		return error;
+	}
+};
+
 export { AuthService };
