@@ -10,7 +10,7 @@ class AuthService {
 // Method to log in a user
 AuthService.prototype.login = async function (credentials) {
 	if (!credentials?.email || !credentials?.password) {
-		return (data = {
+		return ({
 			error: true,
 			message: "Please provide both email and password!",
 		});
