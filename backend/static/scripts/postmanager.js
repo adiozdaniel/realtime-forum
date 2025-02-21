@@ -99,6 +99,7 @@ PostManager.prototype.renderPosts = function (posts = POSTS) {
 	posts.forEach((post) => {
 		post.post_timeAgo = formatTimeAgo(post.created_at);
 		post.post_likes = post.likes?.length || 0;
+		post.post_dislikes = post.dislikes?.length || 0;
 		post.post_comments = post.comments?.length || 0;
 
 		if (post.post_hasComments) {
@@ -108,6 +109,11 @@ PostManager.prototype.renderPosts = function (posts = POSTS) {
 		post.post_likes = this.likeState.posts[post.post_id] = {
 			count: post?.post_likes || 0,
 			likedBy: new Set(),
+		};
+
+		post.post_dislikes = this.dislikeState.posts[post.post_id] = {
+			count: post?.post_dislikes || 0,
+			dislikedBy: new Set(),
 		};
 	});
 
@@ -122,12 +128,17 @@ PostManager.prototype.attachPostEventListeners = function () {
 	document.querySelectorAll(".like-button").forEach((button) => {
 		button.addEventListener("click", (e) => this.handlePostLikes(e));
 	});
+	document.querySelectorAll(".dislike-button").forEach((button) => {
+		button.addEventListener("click", (e) => this.handlePostDisLikes(e));
+	});
 	document.querySelectorAll(".comment-toggle").forEach((button) => {
 		button.addEventListener("click", (e) => this.toggleComments(e));
 	});
 };
 
 PostManager.prototype.handlePostLikes = async function (e) {
+	e.stopPropagation();
+
 	const button = e.currentTarget.closest(".like-button");
 	if (!button) return;
 	const postId = button.getAttribute("data-post-id");
@@ -163,6 +174,53 @@ PostManager.prototype.handlePostLikes = async function (e) {
 	}
 	button.classList.add("like-animation");
 	setTimeout(() => button.classList.remove("like-animation"), 300);
+};
+
+PostManager.prototype.handlePostDisLikes = async function (e) {
+	e.stopPropagation();
+
+	const button = e.currentTarget.closest(".dislike-button");
+	if (!button) return;
+	const postId = button.getAttribute("data-post-id");
+	if (!postId) return;
+
+	const dislikeData = (this.dislikeState.posts[postId] ??= {
+		count: 0,
+		dislikedBy: new Set(),
+	});
+
+	const currentUser = await getUserData();
+	if (!currentUser?.user_id) {
+		alert("Please login to dislike the post");
+		window.location.href = "/auth";
+		return;
+	}
+
+	const postData = { post_id: postId, user_id: currentUser.user_id };
+	const res = await this.postService.dislikePost(postData);
+
+	if (res.error) {
+		alert(res.message);
+		return;
+	}
+
+	if (res.data) {
+		dislikeData.count++;
+		dislikeData.dislikedBy.add(currentUser.user_id);
+		button.classList.add("disliked", "text-red-600");
+	} else if (res.data === null) {
+		dislikeData.count = Math.max(0, dislikeData.count - 1);
+		dislikeData.dislikedBy.delete(currentUser.user_id);
+		button.classList.remove("disliked", "text-red-600");
+	}
+
+	const dislikesCount = button.querySelector(".likes-count");
+	if (dislikesCount) {
+		dislikesCount.textContent = dislikeData.count;
+	}
+
+	button.classList.add("dislike-animation");
+	setTimeout(() => button.classList.remove("dislike-animation"), 300);
 };
 
 PostManager.prototype.searchPosts = function (
@@ -203,6 +261,7 @@ PostManager.prototype.searchPosts = function (
 PostManager.prototype.init = async function () {
 	const posts = await this.postService.fetchPosts();
 	this.postList = Array.isArray(posts) ? posts : posts.data;
+	console.log(this.postList);
 
 	if (this.postList === null) return;
 
