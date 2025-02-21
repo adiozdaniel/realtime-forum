@@ -227,3 +227,26 @@ func (p *PostService) GetDislikesByUserID(userID string) ([]*Like, error) {
 	}
 	return p.post.GetDislikesByUserID(userID)
 }
+
+// AddActivity adds a new activity to the database
+func (p *PostService) AddActivity(activity *Activity) (*Activity, error) {
+	if activity.UserId == "" {
+		return nil, errors.New("user ID cannot be empty")
+	}
+	return p.post.AddActivity(activity)
+}
+
+// RecordActivity records an activity
+func (p *PostService) RecordActivity(userID, activityType string, activityData interface{}) (*Activity, error) {
+	if userID == "" {
+		return nil, errors.New("user ID cannot be empty")
+	}
+
+	var activity = &Activity{
+		UserId:       userID,
+		ActivityType: activityType,
+		ActivityData: activityData,
+		CreatedAt:    time.Now(),
+	}
+	return p.post.AddActivity(activity)
+}

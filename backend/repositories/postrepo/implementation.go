@@ -359,6 +359,10 @@ func (r *PostRepository) GetPostsByUserID(userID string) ([]*Post, error) {
 		if err != nil {
 			return nil, err
 		}
+
+		post.Likes, _ = r.GetLikesByPostID(post.PostID)
+		post.Dislikes, _ = r.GetDislikesByPostID(post.PostID)
+		post.Comments, _ = r.GetCommentsByPostID(post.PostID)
 		posts = append(posts, post)
 	}
 	return posts, nil
@@ -446,4 +450,12 @@ func (r *PostRepository) GetDislikesByUserID(userID string) ([]*Like, error) {
 		dislikes = append(dislikes, like)
 	}
 	return dislikes, nil
+}
+
+// AddActivity adds a new activity to the database
+func (r *PostRepository) AddActivity(activity *Activity) (*Activity, error) {
+	query := `INSERT INTO activities (user_id, activity_type, activity_data, created_at)
+	           VALUES (?, ?, ?, ?)`
+	_, err := r.DB.Exec(query, activity.UserId, activity.ActivityType, activity.ActivityData, activity.CreatedAt)
+	return activity, err
 }
