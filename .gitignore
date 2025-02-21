@@ -1,2 +1,3 @@
 # ignore temporal development files
 tmp/
+node_modules/
