@@ -1,7 +1,7 @@
 import { API_ENDPOINTS } from "./data.js";
 import { postManager } from "./postmanager.js";
 import { getUserData } from "./authmiddleware.js";
-import { sidebar} from "./sidebar.js"
+import { sidebar } from "./sidebar.js";
 
 class Header {
 	constructor() {
@@ -24,11 +24,11 @@ Header.prototype.toggleMobileMenu = function () {
 
 Header.prototype.handleResize = function () {
 	if (window.innerWidth >= 768) {
-		sidebar.style.display = 'block';
+		sidebar.style.display = "block";
 	} else {
-		sidebar.style.display = 'none';
+		sidebar.style.display = "none";
 	}
-}
+};
 
 // Search functionality
 Header.prototype.handleSearch = (e) => {
@@ -59,6 +59,11 @@ Header.prototype.signOutUser = async function () {
 		if (response.ok) {
 			console.log("User signed out successfully.");
 			this.authButton.textContent = "Sign In";
+		}
+
+		if (this.authCheckInterval) {
+			clearInterval(this.authCheckInterval);
+			this.authCheckInterval = null;
 		}
 
 		return response.status === 200;
@@ -114,15 +119,21 @@ Header.prototype.init = async function () {
 	this.menuToggleBtn?.addEventListener("click", this.toggleMobileMenu);
 	this.searchInput?.addEventListener("input", this.handleSearch);
 	this.darkModeToggle?.addEventListener("click", this.toggleDarkMode);
-	window.addEventListener('resize', this.handleResize);
+	window.addEventListener("resize", this.handleResize);
 	this.authButton?.addEventListener("click", this.handleAuth.bind(this));
 	// Check for saved dark mode preference
 	const savedDarkMode = localStorage.getItem("darkMode") === "true";
 	if (savedDarkMode) {
 		document.body.classList.add("dark-mode");
 	}
-	
+
 	this.handleResize();
+
+	// Listen for user data changes
+	this.authCheckInterval = setInterval(async () => {
+		const newUserdata = await getUserData();
+		this.handleUserChange(newUserdata);
+	}, 2000);
 };
 
 // Start the application

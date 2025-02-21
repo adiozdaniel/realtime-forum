@@ -10,7 +10,6 @@ class Authmiddleware {
 		const isAuthenticated = await this.authService.isAuthenticated();
 
 		if (isAuthenticated.error) {
-			console.log(isAuthenticated.message);
 			return null;
 		}
 
