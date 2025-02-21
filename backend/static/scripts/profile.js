@@ -64,6 +64,12 @@ ProfileDashboard.prototype.cacheElements = function () {
 			settings: document.getElementById("settingsSection"),
 		},
 		sidebarItems: document.querySelectorAll(".sidebar-item"),
+		modal: {
+			container: document.getElementById("postModal"),
+			content: document.getElementById("modalPostContent"),
+			closeBtn: document.querySelector(".close-modal"),
+			viewFullBtn: document.getElementById("viewFullPost")
+		},
 	};
 	this.elements.bioText.textContent = this.state.bio || "Hey there! I'm on forum.";
 	this.elements.profileImage.src = this.state.profilePic || "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%239ca3af'%3E%3Cpath d='M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm0 14.2c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08 1.99 0 5.97 1.09 6 3.08-1.29 1.94-3.5 3.22-6 3.22z'/%3E%3C/svg%3E";
@@ -93,6 +99,21 @@ ProfileDashboard.prototype.setupEventListeners = function () {
 		this.renderPosts();
 		this.updateStats();
 	};
+
+	// Modal event listeners
+	this.elements.modal.closeBtn?.addEventListener('click', () => this.closeModal());
+	this.elements.modal.container?.addEventListener('click', (e) => {
+		if (e.target === this.elements.modal.container) {
+			this.closeModal();
+		}
+	});
+
+	// Handle ESC key
+	document.addEventListener('keydown', (e) => {
+		if (e.key === 'Escape' && !this.elements.modal.container.classList.contains('hidden')) {
+			this.closeModal();
+		}
+	});
 };
 
 ProfileDashboard.prototype.switchView = function (view) {
@@ -210,9 +231,9 @@ ProfileDashboard.prototype.renderActivities = function () {
 };
 
 ProfileDashboard.prototype.renderPosts = function () {
-	// console.log(this.state.posts);
-	document.getElementById("postsList").innerHTML = this.state.posts?.map((post) => `
-		<div class="post-item">
+	if (this.state.posts.length > 0) {
+		document.getElementById("postsList").innerHTML = this.state.posts.map((post) => `
+		<div class="post-item" data-post-id="${post.post_id}" style="cursor: pointer;">
                 <article class="post-card" data-post-id="${post.post_id}">
 	  	${post.post_image
 				? `
@@ -266,11 +287,78 @@ ProfileDashboard.prototype.renderPosts = function () {
             </div>
 			`)
 		.join(" ");
+
+		// Add click handlers to post items
+		document.querySelectorAll('.post-item').forEach(post => {
+			post.addEventListener('click', (e) => {
+				const postId = post.dataset.postId;
+				this.showPostPreview(postId);
+			});
+		});
+
+		document.querySelectorAll('.post-action-button').forEach(button => {
+			button.addEventListener('click', (e) => e.stopPropagation());
+		});
+	} else {
+		document.getElementById("postsList").innerHTML = `<div class="post-item"><p>There are no posts yet</p></div>`;
+	}
 	lucide.createIcons();
 };
 
+ProfileDashboard.prototype.showPostPreview = function (postId) {
+	const post = this.state.posts.find(p => p.post_id === postId);
+	if (!post) return;
+
+	// Populate modal content
+	this.elements.modal.content.innerHTML = `
+		<div class="modal-post">
+			${post.post_image ? `
+				<div class="modal-post-img">
+					<img src="${post.post_image}" alt="Post Image"/>
+				</div>
+			` : ''}
+			<div class="modal-post-header">
+				<div class="post-categories">
+					${post.post_category
+						.split(" ")
+						.map(category => `<span class="post-category">${category.trim()}</span>`)
+						.join("")}
+				</div>
+				<h2 class="modal-post-title">${post.post_title}</h2>
+			</div>
+			<div class="modal-post-content">
+				<p>${post.post_content}</p>
+			</div>
+			<div class="modal-post-footer">
+				<div class="post-meta">
+					<div class="profile-image">
+						<img src="${post.author_img}" onerror="this.onerror=null;this.src='/static/profiles/avatar.jpg';"/>
+					</div>
+					<span>by ${post.post_author}</span>
+					<span>•</span>
+					<span>${formatTimeAgo(post.updated_at)}</span>
+				</div>
+			</div>
+		</div>
+	`;
+
+	// Update "View Full Post" button
+	this.elements.modal.viewFullBtn.addEventListener('click', () => {
+		window.location.href = `/post/${postId}`;
+	});
+
+	// Show modal
+	this.elements.modal.container.classList.remove('hidden');
+};
+
+ProfileDashboard.prototype.closeModal = function () {
+	this.elements.modal.container.classList.add('hidden');
+	this.elements.modal.content.innerHTML = '';
+};
+
 ProfileDashboard.prototype.renderComments = function () {
-	document.getElementById("commentsList").innerHTML = this.state.userComments?.map((comment) => `
+	if (this.state.userComments.length > 0) {
+		document.getElementById("commentsList").innerHTML = this.state.userComments.map((comment) => `
 		<div class="comment-item">
                 <div class="comment" data-comment-id="${comment.comment_id}"> 
             <div class="comment-content"> 
@@ -303,6 +391,9 @@ ProfileDashboard.prototype.renderComments = function () {
             </div>
 		`)
 		.join(" ");
+	} else {
+		document.getElementById("commentsList").innerHTML = `<div class="comment-item"><p>There are no comments yet</p></div>`;
+	}
 	lucide.createIcons();
 };
 
