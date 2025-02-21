@@ -108,8 +108,18 @@ func (u *UserService) GetUserDashboard(user string) (*UserData, error) {
 		return nil, errors.New("you need to login to access this resource")
 	}
 
+	var userinfo User
+
+	userinfo.UserID = user
+
+	newUserInfo, err := u.user.GetUserByID(&userinfo)
+	if err != nil {
+		return nil, errors.New("oops something went wrong")
+	}
+
 	var userData UserData
 
+	userData.UserInfo = newUserInfo
 	posts, err := u.postService.GetPostsByUserID(user)
 	if err != nil {
 		return nil, err

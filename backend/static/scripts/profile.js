@@ -2,6 +2,10 @@ import { AuthService } from "./authservice.js";
 import { getUserData } from "./authmiddleware.js";
 import { STATE } from "./data.js";
 
+function toTitleCase(str) {
+    return str.replace(/\b\w/g, (char) => char.toUpperCase());
+}
+
 class ProfileDashboard {
 	constructor() {
 		this.authService = new AuthService();
@@ -31,6 +35,7 @@ ProfileDashboard.prototype.init = async function () {
 		this.state.dislikes = userData.data.dislikes;
 		this.state.replies = userData.data.replies;
 		this.state.bio = userData.data.user_info?.bio;
+		this.state.username = userData.data.user_info?.user_name;
 	}
 
 	this.cacheElements();
@@ -60,9 +65,9 @@ ProfileDashboard.prototype.cacheElements = function () {
 		},
 		sidebarItems: document.querySelectorAll(".sidebar-item"),
 	};
-	this.elements.bioText.textContent = this.state.bio;
-	this.elements.profileImage.src = this.userData?.image;
-	this.elements.userName.textContent = this.userData?.user_name;
+	this.elements.bioText.textContent = this.state.bio || "Hey there! I'm on forum.";
+	this.elements.profileImage.src = this.state.profilePic;
+	this.elements.userName.textContent = toTitleCase(this.state.username);
 };
 
 ProfileDashboard.prototype.setupEventListeners = function () {
