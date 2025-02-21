@@ -342,3 +342,108 @@ func (r *PostRepository) CreateReply(reply *Reply) (*Reply, error) {
 	_, err := r.DB.Exec(query, reply.ReplyID, reply.CommentID, reply.UserID, reply.Author, reply.AuthorImg, reply.ParentReplyID, reply.Content, reply.CreatedAt, reply.UpdatedAt)
 	return reply, err
 }
+
+// GetPostsByUserID retrieves all posts created by a specific user
+func (r *PostRepository) GetPostsByUserID(userID string) ([]*Post, error) {
+	query := `SELECT post_id, user_id, post_author, author_img, post_title, post_content, post_image, post_video, post_category, post_hasComments, created_at, updated_at FROM posts WHERE user_id = ?`
+	rows, err := r.DB.Query(query, userID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var posts []*Post
+	for rows.Next() {
+		post := &Post{}
+		err := rows.Scan(&post.PostID, &post.UserID, &post.PostAuthor, &post.AuthorImg, &post.PostTitle, &post.PostContent, &post.PostImage, &post.PostVideo, &post.PostCategory, &post.HasComments, &post.CreatedAt, &post.UpdatedAt)
+		if err != nil {
+			return nil, err
+		}
+		posts = append(posts, post)
+	}
+	return posts, nil
+}
+
+// GetCommentsByUserID retrieves all comments created by a specific user
+func (r *PostRepository) GetCommentsByUserID(userID string) ([]*Comment, error) {
+	query := `SELECT comment_id, post_id, user_id, user_name, author_img, parent_comment_id, comment, created_at, updated_at FROM comments WHERE user_id = ?`
+	rows, err := r.DB.Query(query, userID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var comments []*Comment
+	for rows.Next() {
+		comment := &Comment{}
+		err := rows.Scan(&comment.CommentID, &comment.PostID, &comment.UserID, &comment.Author, &comment.AuthorImg, &comment.ParentCommentID, &comment.Content, &comment.CreatedAt, &comment.UpdatedAt)
+		if err != nil {
+			return nil, err
+		}
+		comments = append(comments, comment)
+	}
+	return comments, nil
+}
+
+// GetRepliesByUserID retrieves all replies created by a specific user
+func (r *PostRepository) GetRepliesByUserID(userID string) ([]*Reply, error) {
+	query := `SELECT reply_id, comment_id, user_id, user_name, author_img, parent_reply_id, content, created_at, updated_at FROM replies WHERE user_id = ?`
+	rows, err := r.DB.Query(query, userID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var replies []*Reply
+	for rows.Next() {
+		reply := &Reply{}
+		err := rows.Scan(&reply.ReplyID, &reply.CommentID, &reply.UserID, &reply.Author, &reply.AuthorImg, &reply.ParentReplyID, &reply.Content, &reply.CreatedAt, &reply.UpdatedAt)
+		if err != nil {
+			return nil, err
+		}
+		replies = append(replies, reply)
+	}
+	return replies, nil
+}
+
+// GetLikesByUserID retrieves all likes created by a specific user
+func (r *PostRepository) GetLikesByUserID(userID string) ([]*Like, error) {
+	query := `SELECT like_id, user_id FROM likes WHERE user_id = ?`
+	rows, err := r.DB.Query(query, userID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var likes []*Like
+	for rows.Next() {
+		like := &Like{}
+		err := rows.Scan(&like.LikeID, &like.UserID)
+		if err != nil {
+			return nil, err
+		}
+		likes = append(likes, like)
+	}
+	return likes, nil
+}
+
+// GetDislikesByUserID retrieves all dislikes created by a specific user
+func (r *PostRepository) GetDislikesByUserID(userID string) ([]*Like, error) {
+	query := `SELECT like_id, user_id FROM dislikes WHERE user_id = ?`
+	rows, err := r.DB.Query(query, userID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var dislikes []*Like
+	for rows.Next() {
+		like := &Like{}
+		err := rows.Scan(&like.LikeID, &like.UserID)
+		if err != nil {
+			return nil, err
+		}
+		dislikes = append(dislikes, like)
+	}
+	return dislikes, nil
+}

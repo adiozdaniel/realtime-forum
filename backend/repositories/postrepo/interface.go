@@ -18,6 +18,11 @@ type PostRepo interface {
 	DisLike(like *Like, entityType string) error
 	HasUserLiked(entityID, userID string, entityType string) (string, error)
 	HasUserDisliked(entityID, userID string, entityType string) (string, error)
+	GetPostsByUserID(userID string) ([]*Post, error)
+	GetCommentsByUserID(userID string) ([]*Comment, error)
+	GetRepliesByUserID(userID string) ([]*Reply, error)
+	GetLikesByUserID(userID string) ([]*Like, error)
+	GetDislikesByUserID(userID string) ([]*Like, error)
 
 	// Comments
 	CreateComment(post *Comment) (*Comment, error)

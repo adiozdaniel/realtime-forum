@@ -187,3 +187,43 @@ func (p *PostService) CreateCommentReply(reply *Reply) (*Reply, error) {
 	reply.UpdatedAt = time.Now()
 	return p.post.CreateReply(reply)
 }
+
+// GetPostsByUserID retrieves all posts created by a specific user
+func (p *PostService) GetPostsByUserID(userID string) ([]*Post, error) {
+	if userID == "" {
+		return nil, errors.New("user ID cannot be empty")
+	}
+	return p.post.GetPostsByUserID(userID)
+}
+
+// GetCommentsByUserID retrieves all comments created by a specific user
+func (p *PostService) GetCommentsByUserID(userID string) ([]*Comment, error) {
+	if userID == "" {
+		return nil, errors.New("user ID cannot be empty")
+	}
+	return p.post.GetCommentsByUserID(userID)
+}
+
+// GetRepliesByUserID retrieves all replies created by a specific user
+func (p *PostService) GetRepliesByUserID(userID string) ([]*Reply, error) {
+	if userID == "" {
+		return nil, errors.New("user ID cannot be empty")
+	}
+	return p.post.GetRepliesByUserID(userID)
+}
+
+// GetLikesByUserID retrieves all likes created by a specific user
+func (p *PostService) GetLikesByUserID(userID string) ([]*Like, error) {
+	if userID == "" {
+		return nil, errors.New("user ID cannot be empty")
+	}
+	return p.post.GetLikesByUserID(userID)
+}
+
+// GetDislikesByUserID retrieves all dislikes created by a specific user
+func (p *PostService) GetDislikesByUserID(userID string) ([]*Like, error) {
+	if userID == "" {
+		return nil, errors.New("user ID cannot be empty")
+	}
+	return p.post.GetDislikesByUserID(userID)
+}
