@@ -359,6 +359,10 @@ func (r *PostRepository) GetPostsByUserID(userID string) ([]*Post, error) {
 		if err != nil {
 			return nil, err
 		}
+
+		post.Likes, _ = r.GetLikesByPostID(post.PostID)
+		post.Dislikes, _ = r.GetDislikesByPostID(post.PostID)
+		post.Comments, _ = r.GetCommentsByPostID(post.PostID)
 		posts = append(posts, post)
 	}
 	return posts, nil
