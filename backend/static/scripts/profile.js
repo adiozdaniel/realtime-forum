@@ -1,96 +1,37 @@
 import { AuthService } from "./authservice.js";
 import { getUserData } from "./authmiddleware.js";
+import { STATE } from "./data.js";
 
 class ProfileDashboard {
 	constructor() {
 		this.authService = new AuthService();
-		this.state = {
-			currentView: "overview",
-			darkMode: localStorage.getItem("darkMode") === "true",
-			profilePic: "",
-			bio:
-				localStorage.getItem("userBio") ||
-				"Hi, I love coding and sharing knowledge with the community!",
-			posts: [
-				{
-					id: 1,
-					content: "Just learned about React hooks!",
-					comments: 5,
-					likes: 12,
-					timestamp: "2h ago",
-				},
-				{
-					id: 2,
-					content: "Working on a new project using TypeScript",
-					comments: 3,
-					likes: 8,
-					timestamp: "5h ago",
-				},
-				{
-					id: 3,
-					content: "Check out my latest blog post about web performance",
-					comments: 8,
-					likes: 15,
-					timestamp: "1d ago",
-				},
-			],
-			userComments: [
-				{
-					id: 1,
-					postTitle: "Introduction to GraphQL",
-					content: "Great explanation!",
-					likes: 5,
-					timestamp: "3h ago",
-				},
-				{
-					id: 2,
-					postTitle: "Docker Best Practices",
-					content: "Very effective!",
-					likes: 3,
-					timestamp: "1d ago",
-				},
-			],
-			activities: [
-				{ type: "post", content: "Created a new post", timestamp: "2h ago" },
-				{
-					type: "comment",
-					content: "Commented on 'Docker Best Practices'",
-					timestamp: "1d ago",
-				},
-				{
-					type: "like",
-					content: "Liked 'Introduction to GraphQL'",
-					timestamp: "1d ago",
-				},
-			],
-		};
+		this.state = STATE;
 	}
 }
 
 ProfileDashboard.prototype.init = async function () {
-	const user = await getUserData();
-
-	if (user) this.userData = user;
-
-	if (!user) {
-		window.location.href = "/auth";
-		return;
-	}
-
 	const userData = await this.authService.userDashboard();
 
 	if (userData.error) {
 		alert(userData.message);
+		window.location.href = "/auth"
 		return;
 	}
 
 	console.log(userData);
 	// this.state.profilePic = userData.image;
 	// this.state.bio = userData.bio;
-	if (userData.data.posts) this.state.posts = userData.posts;
-	if (userData.data.userComments)
-		this.state.userComments = userData.userComments;
-	if (userData.data.activities) this.state.activities = userData.activities;
+
+	if (userData.data) {
+		this.state.profilePic = userData.data.user_info?.image;
+		this.state.posts = userData.data.posts;
+		this.state.userComments = userData.data.comments;
+		this.state.activities = userData.data.recent_activity;
+		this.state.likes = userData.data.likes;
+		this.state.dislikes = userData.data.dislikes;
+		this.state.replies = userData.data.replies;
+		this.state.bio = userData.data.user_info?.bio;
+	}
 
 	this.cacheElements();
 	this.setupEventListeners();
@@ -140,6 +81,13 @@ ProfileDashboard.prototype.setupEventListeners = function () {
 	this.elements.sidebarItems.forEach((item) =>
 		item.addEventListener("click", () => this.switchView(item.dataset.view))
 	);
+
+	//temporary handler for deleting posts
+	window.deletePost = (postId) => {
+		state.posts = this.state.posts.filter(post => post.id !== postId);
+		renderPosts();
+		updateStats();
+	};
 };
 
 ProfileDashboard.prototype.switchView = function (view) {
@@ -152,6 +100,9 @@ ProfileDashboard.prototype.updateActiveSection = function () {
 		section.classList.add("hidden")
 	);
 	this.elements.sections[this.state.currentView].classList.remove("hidden");
+	this.elements.sidebarItems.forEach(item => {
+		item.classList.toggle('active', item.dataset.view === this.state.currentView);
+	});
 };
 
 ProfileDashboard.prototype.toggleDarkMode = function () {
@@ -165,6 +116,7 @@ ProfileDashboard.prototype.updateTheme = function () {
 		"data-theme",
 		this.state.darkMode ? "dark" : "light"
 	);
+	this.elements.darkModeToggle.innerHTML = `<i data-lucide="${this.state.darkMode ? 'sun' : 'moon'}"></i>`;
 	lucide.createIcons();
 };
 
@@ -194,8 +146,7 @@ ProfileDashboard.prototype.handleImageUpload = async function (e) {
 
 	if (file.size > maxFileSize) {
 		alert(
-			`Image size is too large.Please upload an image less than ${
-				maxFileSize / 1024 / 1024
+			`Image size is too large.Please upload an image less than ${maxFileSize / 1024 / 1024
 			} MB.`
 		);
 		this.elements.imageUpload.value = ""; // Clear the input
@@ -235,31 +186,56 @@ ProfileDashboard.prototype.handleImageUpload = async function (e) {
 };
 
 ProfileDashboard.prototype.updateStats = function () {
-	document.getElementById("postsCount").textContent = this.state.posts.length;
-	document.getElementById("commentsCount").textContent =
-		this.state.userComments.length;
-	document.getElementById("likesCount").textContent = this.state.posts.reduce(
-		(acc, post) => acc + post.likes,
-		0
-	);
+	document.getElementById("postsCount").textContent = this.state.posts.length || 0;
+	document.getElementById("commentsCount").textContent = this.state.userComments.length || 0;
+	document.getElementById("likesCount").textContent = this.state.likes?.length || 0;
+	document.getElementById("dislikeCount").textContent = this.state.dislikes?.length || 0;
+	document.getElementById("repliesCount").textContent = this.state.replies?.length || 0;
 };
 
 ProfileDashboard.prototype.renderActivities = function () {
-	document.getElementById("activityList").innerHTML = this.state.activities
-		.map((activity) => `<div>${activity.content} - ${activity.timestamp}</div>`)
+	document.getElementById("activityList").innerHTML = this.state.activities?.map((activity) => `
+		<div class="activity-item">
+			<i data-lucide="clock"></i>
+			<span>${activity.content}</span> - 
+			<span>${activity.timestamp}</span>
+		</div>`)
 		.join(" ");
+	lucide.createIcons();
 };
 
 ProfileDashboard.prototype.renderPosts = function () {
 	document.getElementById("postsList").innerHTML = this.state.posts
-		.map((post) => `<div>${post.content} - ${post.timestamp}</div>`)
+		.map((post) => `
+		<div class="post-item">
+                <p>${post.content}</p>
+                <div class="post-actions">
+                    <span><i data-lucide="thumbs-up"></i> ${post.likes}</span>
+                    <span><i data-lucide="message-square"></i> ${post.comments}</span>
+                    <span>${post.timestamp}</span>
+                </div>
+                <button class="delete-button" onclick="deletePost(${post.id})">
+                    <i data-lucide="trash-2"></i>
+                </button>
+            </div>`)
 		.join(" ");
+	lucide.createIcons();
 };
 
 ProfileDashboard.prototype.renderComments = function () {
 	document.getElementById("commentsList").innerHTML = this.state.userComments
-		.map((comment) => `<div>${comment.content} - ${comment.timestamp}</div>`)
+		.map((comment) => `
+		<div class="comment-item">
+                <h3>Re: ${comment.postTitle}</h3>
+                <p>${comment.content}</p>
+                <div class="post-actions">
+                    <span><i data-lucide="thumbs-up"></i> ${comment.likes}</span>
+                    <span>${comment.timestamp}</span>
+                </div>
+            </div>
+		`)
 		.join(" ");
+	lucide.createIcons();
 };
 
 const dashboard = new ProfileDashboard();
