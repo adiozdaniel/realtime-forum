@@ -129,6 +129,21 @@ func (tm *TableManager) CreateTables() error {
 		);
 		CREATE INDEX IF NOT EXISTS idx_likes_user_id ON likes(user_id);`,
 
+		"dislikes": `
+		CREATE TABLE IF NOT EXISTS dislikes (
+			like_id TEXT PRIMARY KEY,
+			user_id TEXT NOT NULL,
+			post_id TEXT,
+			comment_id TEXT,
+			reply_id TEXT,
+			created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+			FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE,
+			FOREIGN KEY (post_id) REFERENCES posts(post_id) ON DELETE CASCADE,
+			FOREIGN KEY (comment_id) REFERENCES comments(comment_id) ON DELETE CASCADE,
+			FOREIGN KEY (reply_id) REFERENCES replies(reply_id) ON DELETE CASCADE
+		);
+		CREATE INDEX IF NOT EXISTS idx_dislikes_user_id ON dislikes(user_id);`,
+
 		"replies": `
 		CREATE TABLE IF NOT EXISTS replies (
 			reply_id TEXT PRIMARY KEY,
