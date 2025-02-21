@@ -22,6 +22,7 @@ PostManager.prototype.createPostHTML = function (post) {
 		this.likeState.posts[post.post_id]?.likedBy.has("current-user");
 	const isDisliked =
 		this.dislikeState.posts[post.post_id]?.dislikedBy.has("current-user");
+
 	return `
       <article class="post-card" data-post-id="${post.post_id}">
 	  	${
@@ -34,7 +35,12 @@ PostManager.prototype.createPostHTML = function (post) {
 			}
         <div class="flex items-start justify-between">
           <div>
-            <span class="post-category">${post.post_category}</span>
+			<div class="post-categories">
+				${post.post_category
+					.split(" ") // Split multiple categories
+					.map((category) => `<span class="post-category">${category.trim()}</span>`)
+					.join("")}
+			</div>
             <h3 class="post-title">${post.post_title}</h3>
             <p class="post-excerpt">${post.post_content}</p>
           </div>
@@ -81,6 +87,7 @@ PostManager.prototype.createPostHTML = function (post) {
       </article>
     `;
 };
+
 
 PostManager.prototype.toggleComments = function (e) {
 	const commentButton = e.target.closest(".comment-toggle");

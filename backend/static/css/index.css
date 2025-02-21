@@ -55,6 +55,7 @@
 .post-category {
     background-color: var(--gray-100);
     color: var(--gray-700);
+    flex-wrap: wrap;
 }
 
 .post-title {
