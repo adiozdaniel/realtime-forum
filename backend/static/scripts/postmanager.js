@@ -268,7 +268,6 @@ PostManager.prototype.searchPosts = function (
 PostManager.prototype.init = async function () {
 	const posts = await this.postService.fetchPosts();
 	this.postList = Array.isArray(posts) ? posts : posts.data;
-	console.log(this.postList);
 
 	if (this.postList === null) return;
 
