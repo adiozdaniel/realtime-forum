@@ -34,24 +34,15 @@ type User struct {
 
 // UserData represents the user data
 type UserData struct {
-	UserInfo       *User               `json:"user_info"`
-	Posts          []*postrepo.Post    `json:"posts"`
-	Comments       []*postrepo.Comment `json:"comments"`
-	Replies        []*postrepo.Reply   `json:"replies"`
-	LikedPosts     []*postrepo.Post    `json:"liked_posts"`
-	LikedComments  []*postrepo.Comment `json:"liked_comments"`
-	Likes          []*postrepo.Like    `json:"likes"`
-	Dislikes       []*postrepo.Like    `json:"dislikes"`
-	RecentActivity []*RecentActivity   `json:"recent_activity"`
-}
-
-// RecentActivity represents the recent activity
-type RecentActivity struct {
-	Post    postrepo.Post    `json:"post"`
-	Comment postrepo.Comment `json:"comment"`
-	Reply   postrepo.Reply   `json:"reply"`
-	Like    postrepo.Like    `json:"like"`
-	Dislike postrepo.Like    `json:"dislike"`
+	UserInfo      *User                `json:"user_info"`
+	Posts         []*postrepo.Post     `json:"posts"`
+	Comments      []*postrepo.Comment  `json:"comments"`
+	Replies       []*postrepo.Reply    `json:"replies"`
+	LikedPosts    []*postrepo.Post     `json:"liked_posts"`
+	LikedComments []*postrepo.Comment  `json:"liked_comments"`
+	Likes         []*postrepo.Like     `json:"likes"`
+	Dislikes      []*postrepo.Like     `json:"dislikes"`
+	Activities    []*postrepo.Activity `json:"activities"`
 }
 
 // AuthRepo represents the repository for authentication
