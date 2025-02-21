@@ -10,10 +10,10 @@ class AuthService {
 // Method to log in a user
 AuthService.prototype.login = async function (credentials) {
 	if (!credentials?.email || !credentials?.password) {
-		return (data = {
+		return {
 			error: true,
 			message: "Please provide both email and password!",
-		});
+		};
 	}
 
 	try {
@@ -34,10 +34,10 @@ AuthService.prototype.login = async function (credentials) {
 // Method to register a new user
 AuthService.prototype.register = async function (formData) {
 	if (!formData?.email || !formData?.password || !formData?.user_name) {
-		return (data = {
+		return  {
 			error: true,
 			message: "Please provide all required fields!",
-		});
+		};
 	}
 
 	try {
