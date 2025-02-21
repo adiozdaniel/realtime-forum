@@ -79,6 +79,7 @@ func (repo *PostRepository) ListPosts() ([]*Post, error) {
 
 		// Fetch likes
 		post.Likes, _ = repo.GetLikesByPostID(post.PostID)
+		post.Dislikes, _ = repo.GetDislikesByPostID(post.PostID)
 
 		// Fetch comments
 		post.Comments, _ = repo.GetCommentsByPostID(post.PostID)
@@ -112,6 +113,27 @@ func (r *PostRepository) GetLikesByPostID(postID string) ([]*Like, error) {
 		likes = append(likes, like)
 	}
 	return likes, nil
+}
+
+// GetDislikesByPostID retrieves all dislikes for a post by its ID
+func (r *PostRepository) GetDislikesByPostID(postID string) ([]*Like, error) {
+	query := `SELECT like_id, user_id FROM dislikes WHERE post_id = ?`
+	rows, err := r.DB.Query(query, postID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var dislikes []*Like
+	for rows.Next() {
+		like := &Like{}
+		err := rows.Scan(&like.LikeID, &like.UserID)
+		if err != nil {
+			return nil, err
+		}
+		dislikes = append(dislikes, like)
+	}
+	return dislikes, nil
 }
 
 // GetCommentsByPostID retrieves all comments for a post by its ID
@@ -211,6 +233,14 @@ func (r *PostRepository) GetLikesByReplyID(replyID string) ([]*Like, error) {
 	return likes, nil
 }
 
+// PostDisLike removes a like from a post
+func (r *PostRepository) PostDislike(dislike *Like) (*Like, error) {
+	query := `INSERT INTO dislikes (like_id, user_id, post_id, comment_id, reply_id, created_at)
+	          VALUES (?, ?, ?, NULLIF(?, ''), NULLIF(?, ''), ?)`
+	_, err := r.DB.Exec(query, dislike.LikeID, dislike.UserID, dislike.PostID, dislike.CommentID, dislike.ReplyID, dislike.CreatedAt)
+	return dislike, err
+}
+
 // AddLike adds a like to a post
 func (r *PostRepository) AddLike(postlike *Like) (*Like, error) {
 	query := `INSERT INTO likes (like_id, user_id, post_id, comment_id, reply_id, created_at)
@@ -220,9 +250,25 @@ func (r *PostRepository) AddLike(postlike *Like) (*Like, error) {
 }
 
 // DisLike removes a like from a post
-func (r *PostRepository) DisLike(postdislike *Like) error {
-	query := `DELETE FROM likes WHERE like_id = ?`
-	_, err := r.DB.Exec(query, postdislike.LikeID)
+func (r *PostRepository) DisLike(dislike *Like, entityType string) error {
+	var query string
+
+	switch entityType {
+	case "likes":
+		query = `DELETE FROM likes WHERE like_id = ?`
+	case "dislikes":
+		query = `DELETE FROM dislikes WHERE like_id = ?`
+	default:
+		return errors.New("invalid entity type")
+	}
+
+	_, err := r.DB.Exec(query, dislike.LikeID)
+	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return nil
+		}
+		return err
+	}
 	return err
 }
 
@@ -238,6 +284,33 @@ func (r *PostRepository) HasUserLiked(entityID, userID, entityType string) (stri
 		query = `SELECT like_id FROM likes WHERE comment_id = ? AND user_id = ?`
 	case "Reply":
 		query = `SELECT like_id FROM likes WHERE reply_id = ? AND user_id = ?`
+	default:
+		return "", errors.New("invalid entity type")
+	}
+
+	err := r.DB.QueryRow(query, entityID, userID).Scan(&likeID)
+	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return "", nil // No like found, return empty string
+		}
+		return "", err
+	}
+
+	return likeID, nil
+}
+
+// HasUserDisliked checks if a user has disliked a specific post, comment, or reply and returns the dislike ID if it exists
+func (r *PostRepository) HasUserDisliked(entityID, userID, entityType string) (string, error) {
+	var query string
+	var likeID string
+
+	switch entityType {
+	case "Post":
+		query = `SELECT like_id FROM dislikes WHERE post_id = ? AND user_id = ?`
+	case "Comment":
+		query = `SELECT like_id FROM dislikes WHERE comment_id = ? AND user_id = ?`
+	case "Reply":
+		query = `SELECT like_id FROM dislikes WHERE reply_id = ? AND user_id = ?`
 	default:
 		return "", errors.New("invalid entity type")
 	}

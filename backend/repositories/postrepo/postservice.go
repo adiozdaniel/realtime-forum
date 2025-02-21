@@ -64,12 +64,58 @@ func (p *PostService) PostAddLike(like *Like) (*Like, error) {
 
 	if haslike != "" {
 		like.LikeID = haslike
-		return nil, p.DisLike(like)
+		return nil, p.DeleteLike(like, "likes")
+	}
+
+	hasDisliked, err := p.post.HasUserDisliked(like.PostID, like.UserID, "Post")
+	if err != nil {
+		return nil, err
+	}
+
+	if hasDisliked != "" {
+		like.LikeID = hasDisliked
+		err := p.DeleteLike(like, "dislikes")
+		if err != nil {
+			return nil, err
+		}
 	}
 
 	like.LikeID, _ = p.shared.GenerateUUID()
 	like.CreatedAt = time.Now()
 	return p.post.AddLike(like)
+}
+
+func (p *PostService) PostDisLike(dislike *Like) (*Like, error) {
+	if dislike.UserID == "" {
+		return nil, errors.New("user ID cannot be empty")
+	}
+
+	haslike, err := p.post.HasUserLiked(dislike.PostID, dislike.UserID, "Post")
+	if err != nil {
+		return nil, err
+	}
+
+	if haslike != "" {
+		dislike.LikeID = haslike
+		err = p.DeleteLike(dislike, "likes")
+		if err != nil {
+			return nil, errors.New("failed to delete like")
+		}
+	}
+
+	hasDisliked, err := p.post.HasUserDisliked(dislike.PostID, dislike.UserID, "Post")
+	if err != nil {
+		return nil, err
+	}
+
+	if hasDisliked != "" {
+		dislike.LikeID = hasDisliked
+		return nil, p.DeleteLike(dislike, "dislikes")
+	}
+
+	dislike.LikeID, _ = p.shared.GenerateUUID()
+	dislike.CreatedAt = time.Now()
+	return p.post.PostDislike(dislike)
 }
 
 func (p *PostService) CommentAddLike(like *Like) (*Like, error) {
@@ -84,7 +130,7 @@ func (p *PostService) CommentAddLike(like *Like) (*Like, error) {
 
 	if haslike != "" {
 		like.LikeID = haslike
-		return nil, p.DisLike(like)
+		return nil, p.DeleteLike(like, "likes")
 	}
 
 	like.LikeID, _ = p.shared.GenerateUUID()
@@ -92,12 +138,12 @@ func (p *PostService) CommentAddLike(like *Like) (*Like, error) {
 	return p.post.AddLike(like)
 }
 
-func (p *PostService) DisLike(dislike *Like) error {
+func (p *PostService) DeleteLike(dislike *Like, entityType string) error {
 	if dislike.LikeID == "" {
 		return errors.New("like ID cannot be empty")
 	}
 
-	return p.post.DisLike(dislike)
+	return p.post.DisLike(dislike, entityType)
 }
 
 // CreateComment creates a new comment
