@@ -50,6 +50,8 @@ func (u *UserService) Register(user *User) error {
 	}
 	user.UserID = userID
 
+	go u.postService.RecordActivity(user.UserID, "account_registration", "registered an account")
+
 	return u.user.CreateUser(user)
 }
 
@@ -85,10 +87,6 @@ func (u *UserService) UpdateUser(user *User) (*User, error) {
 		return nil, errors.New("bad request")
 	}
 
-	if user.Image == "" {
-		return nil, errors.New("bad request")
-	}
-
 	image := user.Image
 
 	updatedUser, err := u.GetUserByID(user)
@@ -98,6 +96,16 @@ func (u *UserService) UpdateUser(user *User) (*User, error) {
 
 	updatedUser.Image = image
 	updatedUser.UpdatedAt = time.Now()
+
+	var msg string
+
+	if image != "" {
+		msg = "updated user profile picture"
+	} else {
+		msg = "updated user profile"
+	}
+
+	go u.postService.RecordActivity(user.UserID, "profile", msg)
 
 	return u.user.UpdateUser(updatedUser)
 }
@@ -149,6 +157,12 @@ func (u *UserService) GetUserDashboard(user string) (*UserData, error) {
 		return nil, err
 	}
 	userData.Dislikes = dislikes
+
+	activities, err := u.postService.GetActivitiesByUserID(user)
+	if err != nil {
+		return nil, err
+	}
+	userData.Activities = activities
 
 	return &userData, nil
 }

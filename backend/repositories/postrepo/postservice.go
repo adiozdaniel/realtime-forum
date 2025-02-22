@@ -41,6 +41,8 @@ func (p *PostService) CreatePost(post *Post) (*Post, error) {
 	post.UpdatedAt = time.Now()
 	post.HasComments = true
 
+	go p.RecordActivity(post.UserID, "created_post", post.PostTitle)
+
 	return p.post.CreatePost(post)
 }
 
@@ -64,6 +66,9 @@ func (p *PostService) PostAddLike(like *Like) (*Like, error) {
 
 	if haslike != "" {
 		like.LikeID = haslike
+
+		go p.RecordActivity(like.UserID, "removed a post like", like.PostID)
+
 		return nil, p.DeleteLike(like, "likes")
 	}
 
@@ -74,14 +79,17 @@ func (p *PostService) PostAddLike(like *Like) (*Like, error) {
 
 	if hasDisliked != "" {
 		like.LikeID = hasDisliked
-		err := p.DeleteLike(like, "dislikes")
-		if err != nil {
-			return nil, err
-		}
+
+		go p.RecordActivity(like.UserID, "removed a post like", like.PostID)
+
+		return nil, p.DeleteLike(like, "dislikes")
 	}
 
 	like.LikeID, _ = p.shared.GenerateUUID()
 	like.CreatedAt = time.Now()
+
+	go p.RecordActivity(like.UserID, "added a post like", like.PostID)
+
 	return p.post.AddLike(like)
 }
 
@@ -110,12 +118,18 @@ func (p *PostService) PostDisLike(dislike *Like) (*Like, error) {
 
 	if hasDisliked != "" {
 		dislike.LikeID = hasDisliked
+
+		go p.RecordActivity(dislike.UserID, "removed a post dislike", dislike.PostID)
+
 		return nil, p.DeleteLike(dislike, "dislikes")
 	}
 
 	dislike.LikeID, _ = p.shared.GenerateUUID()
 	dislike.CreatedAt = time.Now()
-	return p.post.PostDislike(dislike)
+
+	go p.RecordActivity(dislike.UserID, "added a post dislike", dislike.PostID)
+
+	return p.post.AddLike(dislike)
 }
 
 func (p *PostService) CommentAddLike(like *Like) (*Like, error) {
@@ -130,11 +144,17 @@ func (p *PostService) CommentAddLike(like *Like) (*Like, error) {
 
 	if haslike != "" {
 		like.LikeID = haslike
+
+		go p.RecordActivity(like.UserID, "removed a comment like", like.CommentID)
+
 		return nil, p.DeleteLike(like, "likes")
 	}
 
 	like.LikeID, _ = p.shared.GenerateUUID()
 	like.CreatedAt = time.Now()
+
+	go p.RecordActivity(like.UserID, "added a comment like", like.CommentID)
+
 	return p.post.AddLike(like)
 }
 
@@ -142,6 +162,8 @@ func (p *PostService) DeleteLike(dislike *Like, entityType string) error {
 	if dislike.LikeID == "" {
 		return errors.New("like ID cannot be empty")
 	}
+
+	go p.RecordActivity(dislike.UserID, "removed a comment like", dislike.CommentID)
 
 	return p.post.DisLike(dislike, entityType)
 }
@@ -164,6 +186,9 @@ func (p *PostService) CreatePostComment(comment *Comment) (*Comment, error) {
 	comment.CommentID, _ = p.shared.GenerateUUID()
 	comment.CreatedAt = time.Now()
 	comment.UpdatedAt = time.Now()
+
+	go p.RecordActivity(comment.UserID, "created_comment", comment.Content)
+
 	return p.post.CreateComment(comment)
 }
 
@@ -185,6 +210,9 @@ func (p *PostService) CreateCommentReply(reply *Reply) (*Reply, error) {
 	reply.ReplyID, _ = p.shared.GenerateUUID()
 	reply.CreatedAt = time.Now()
 	reply.UpdatedAt = time.Now()
+
+	go p.RecordActivity(reply.UserID, "replied to a comment", reply.Content)
+
 	return p.post.CreateReply(reply)
 }
 
@@ -237,16 +265,26 @@ func (p *PostService) AddActivity(activity *Activity) (*Activity, error) {
 }
 
 // RecordActivity records an activity
-func (p *PostService) RecordActivity(userID, activityType string, activityData interface{}) (*Activity, error) {
+func (p *PostService) RecordActivity(userID, activityType, activityData string) (*Activity, error) {
 	if userID == "" {
 		return nil, errors.New("user ID cannot be empty")
 	}
 
-	var activity = &Activity{
-		UserId:       userID,
-		ActivityType: activityType,
-		ActivityData: activityData,
-		CreatedAt:    time.Now(),
+	var activity Activity
+
+	activity.ActivityID, _ = p.shared.GenerateUUID()
+	activity.UserId = userID
+	activity.ActivityType = activityType
+	activity.ActivityData = activityData
+	activity.CreatedAt = time.Now()
+
+	return p.post.AddActivity(&activity)
+}
+
+// GetActivitiesByUserID retrieves all activities created by a specific user
+func (p *PostService) GetActivitiesByUserID(userID string) ([]*Activity, error) {
+	if userID == "" {
+		return nil, errors.New("user ID cannot be empty")
 	}
-	return p.post.AddActivity(activity)
+	return p.post.GetActivitiesByUserID(userID)
 }
