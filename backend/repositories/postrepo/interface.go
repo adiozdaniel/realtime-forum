@@ -30,6 +30,7 @@ type PostRepo interface {
 
 	// Comments
 	CreateComment(post *Comment) (*Comment, error)
+	GetCommentByID(id string) (*Comment, error)
 
 	// Replies
 	CreateReply(post *Reply) (*Reply, error)

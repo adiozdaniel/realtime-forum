@@ -59,36 +59,34 @@ func (p *PostService) PostAddLike(like *Like) (*Like, error) {
 		return nil, errors.New("user ID cannot be empty")
 	}
 
-	haslike, err := p.post.HasUserLiked(like.PostID, like.UserID, "Post")
+	post, err := p.post.GetPostByID(like.PostID)
 	if err != nil {
-		return nil, err
+		return nil, errors.New("bad request")
 	}
 
-	if haslike != "" {
-		like.LikeID = haslike
+	msg := "removed a post like"
 
-		go p.RecordActivity(like.UserID, "removed a post like", like.PostID)
-
-		return nil, p.DeleteLike(like, "likes")
-	}
-
-	hasDisliked, err := p.post.HasUserDisliked(like.PostID, like.UserID, "Post")
-	if err != nil {
-		return nil, err
-	}
-
+	hasDisliked, _ := p.post.HasUserDisliked(post.PostID, like.UserID, "Post")
 	if hasDisliked != "" {
 		like.LikeID = hasDisliked
 
-		go p.RecordActivity(like.UserID, "removed a post like", like.PostID)
+		go p.DeleteLike(like, "dislikes")
+	}
 
-		return nil, p.DeleteLike(like, "dislikes")
+	haslike, _ := p.post.HasUserLiked(post.PostID, like.UserID, "Post")
+	if haslike != "" {
+		like.LikeID = haslike
+
+		go p.RecordActivity(like.UserID, msg, msg+" on: "+post.PostTitle)
+
+		return nil, p.DeleteLike(like, "likes")
 	}
 
 	like.LikeID, _ = p.shared.GenerateUUID()
 	like.CreatedAt = time.Now()
 
-	go p.RecordActivity(like.UserID, "added a post like", like.PostID)
+	msg = "liked a post: "
+	go p.RecordActivity(like.UserID, msg, msg+post.PostTitle)
 
 	return p.post.AddLike(like)
 }
@@ -98,28 +96,24 @@ func (p *PostService) PostDisLike(dislike *Like) (*Like, error) {
 		return nil, errors.New("user ID cannot be empty")
 	}
 
-	haslike, err := p.post.HasUserLiked(dislike.PostID, dislike.UserID, "Post")
+	post, err := p.post.GetPostByID(dislike.PostID)
 	if err != nil {
-		return nil, err
+		return nil, errors.New("bad request")
 	}
 
+	msg := "removed a post dislike"
+
+	haslike, _ := p.post.HasUserLiked(post.PostID, dislike.UserID, "Post")
 	if haslike != "" {
 		dislike.LikeID = haslike
-		err = p.DeleteLike(dislike, "likes")
-		if err != nil {
-			return nil, errors.New("failed to delete like")
-		}
+		go p.DeleteLike(dislike, "likes")
 	}
 
-	hasDisliked, err := p.post.HasUserDisliked(dislike.PostID, dislike.UserID, "Post")
-	if err != nil {
-		return nil, err
-	}
-
+	hasDisliked, _ := p.post.HasUserDisliked(post.PostID, dislike.UserID, "Post")
 	if hasDisliked != "" {
 		dislike.LikeID = hasDisliked
 
-		go p.RecordActivity(dislike.UserID, "removed a post dislike", dislike.PostID)
+		go p.RecordActivity(dislike.UserID, msg, msg+" on: "+post.PostTitle)
 
 		return nil, p.DeleteLike(dislike, "dislikes")
 	}
@@ -127,9 +121,10 @@ func (p *PostService) PostDisLike(dislike *Like) (*Like, error) {
 	dislike.LikeID, _ = p.shared.GenerateUUID()
 	dislike.CreatedAt = time.Now()
 
-	go p.RecordActivity(dislike.UserID, "added a post dislike", dislike.PostID)
+	msg = "disliked a post"
+	go p.RecordActivity(dislike.UserID, msg, msg+" : "+post.PostTitle)
 
-	return p.post.AddLike(dislike)
+	return p.post.PostDislike(dislike)
 }
 
 func (p *PostService) CommentAddLike(like *Like) (*Like, error) {
@@ -137,15 +132,18 @@ func (p *PostService) CommentAddLike(like *Like) (*Like, error) {
 		return nil, errors.New("user ID cannot be empty")
 	}
 
-	haslike, err := p.post.HasUserLiked(like.CommentID, like.UserID, "Comment")
+	comment, err := p.post.GetCommentByID(like.CommentID)
 	if err != nil {
-		return nil, err
+		return nil, errors.New("bad request")
 	}
 
+	msg := "removed a comment like"
+
+	haslike, _ := p.post.HasUserLiked(like.CommentID, like.UserID, "Comment")
 	if haslike != "" {
 		like.LikeID = haslike
 
-		go p.RecordActivity(like.UserID, "removed a comment like", like.CommentID)
+		go p.RecordActivity(like.UserID, msg, msg+" on: "+comment.Content)
 
 		return nil, p.DeleteLike(like, "likes")
 	}
@@ -153,7 +151,8 @@ func (p *PostService) CommentAddLike(like *Like) (*Like, error) {
 	like.LikeID, _ = p.shared.GenerateUUID()
 	like.CreatedAt = time.Now()
 
-	go p.RecordActivity(like.UserID, "added a comment like", like.CommentID)
+	msg = "liked a comment: "
+	go p.RecordActivity(like.UserID, msg, msg+comment.Content)
 
 	return p.post.AddLike(like)
 }
@@ -162,8 +161,6 @@ func (p *PostService) DeleteLike(dislike *Like, entityType string) error {
 	if dislike.LikeID == "" {
 		return errors.New("like ID cannot be empty")
 	}
-
-	go p.RecordActivity(dislike.UserID, "removed a comment like", dislike.CommentID)
 
 	return p.post.DisLike(dislike, entityType)
 }
@@ -187,7 +184,7 @@ func (p *PostService) CreatePostComment(comment *Comment) (*Comment, error) {
 	comment.CreatedAt = time.Now()
 	comment.UpdatedAt = time.Now()
 
-	go p.RecordActivity(comment.UserID, "created_comment", comment.Content)
+	go p.RecordActivity(comment.UserID, "created_comment", "added a comment: "+comment.Content)
 
 	return p.post.CreateComment(comment)
 }
@@ -211,7 +208,7 @@ func (p *PostService) CreateCommentReply(reply *Reply) (*Reply, error) {
 	reply.CreatedAt = time.Now()
 	reply.UpdatedAt = time.Now()
 
-	go p.RecordActivity(reply.UserID, "replied to a comment", reply.Content)
+	go p.RecordActivity(reply.UserID, "replied to a comment", "replied: "+reply.Content)
 
 	return p.post.CreateReply(reply)
 }

@@ -517,3 +517,19 @@ func (r *PostRepository) GetActivitiesByUserID(userID string) ([]*Activity, erro
 	}
 	return activities, nil
 }
+
+// GetCommentByID retrieves a comment by its ID
+func (r *PostRepository) GetCommentByID(id string) (*Comment, error) {
+	query := `SELECT comment_id, post_id, user_id, user_name, author_img, parent_comment_id, comment, created_at, updated_at 
+	          FROM comments 
+	          WHERE comment_id = ?`
+	var comment Comment
+	err := r.DB.QueryRow(query, id).Scan(
+		&comment.CommentID, &comment.PostID, &comment.UserID, &comment.Author, &comment.AuthorImg, &comment.ParentCommentID, &comment.Content,
+		&comment.CreatedAt, &comment.UpdatedAt,
+	)
+	if err != nil {
+		return nil, err
+	}
+	return &comment, nil
+}
