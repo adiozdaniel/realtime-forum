@@ -48,6 +48,25 @@ func (m *RendersRepo) SignUpPageHandler(w http.ResponseWriter, r *http.Request) 
 	}
 }
 
+
+//moderator page
+func (m *RendersRepo) ModeratorPageHandler(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodGet {
+		http.Error(w, "Oops, didn't understand what you are looking for", http.StatusForbidden)
+		return
+	}
+
+	data := map[string]interface{}{
+		"Page": "moderator",
+	}
+
+	err := m.RenderTemplate(w, "moderator.page.html", data)
+	if err != nil {
+		http.Error(w, "Oops, something went wrong while rendering the page!", http.StatusInternalServerError)
+		return
+	}
+}
+
 // ProfilePageHandler renders profile page
 func (m *RendersRepo) ProfilePageHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodGet {

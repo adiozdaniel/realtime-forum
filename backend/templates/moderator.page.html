@@ -1,0 +1,52 @@
+{{template "base" .}}
+
+{{define "moderatorsidebar"}}
+<aside class="sidebar">
+    <nav>
+        <ul class="category-list">
+            <li>
+                <button class="category-button active" onclick="switchSection('user-reports')">
+                    <i data-lucide="flag"></i>
+                    <span>User Reports</span>
+                </button>
+            </li>
+            <li>
+                <button class="category-button" onclick="switchSection('moderator-reports')">
+                    <i data-lucide="shield-alert"></i>
+                    <span>My Reports to Admin</span>
+                </button>
+            </li>
+        </ul>
+    </nav>
+</aside>
+{{end}}
+
+{{define "moderatorcontent"}}
+<div id="user-reports-section" class="section">
+    <div class="section-header">
+        <h2 class="section-title">
+            <i data-lucide="flag"></i>
+            User Reports
+        </h2>
+        <p class="section-description">
+            Review and manage reports submitted by users
+        </p>
+    </div>
+    <div id="user-reports-container"></div>
+</div>
+
+<div id="moderator-reports-section" class="section hidden">
+    <div class="section-header">
+        <h2 class="section-title">
+            <i data-lucide="shield-alert"></i>
+            My Reports to Admin
+        </h2>
+        <p class="section-description">
+            Track the status of reports you've escalated to administrators
+        </p>
+    </div>
+    <div id="moderator-reports-container"></div>
+</div>
+
+<script src="/static/scripts/moderator.js"></script>
+{{end}}
