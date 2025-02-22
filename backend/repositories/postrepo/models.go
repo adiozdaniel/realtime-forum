@@ -67,11 +67,11 @@ type Reply struct {
 
 // Activity represents user activities
 type Activity struct {
-	ActivityID   string      `json:"activity_id"`
-	UserId       string      `json:"user_id"`
-	ActivityType string      `json:"activity_type"`
-	ActivityData interface{} `json:"activity_data"`
-	CreatedAt    time.Time   `json:"created_at"`
+	ActivityID   string    `json:"activity_id"`
+	UserId       string    `json:"user_id"`
+	ActivityType string    `json:"activity_type"`
+	ActivityData string    `json:"activity_data"`
+	CreatedAt    time.Time `json:"created_at"`
 }
 
 // PostRepo represents posts repository

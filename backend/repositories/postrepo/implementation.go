@@ -454,8 +454,66 @@ func (r *PostRepository) GetDislikesByUserID(userID string) ([]*Like, error) {
 
 // AddActivity adds a new activity to the database
 func (r *PostRepository) AddActivity(activity *Activity) (*Activity, error) {
-	query := `INSERT INTO activities (user_id, activity_type, activity_data, created_at)
-	           VALUES (?, ?, ?, ?)`
-	_, err := r.DB.Exec(query, activity.UserId, activity.ActivityType, activity.ActivityData, activity.CreatedAt)
+	query := `INSERT INTO activities (activity_id, user_id, activity_type, activity_data, created_at)
+	           VALUES (?, ?, ?, ?, ?)`
+	_, err := r.DB.Exec(query, activity.ActivityID, activity.UserId, activity.ActivityType, activity.ActivityData, activity.CreatedAt)
 	return activity, err
+}
+
+// GetPostByLikeID retrieves a post by its like ID and user ID
+func (r *PostRepository) GetPostByLikeID(likeID, userID string) (*Post, error) {
+	query := `SELECT post_id, user_id, post_author, author_img, post_title, post_content, post_image, post_video, post_category, post_hasComments, created_at, updated_at 
+	          FROM posts 
+	          WHERE post_id IN (SELECT post_id FROM likes WHERE like_id = ? AND user_id = ?) AND user_id = ?`
+
+	var post Post
+	err := r.DB.QueryRow(query, likeID, userID, userID).Scan(
+		&post.PostID, &post.UserID, &post.PostAuthor, &post.AuthorImg,
+		&post.PostTitle, &post.PostContent, &post.PostImage, &post.PostVideo,
+		&post.PostCategory, &post.HasComments, &post.CreatedAt, &post.UpdatedAt,
+	)
+	if err != nil {
+		return nil, err
+	}
+	return &post, nil
+}
+
+// GetCommentByLikeID retrieves a comment by its like ID and user ID
+func (r *PostRepository) GetCommentByLikeID(likeID, userID string) (*Comment, error) {
+	query := `SELECT comment_id, user_id, post_id, comment_content, comment_likes, created_at, updated_at 
+	          FROM comments 
+	          WHERE comment_id IN (SELECT comment_id FROM likes WHERE like_id = ? AND user_id = ?) AND user_id = ?`
+
+	var comment Comment
+	err := r.DB.QueryRow(query, likeID, userID, userID).Scan(
+		&comment.CommentID, &comment.UserID, &comment.PostID, &comment.Content,
+		&comment.Likes, &comment.CreatedAt, &comment.UpdatedAt,
+	)
+	if err != nil {
+		return nil, err
+	}
+	return &comment, nil
+}
+
+// GetActivitiesByUserID retrieves all activities created by a specific user
+func (r *PostRepository) GetActivitiesByUserID(userID string) ([]*Activity, error) {
+	query := `SELECT activity_id, user_id, activity_type, activity_data, created_at 
+	          FROM activities 
+	          WHERE user_id = ?`
+	rows, err := r.DB.Query(query, userID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var activities []*Activity
+	for rows.Next() {
+		activity := &Activity{}
+		err := rows.Scan(&activity.ActivityID, &activity.UserId, &activity.ActivityType, &activity.ActivityData, &activity.CreatedAt)
+		if err != nil {
+			return nil, err
+		}
+		activities = append(activities, activity)
+	}
+	return activities, nil
 }

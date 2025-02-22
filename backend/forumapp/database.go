@@ -159,6 +159,16 @@ func (tm *TableManager) CreateTables() error {
 			FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE,
 			FOREIGN KEY (parent_reply_id) REFERENCES replies(reply_id) ON DELETE CASCADE
 		);`,
+
+		"activities": `
+		CREATE TABLE IF NOT EXISTS activities (
+			activity_id TEXT PRIMARY KEY,
+			user_id TEXT NOT NULL,
+			activity_type TEXT NOT NULL,
+			activity_data TEXT,
+			created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+			FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE
+		);`,
 	}
 
 	// Start a transaction
