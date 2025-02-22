@@ -63,12 +63,6 @@ ProfileDashboard.prototype.cacheElements = function () {
 			settings: document.getElementById("settingsSection"),
 		},
 		sidebarItems: document.querySelectorAll(".sidebar-item"),
-		modal: {
-			container: document.getElementById("postModal"),
-			content: document.getElementById("modalPostContent"),
-			closeBtn: document.querySelector(".close-modal"),
-			viewFullBtn: document.getElementById("viewFullPost"),
-		},
 	};
 	this.elements.bioText.textContent =
 		this.state.bio || "Hey there! I'm on forum.";
@@ -101,26 +95,6 @@ ProfileDashboard.prototype.setupEventListeners = function () {
 		this.renderPosts();
 		this.updateStats();
 	};
-
-	// Modal event listeners
-	this.elements.modal.closeBtn?.addEventListener("click", () =>
-		this.closeModal()
-	);
-	this.elements.modal.container?.addEventListener("click", (e) => {
-		if (e.target === this.elements.modal.container) {
-			this.closeModal();
-		}
-	});
-
-	// Handle ESC key
-	document.addEventListener("keydown", (e) => {
-		if (
-			e.key === "Escape" &&
-			!this.elements.modal.container.classList.contains("hidden")
-		) {
-			this.closeModal();
-		}
-	});
 };
 
 ProfileDashboard.prototype.switchView = function (view) {
@@ -271,7 +245,7 @@ ProfileDashboard.prototype.renderPosts = function () {
 		document.getElementById("postsList").innerHTML = this.state.posts
 			.map(
 				(post) => `
-		<div class="post-item" data-post-id="${post.post_id}" style="cursor: pointer;">
+		<div class="post-item" data-post-id="${post.post_id}">
                 <article class="post-card" data-post-id="${post.post_id}">
 	  	${
 				post.post_image
@@ -337,14 +311,6 @@ ProfileDashboard.prototype.renderPosts = function () {
 			)
 			.join(" ");
 
-		// Add click handlers to post items
-		document.querySelectorAll(".post-item").forEach((post) => {
-			post.addEventListener("click", (e) => {
-				const postId = post.dataset.postId;
-				this.showPostPreview(postId);
-			});
-		});
-
 		document.querySelectorAll(".post-action-button").forEach((button) => {
 			button.addEventListener("click", (e) => e.stopPropagation());
 		});
@@ -354,66 +320,6 @@ ProfileDashboard.prototype.renderPosts = function () {
 		).innerHTML = `<div class="post-item"><p>There are no posts yet</p></div>`;
 	}
 	lucide.createIcons();
-};
-
-ProfileDashboard.prototype.showPostPreview = function (postId) {
-	const post = this.state.posts.find((p) => p.post_id === postId);
-	if (!post) return;
-
-	// Populate modal content
-	this.elements.modal.content.innerHTML = `
-		<div class="modal-post">
-			${
-				post.post_image
-					? `
-				<div class="modal-post-img">
-					<img src="${post.post_image}" alt="Post Image"/>
-				</div>
-			`
-					: ""
-			}
-			<div class="modal-post-header">
-				<div class="post-categories">
-					${post.post_category
-						.split(" ")
-						.map(
-							(category) =>
-								`<span class="post-category">${category.trim()}</span>`
-						)
-						.join("")}
-				</div>
-				<h2 class="modal-post-title">${post.post_title}</h2>
-			</div>
-			<div class="modal-post-content">
-				<p>${post.post_content}</p>
-			</div>
-			<div class="modal-post-footer">
-				<div class="post-meta">
-					<div class="profile-image">
-						<img src="${
-							post.author_img
-						}" onerror="this.onerror=null;this.src='/static/profiles/avatar.jpg';"/>
-					</div>
-					<span>by ${post.post_author}</span>
-					<span>•</span>
-					<span>${formatTimeAgo(post.updated_at)}</span>
-				</div>
-			</div>
-		</div>
-	`;
-
-	// Update "View Full Post" button
-	this.elements.modal.viewFullBtn.addEventListener("click", () => {
-		window.location.href = `/post/${postId}`;
-	});
-
-	// Show modal
-	this.elements.modal.container.classList.remove("hidden");
-};
-
-ProfileDashboard.prototype.closeModal = function () {
-	this.elements.modal.container.classList.add("hidden");
-	this.elements.modal.content.innerHTML = "";
 };
 
 ProfileDashboard.prototype.renderComments = function () {
