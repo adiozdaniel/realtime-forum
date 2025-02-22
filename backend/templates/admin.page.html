@@ -1,29 +1,6 @@
 {{template "base" .}} 
-{{define "content"}}
-    <div class="app">
-        <header class="header">
-            <div class="header-container">
-                <div class="header-left">
-                    <button class="menu-button" id="menuToggle">
-                        <i data-lucide="menu"></i>
-                    </button>
-                    <h1 class="logo">Forum</h1>
-                </div>
-                <div class="header-right">
-                    <div class="header-icons">
-                        <button class="icon-button" id="darkModeToggle">
-                            <i data-lucide="moon"></i>
-                        </button>
-                        <button class="icon-button">
-                            <i data-lucide="bell"></i>
-                        </button>
-                        <a href="login.html" class="sign-out-button">Sign out</a>
-                    </div>
-                </div>
-            </div>
-        </header>
 
-        <div class="main-container">
+{{define "adminsidebar"}}
             <aside class="sidebar">
                 <nav>
                     <ul class="category-list">
@@ -46,8 +23,9 @@
                     </ul>
                 </nav>
             </aside>
+{{end}}
 
-            <div class="main-content">
+{{define "admincontent"}}
                 <div id="dashboard-section" class="section">
                     <div class="stats-grid">
                         <div class="stat-card">
@@ -143,5 +121,6 @@
             </div>
         </div>
     </div>
+    
     <script src="/static/scripts/admin-dashboard-js.js"></script>
     {{end}}
