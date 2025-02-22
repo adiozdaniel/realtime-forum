@@ -34,7 +34,7 @@ AuthService.prototype.login = async function (credentials) {
 // Method to register a new user
 AuthService.prototype.register = async function (formData) {
 	if (!formData?.email || !formData?.password || !formData?.user_name) {
-		return  {
+		return {
 			error: true,
 			message: "Please provide all required fields!",
 		};
@@ -102,6 +102,21 @@ AuthService.prototype.userDashboard = async function () {
 	try {
 		const response = await fetch(this.apiEndpoints.userDashBoard, {
 			method: "GET",
+		});
+
+		return response.json();
+	} catch (error) {
+		return error;
+	}
+};
+
+// Method to edit a user's bio
+AuthService.prototype.editBio = async function (userData) {
+	try {
+		const response = await fetch(this.apiEndpoints.editBio, {
+			method: "POST",
+			body: JSON.stringify(userData),
+			headers: { "Content-Type": "application/json" },
 		});
 
 		return response.json();

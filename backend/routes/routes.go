@@ -33,6 +33,7 @@ func (r *Routes) RegisterRoutes(mux *http.ServeMux) http.Handler {
 	// === Auth ===
 	mux.Handle("/api/auth/uploadProfilePic", r.auth.AuthMiddleware(http.HandlerFunc(r.authRepo.UploadProfilePic)))
 	mux.Handle("/api/user/dashboard", r.auth.AuthMiddleware(http.HandlerFunc(r.authRepo.UserDashboard)))
+	mux.Handle("/api/user/editBio", r.auth.AuthMiddleware(http.HandlerFunc(r.authRepo.EditBio)))
 	// === End Auth ===
 
 	// ===== End Protected RESTFUL API Endpoints ===== //
@@ -60,7 +61,6 @@ func (r *Routes) RegisterRoutes(mux *http.ServeMux) http.Handler {
 	mux.HandleFunc("/dashboard", r.rendersRepo.ProfilePageHandler)
 	mux.HandleFunc("/auth-sign-up", r.rendersRepo.SignUpPageHandler)
 	mux.HandleFunc("/moderator", r.rendersRepo.ModeratorPageHandler)
-
 
 	// CORS middleware
 	handler := r.auth.CorsMiddleware(r.auth.UserContextMiddleware(mux))

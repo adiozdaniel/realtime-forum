@@ -10,6 +10,7 @@ class ProfileDashboard {
 	constructor() {
 		this.authService = new AuthService();
 		this.state = STATE;
+		this.userData = null;
 	}
 }
 
@@ -22,10 +23,6 @@ ProfileDashboard.prototype.init = async function () {
 		return;
 	}
 
-	console.log(userData);
-	// this.state.profilePic = userData.image;
-	// this.state.bio = userData.bio;
-
 	if (userData.data) {
 		this.state.profilePic = userData.data.user_info?.image;
 		this.state.posts = userData.data.posts || [];
@@ -36,6 +33,8 @@ ProfileDashboard.prototype.init = async function () {
 		this.state.replies = userData.data.replies;
 		this.state.bio = userData.data.user_info?.bio;
 		this.state.username = userData.data.user_info?.user_name;
+
+		this.userData = userData.data.user_info;
 	}
 
 	this.cacheElements();
@@ -159,12 +158,25 @@ ProfileDashboard.prototype.updateTheme = function () {
 	lucide.createIcons();
 };
 
-ProfileDashboard.prototype.editBio = function () {
+ProfileDashboard.prototype.editBio = async function () {
 	const newBio = prompt("Edit your bio:", this.state.bio);
 	if (newBio) {
-		this.state.bio = newBio;
-		localStorage.setItem("userBio", newBio);
-		this.elements.bioText.textContent = newBio;
+		const formData = {
+			user_id: this.userData.user_id,
+			bio: newBio,
+		};
+
+		const res = await this.authService.editBio(formData);
+
+		if (res.error) {
+			alert(res.message);
+			return;
+		}
+
+		if (res.data) {
+			this.state.bio = res.data.bio;
+			this.elements.bioText.textContent = res.data.bio;
+		}
 	}
 };
 

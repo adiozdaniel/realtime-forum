@@ -5,6 +5,7 @@ const API_ENDPOINTS = {
 	logout: "/api/auth/logout",
 	check: "/api/auth/check",
 	uploadProfilePic: "/api/auth/uploadProfilePic",
+	editBio: "/api/user/editBio",
 	userDashBoard: "/api/user/dashboard",
 
 	// posts ENDPOINTS
@@ -87,10 +88,11 @@ const STATE = {
 		},
 	],
 	activities: [
-		{ 
-			type: "post", 
-			content: "Created a new post", 
-			timestamp: "2h ago" },
+		{
+			type: "post",
+			content: "Created a new post",
+			timestamp: "2h ago",
+		},
 		{
 			type: "comment",
 			content: "Commented on 'Docker Best Practices'",

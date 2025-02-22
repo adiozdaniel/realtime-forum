@@ -222,3 +222,31 @@ func (h *AuthRepo) UserDashboard(w http.ResponseWriter, r *http.Request) {
 	h.res.Data = data
 	h.res.WriteJSON(w, *h.res, http.StatusOK)
 }
+
+// EditBio updates a user's bio
+func (h *AuthRepo) EditBio(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodPost {
+		h.res.SetError(w, errors.New("method not allowed"), http.StatusMethodNotAllowed)
+		return
+	}
+
+	// Parse request
+	var req User
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		h.res.SetError(w, errors.New("invalid request body"), http.StatusBadRequest)
+		return
+	}
+
+	// Call the EditBio method
+	user, err := h.user.EditBio(&req)
+	if err != nil {
+		h.res.SetError(w, err, http.StatusInternalServerError)
+		return
+	}
+
+	// Prepare and send the success response
+	h.res.Err = false
+	h.res.Message = "Success"
+	h.res.Data = user
+	h.res.WriteJSON(w, *h.res, http.StatusOK)
+}

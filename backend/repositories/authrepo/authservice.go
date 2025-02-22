@@ -110,6 +110,35 @@ func (u *UserService) UpdateUser(user *User) (*User, error) {
 	return u.user.UpdateUser(updatedUser)
 }
 
+func (u *UserService) EditBio(user *User) (*User, error) {
+	if user.UserID == "" {
+		return nil, errors.New("bad request")
+	}
+
+	if user.Bio == "" {
+		return nil, errors.New("bad request")
+	}
+
+	bio := user.Bio
+
+	updatedUser, err := u.GetUserByID(user)
+	if err != nil {
+		return nil, errors.New("this user does not exist")
+	}
+
+	msg := "created a user bio"
+	if updatedUser.Bio != bio {
+		msg = "updated user bio"
+	}
+
+	updatedUser.Bio = bio
+	updatedUser.UpdatedAt = time.Now()
+
+	go u.postService.RecordActivity(user.UserID, "user_bio", msg)
+
+	return u.user.UpdateUser(updatedUser)
+}
+
 // GetUserDashboard retrieves user data
 func (u *UserService) GetUserDashboard(user string) (*UserData, error) {
 	if user == "" {
