@@ -533,3 +533,37 @@ func (r *PostRepository) GetCommentByID(id string) (*Comment, error) {
 	}
 	return &comment, nil
 }
+
+// CreateNotification creates a new notification
+func (r *PostRepository) CreateNotification(n *Notification) (*Notification, error) {
+	query := `INSERT INTO notifications (notification_id, user_id, sender_id, post_id, comment_id, reply_id, like_id, dislike_id, notification_type, message, is_read, created_at) 
+	          VALUES (?, ?, ?, NULLIF(?, ''), NULLIF(?, ''), NULLIF(?, ''), NULLIF(?, ''), NULLIF(?, ''), ?, ?, ?, ?)`
+	_, err := r.DB.Exec(query, n.NotificationID, n.UserId, n.SenderID, n.PostID, n.CommentID, n.ReplyID, n.LikeID, n.DislikeID, n.NotificationType, n.Message, n.IsRead, n.CreatedAt)
+	if err != nil {
+		return nil, err
+	}
+	return n, nil
+}
+
+// GetNotificationsByUserID retrieves all notifications for a user by their ID
+func (r *PostRepository) GetNotificationsByUserID(userID string) ([]*Notification, error) {
+	query := `SELECT notification_id, user_id, sender_id, post_id, comment_id, reply_id, like_id, dislike_id, notification_type, message, is_read, created_at 
+	          FROM notifications 
+	          WHERE user_id = ?`
+	rows, err := r.DB.Query(query, userID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var notifications []*Notification
+	for rows.Next() {
+		notification := &Notification{}
+		err := rows.Scan(&notification.NotificationID, &notification.UserId, &notification.SenderID, &notification.PostID, &notification.CommentID, &notification.ReplyID, &notification.LikeID, &notification.DislikeID, &notification.NotificationType, &notification.Message, &notification.IsRead, &notification.CreatedAt)
+		if err != nil {
+			return nil, err
+		}
+		notifications = append(notifications, notification)
+	}
+	return notifications, nil
+}

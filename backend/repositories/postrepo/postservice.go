@@ -88,6 +88,18 @@ func (p *PostService) PostAddLike(like *Like) (*Like, error) {
 	msg = "liked a post: "
 	go p.RecordActivity(like.UserID, msg, msg+post.PostTitle)
 
+	nId, _ := p.shared.GenerateUUID()
+	go p.CreateNotification(&Notification{
+		NotificationID:   nId,
+		UserId:           post.UserID,
+		SenderID:         like.UserID,
+		PostID:           post.PostID,
+		NotificationType: "success",
+		Message:          "liked: " + post.PostTitle,
+		IsRead:           false,
+		CreatedAt:        time.Now(),
+	})
+
 	return p.post.AddLike(like)
 }
 
@@ -124,6 +136,18 @@ func (p *PostService) PostDisLike(dislike *Like) (*Like, error) {
 	msg = "disliked a post"
 	go p.RecordActivity(dislike.UserID, msg, msg+" : "+post.PostTitle)
 
+	nId, _ := p.shared.GenerateUUID()
+	go p.CreateNotification(&Notification{
+		NotificationID:   nId,
+		UserId:           post.UserID,
+		SenderID:         dislike.UserID,
+		PostID:           post.PostID,
+		NotificationType: "warning",
+		Message:          post.PostTitle + " performing badly",
+		IsRead:           false,
+		CreatedAt:        time.Now(),
+	})
+
 	return p.post.PostDislike(dislike)
 }
 
@@ -153,6 +177,18 @@ func (p *PostService) CommentAddLike(like *Like) (*Like, error) {
 
 	msg = "liked a comment: "
 	go p.RecordActivity(like.UserID, msg, msg+comment.Content)
+
+	nId, _ := p.shared.GenerateUUID()
+	go p.CreateNotification(&Notification{
+		NotificationID:   nId,
+		UserId:           comment.UserID,
+		SenderID:         like.UserID,
+		PostID:           comment.PostID,
+		NotificationType: "success",
+		Message:          "liked: " + comment.Content,
+		IsRead:           false,
+		CreatedAt:        time.Now(),
+	})
 
 	return p.post.AddLike(like)
 }
@@ -203,12 +239,29 @@ func (p *PostService) CreateCommentReply(reply *Reply) (*Reply, error) {
 		return nil, errors.New("reply content cannot be empty")
 	}
 
+	com, err := p.post.GetCommentByID(reply.CommentID)
+	if err != nil {
+		return nil, errors.New("bad request")
+	}
+
 	reply.AuthorImg = "/static/profiles/" + reply.UserID
 	reply.ReplyID, _ = p.shared.GenerateUUID()
 	reply.CreatedAt = time.Now()
 	reply.UpdatedAt = time.Now()
 
 	go p.RecordActivity(reply.UserID, "replied to a comment", "replied: "+reply.Content)
+
+	nId, _ := p.shared.GenerateUUID()
+	go p.CreateNotification(&Notification{
+		NotificationID:   nId,
+		UserId:           com.UserID,
+		SenderID:         reply.UserID,
+		ReplyID:          reply.ReplyID,
+		NotificationType: "info",
+		Message:          "replied: " + reply.Content,
+		IsRead:           false,
+		CreatedAt:        time.Now(),
+	})
 
 	return p.post.CreateReply(reply)
 }
@@ -284,4 +337,20 @@ func (p *PostService) GetActivitiesByUserID(userID string) ([]*Activity, error) 
 		return nil, errors.New("user ID cannot be empty")
 	}
 	return p.post.GetActivitiesByUserID(userID)
+}
+
+// CreateNotification creates a new notification
+func (p *PostService) CreateNotification(n *Notification) (*Notification, error) {
+	if n.UserId == "" {
+		return nil, errors.New("user ID cannot be empty")
+	}
+	return p.post.CreateNotification(n)
+}
+
+// GetNotificationsByUserID retrieves all notifications created by a specific user
+func (p *PostService) GetNotificationsByUserID(userID string) ([]*Notification, error) {
+	if userID == "" {
+		return nil, errors.New("user ID cannot be empty")
+	}
+	return p.post.GetNotificationsByUserID(userID)
 }

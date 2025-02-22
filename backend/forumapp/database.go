@@ -170,6 +170,29 @@ func (tm *TableManager) CreateTables() error {
 			created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
 			FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE
 		);`,
+
+		"notifications": `
+		CREATE TABLE IF NOT EXISTS notifications (
+			notification_id TEXT PRIMARY KEY,
+			user_id TEXT NOT NULL,
+			sender_id TEXT,
+			post_id TEXT,
+			comment_id TEXT,
+			reply_id TEXT,
+			like_id TEXT,
+			dislike_id TEXT,
+			notification_type TEXT NOT NULL,
+			message TEXT,
+			is_read BOOLEAN DEFAULT FALSE,
+			created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+			FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE,
+			FOREIGN KEY (sender_id) REFERENCES users(user_id) ON DELETE CASCADE,
+			FOREIGN KEY (post_id) REFERENCES posts(post_id) ON DELETE CASCADE,
+			FOREIGN KEY (comment_id) REFERENCES comments(comment_id) ON DELETE CASCADE,
+			FOREIGN KEY (reply_id) REFERENCES replies(reply_id) ON DELETE CASCADE,
+			FOREIGN KEY (like_id) REFERENCES likes(like_id) ON DELETE CASCADE,
+			FOREIGN KEY (dislike_id) REFERENCES dislikes(dislike_id) ON DELETE CASCADE
+		);`,
 	}
 
 	// Start a transaction

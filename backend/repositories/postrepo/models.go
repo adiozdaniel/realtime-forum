@@ -74,6 +74,22 @@ type Activity struct {
 	CreatedAt    time.Time `json:"created_at"`
 }
 
+// Notification represents a notification
+type Notification struct {
+	NotificationID   string    `json:"notification_id"`
+	UserId           string    `json:"user_id"`
+	SenderID         string    `json:"sender_id"`
+	PostID           string    `json:"post_id,omitempty"`
+	CommentID        string    `json:"comment_id,omitempty"`
+	ReplyID          string    `json:"reply_id,omitempty"`
+	LikeID           string    `json:"like_id,omitempty"`
+	DislikeID        string    `json:"dislike_id,omitempty"`
+	NotificationType string    `json:"notification_type"`
+	Message          string    `json:"message"`
+	IsRead           bool      `json:"is_read"`
+	CreatedAt        time.Time `json:"created_at"`
+}
+
 // PostRepo represents posts repository
 type PostsRepo struct {
 	app    *forumapp.ForumApp
