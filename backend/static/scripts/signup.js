@@ -1,4 +1,5 @@
 import { AuthService } from "./authservice.js";
+import { toast } from "./toast.js";
 
 document.addEventListener("DOMContentLoaded", function () {
 	// DOM Elements
@@ -35,6 +36,7 @@ document.addEventListener("DOMContentLoaded", function () {
 			confirmPasswordInput.value &&
 			passwordInput.value !== confirmPasswordInput.value
 		) {
+			toast.createToast("error", "Passwords do not match");
 			showError(confirmPasswordInput, "Passwords do not match");
 			return false;
 		} else {
@@ -126,6 +128,7 @@ document.addEventListener("DOMContentLoaded", function () {
 		// Validate email
 		if (!validateEmail(emailInput.value)) {
 			showError(emailInput, "Please enter a valid email address");
+			toast.createToast("error", "Please enter a valid email address");
 			isValid = false;
 		}
 
@@ -133,17 +136,20 @@ document.addEventListener("DOMContentLoaded", function () {
 		const passwordStrength = checkPasswordStrength(passwordInput.value);
 		if (passwordStrength < 3) {
 			showError(passwordInput, "Password is too weak");
+			toast.createToast("error", "Password is too weak");
 			isValid = false;
 		}
 
 		// Validate password confirmation
 		if (!checkPasswordsMatch()) {
+			showError(confirmPasswordInput, "Passwords do not match");
 			isValid = false;
 		}
 
 		// Validate terms
 		if (!termsCheckbox.checked) {
 			showError(termsCheckbox, "You must accept the terms and conditions");
+			toast.createToast("error", "You must accept the terms and conditions");
 			isValid = false;
 		}
 
@@ -165,11 +171,15 @@ document.addEventListener("DOMContentLoaded", function () {
 
 		// Handle success or error based on the response
 		if (!res.error) {
-			console.log("Registration successful:", res.message);
-			localStorage.setItem("res", JSON.stringify(res.data));
+			toast.createToast("success", "Registration successful!");
+
 			// Redirect or show a success message
 			window.location.href = "/";
 		} else {
+			toast.createToast(
+				"error",
+				res.message || "Failed to create account. Please try again."
+			);
 			console.error(
 				"Registration failed:",
 				res.message || "server misbehaving"

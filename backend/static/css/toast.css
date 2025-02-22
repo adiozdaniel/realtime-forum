@@ -97,7 +97,7 @@
 	font-size: 1.75rem;
 }
 
-.toast.success .column i {
+.toast.success .column span {
 	color: var(--success);
 }
 
@@ -127,17 +127,6 @@
 	color: var(--dark);
 }
 
-.buttons .btn {
-	border: none;
-	outline: none;
-	color: var(--light);
-	cursor: pointer;
-	margin: 0 5px;
-	font-size: 1.2rem;
-	padding: 10px 20px;
-	border-radius: 4px;
-}
-
 @media screen and (max-width: 530px) {
 	.toast-notifications {
 		width: 80%;
@@ -147,11 +136,5 @@
 		width: 100%;
 		font-size: 1rem;
 		margin-left: 20px;
-	}
-
-	.buttons .btn {
-		margin: 0 1px;
-		font-sze: 1.1rem;
-		padding: 8px 15px;
 	}
 }

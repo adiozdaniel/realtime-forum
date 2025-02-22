@@ -1,6 +1,7 @@
 import { AuthService } from "./authservice.js";
 import { STATE } from "./data.js";
 import { formatTimeAgo } from "./timestamps.js";
+import { toast } from "./toast.js";
 
 function toTitleCase(str) {
 	return str.replace(/\b\w/g, (char) => char.toUpperCase());
@@ -143,11 +144,12 @@ ProfileDashboard.prototype.editBio = async function () {
 		const res = await this.authService.editBio(formData);
 
 		if (res.error) {
-			alert(res.message);
+			toast.createToast("error", res.message);
 			return;
 		}
 
 		if (res.data) {
+			toast.createToast("success", res.message || "Bio updated!");
 			this.state.bio = res.data.bio;
 			this.elements.bioText.textContent = res.data.bio;
 		}
