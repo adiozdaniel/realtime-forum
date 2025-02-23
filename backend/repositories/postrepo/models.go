@@ -3,6 +3,7 @@ package postrepo
 import (
 	"database/sql"
 	"forum/forumapp"
+	"forum/middlewares"
 	"forum/repositories/shared"
 	"time"
 )
@@ -76,18 +77,18 @@ type Activity struct {
 
 // Notification represents a notification
 type Notification struct {
-	NotificationID   string    `json:"notification_id"`
-	UserId           string    `json:"user_id"`
-	SenderID         string    `json:"sender_id"`
-	PostID           string    `json:"post_id,omitempty"`
-	CommentID        string    `json:"comment_id,omitempty"`
-	ReplyID          string    `json:"reply_id,omitempty"`
-	LikeID           string    `json:"like_id,omitempty"`
-	DislikeID        string    `json:"dislike_id,omitempty"`
-	NotificationType string    `json:"notification_type"`
-	Message          string    `json:"message"`
-	IsRead           bool      `json:"is_read"`
-	CreatedAt        time.Time `json:"created_at"`
+	NotificationID   string         `json:"notification_id"`
+	UserId           string         `json:"user_id"`
+	SenderID         string         `json:"sender_id"`
+	PostID           sql.NullString `json:"post_id,omitempty"`
+	CommentID        sql.NullString `json:"comment_id,omitempty"`
+	ReplyID          sql.NullString `json:"reply_id,omitempty"`
+	LikeID           sql.NullString `json:"like_id,omitempty"`
+	DislikeID        sql.NullString `json:"dislike_id,omitempty"`
+	NotificationType string         `json:"notification_type"`
+	Message          string         `json:"message"`
+	IsRead           bool           `json:"is_read"`
+	CreatedAt        time.Time      `json:"created_at"`
 }
 
 // PostRepo represents posts repository
@@ -96,10 +97,11 @@ type PostsRepo struct {
 	res    *shared.JSONRes
 	post   *PostService
 	shared *shared.SharedConfig
+	auth   *middlewares.AuthContext
 }
 
 // NewPost returns a new Post instance
-func NewPostsRepo(app *forumapp.ForumApp) *PostsRepo {
+func NewPostsRepo(app *forumapp.ForumApp, auth *middlewares.AuthContext) *PostsRepo {
 	res := shared.NewJSONRes()
 	shared := shared.NewSharedConfig()
 	postRepo := NewPostRepository(app.Db.Query)
@@ -107,6 +109,7 @@ func NewPostsRepo(app *forumapp.ForumApp) *PostsRepo {
 
 	return &PostsRepo{
 		app:    app,
+		auth:   auth,
 		res:    res,
 		post:   postService,
 		shared: shared,

@@ -218,3 +218,28 @@ func (p *PostsRepo) CreatePostReply(w http.ResponseWriter, r *http.Request) {
 	p.res.Data = post
 	p.res.WriteJSON(w, *p.res, http.StatusOK)
 }
+
+// CheckNotifications checks for new notifications
+func (p *PostsRepo) CheckNotifications(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodGet {
+		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+		return
+	}
+
+	userID, ok := p.auth.GetUserIDFromContext(r.Context())
+	if !ok {
+		p.res.SetError(w, errors.New("not logged in"), http.StatusUnauthorized)
+		return
+	}
+
+	notifications, err := p.post.GetNotificationsByUserID(userID)
+	if err != nil {
+		p.res.SetError(w, err, http.StatusInternalServerError)
+		return
+	}
+
+	p.res.Err = false
+	p.res.Message = "Success"
+	p.res.Data = notifications
+	p.res.WriteJSON(w, *p.res, http.StatusOK)
+}
