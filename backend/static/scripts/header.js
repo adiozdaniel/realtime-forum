@@ -124,12 +124,25 @@ Header.prototype.watchNotifications = function () {
 
 		// Update unread count
 		if (newUnreadIds.size > unreadNotifications.size) {
-			this.notificationButton.textContent = newUnreadIds.size;
+			const existingCount = this.notificationButton.querySelector(
+				".notification-count"
+			);
+			if (existingCount) existingCount.remove();
+
+			// create and append new notification count
+			const countSpan = document.createElement("span");
+			countSpan.className = "notification-count";
+			countSpan.textContent = newUnreadIds.size;
+
+			this.notificationButton.appendChild(countSpan);
+			this.notificationButton.classList.add("has-notifications");
 
 			const audio = new Audio("/static/audio/bell.mp3");
 
 			if (this.enableNotifications)
-				audio.play().catch((err) => console.error("error ringing bell", err));
+				audio.play().catch(() => console.error("error ringing bell"));
+		} else {
+			this.notificationButton.classList.remove("has-notifications");
 		}
 
 		unreadNotifications = newUnreadIds;

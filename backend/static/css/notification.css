@@ -1,0 +1,21 @@
+/* Default notification bell (white) */
+#notificationButton {
+	position: relative;
+}
+
+/* When there are notifications, turn the bell red */
+#notificationButton.has-notifications {
+	color: var(--error);
+}
+
+/* Style for the notification count */
+.notification-count {
+	font-size: 0.8rem;
+	color: var(--dark-text-primary);
+	background: var(--error);
+	border-radius: 50%;
+	padding: 3px 8px;
+	position: absolute;
+	top: -5px;
+	right: -5px;
+}
