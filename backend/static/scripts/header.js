@@ -111,11 +111,15 @@ Header.prototype.handleUserChange = function (userdata) {
 // Watch over notifications
 Header.prototype.watchNotifications = function () {
 	let unreadNotifications = new Set();
+	let canCheck = true;
+
+	if (!canCheck) return;
 
 	setInterval(async () => {
 		const res = await this.postService.checkNotifications();
 
 		if (res.error) {
+			canCheck = false;
 			return;
 		}
 
@@ -147,6 +151,19 @@ Header.prototype.watchNotifications = function () {
 
 		unreadNotifications = newUnreadIds;
 	}, 5000);
+};
+
+// Initialize notification dropdown
+Header.prototype.initNotifications = function () {
+	this.notificationDropdown = document.createElement("div");
+	this.notificationDropdown.classList.add("notification-dropdown");
+	this.notificationDropdown.style.display = "none";
+	this.notificationButton.appendChild(this.notificationDropdown);
+
+	this.notificationButton.addEventListener("click", () => {
+		this.notificationDropdown.style.display =
+			this.notificationDropdown.style.display === "none" ? "block" : "none";
+	});
 };
 
 // Handle notifications
