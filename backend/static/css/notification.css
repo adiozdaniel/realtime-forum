@@ -19,3 +19,35 @@
 	top: -5px;
 	right: -5px;
 }
+
+/* Notification dropdown */
+.notification-dropdown {
+	position: absolute;
+	top: 60px;
+	right: 80px;
+	background: var(--success);
+	color: var(--dark-text-primary);
+	width: 300px;
+	max-height: 300px;
+	overflow-y: auto;
+	border-radius: 8px;
+	box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+	display: none;
+	padding: 10px;
+	z-index: 300;
+}
+
+/* Individual notification items */
+.notification-item {
+	padding: 10px;
+	border-bottom: 1px solid var(--dark-border);
+	cursor: pointer;
+}
+
+.notification-item:last-child {
+	border-bottom: none;
+}
+
+.notification-item:hover {
+	background: var(--dark-hover);
+}

@@ -9,6 +9,7 @@ class Header {
 		this.endpoints = API_ENDPOINTS;
 		this.postService = new PostService();
 		this.unreadNotifications = null;
+		this.newUnread = null;
 		this.noticationsCount = 0;
 		this.enableNotifications = false;
 
@@ -19,6 +20,7 @@ class Header {
 		this.profileImage = document.querySelector("#userProfileImage");
 		this.darkModeToggle = document.querySelector("#darkModeToggle");
 		this.notificationButton = document.querySelector("#notificationButton");
+		this.notificationDropdown = document.querySelector("#notificationDropdown");
 	}
 }
 
@@ -123,8 +125,8 @@ Header.prototype.watchNotifications = function () {
 			return;
 		}
 
-		const newUnread = res.data?.filter((n) => !n.is_read);
-		const newUnreadIds = new Set(newUnread?.map((n) => n.notification_id));
+		this.newUnread = res.data?.filter((n) => !n.is_read);
+		const newUnreadIds = new Set(this.newUnread?.map((n) => n.notification_id));
 
 		// Update unread count
 		if (newUnreadIds.size > unreadNotifications.size) {
@@ -141,8 +143,15 @@ Header.prototype.watchNotifications = function () {
 			this.notificationButton.appendChild(countSpan);
 			this.notificationButton.classList.add("has-notifications");
 
-			const audio = new Audio("/static/audio/bell.mp3");
+			this.notificationDropdown.innerHTML = "";
+			this.newUnread.forEach((n) => {
+				const notifItem = document.createElement("div");
+				notifItem.classList.add("notification-item");
+				notifItem.textContent = n.message;
+				this.notificationDropdown.appendChild(notifItem);
+			});
 
+			const audio = new Audio("/static/audio/bell.mp3");
 			if (this.enableNotifications)
 				audio.play().catch(() => console.error("error ringing bell"));
 		} else {
@@ -153,23 +162,16 @@ Header.prototype.watchNotifications = function () {
 	}, 5000);
 };
 
-// Initialize notification dropdown
-Header.prototype.initNotifications = function () {
-	this.notificationDropdown = document.createElement("div");
-	this.notificationDropdown.classList.add("notification-dropdown");
-	this.notificationDropdown.style.display = "none";
-	this.notificationButton.appendChild(this.notificationDropdown);
-
-	this.notificationButton.addEventListener("click", () => {
-		this.notificationDropdown.style.display =
-			this.notificationDropdown.style.display === "none" ? "block" : "none";
-	});
-};
-
 // Handle notifications
-Header.prototype.handleNotifications = function () {
-	// Implement notification handling logic here
-	console.log("Handling notifications...");
+Header.prototype.handleNotifications = function (e) {
+	e.stopPropagation();
+
+	console.log("Handling notifications");
+	if (!this.enableNotifications) return;
+	if (!this.newUnread) return;
+
+	this.notificationDropdown.style.display =
+		this.notificationDropdown.style.display === "none" ? "block" : "none";
 };
 
 // Initialize function
@@ -195,7 +197,10 @@ Header.prototype.init = async function () {
 	this.darkModeToggle?.addEventListener("click", this.toggleDarkMode);
 	window.addEventListener("resize", this.handleResize);
 	this.authButton?.addEventListener("click", this.handleAuth.bind(this));
-	this.notificationButton?.addEventListener("click", this.handleNotifications);
+	this.notificationButton?.addEventListener(
+		"click",
+		this.handleNotifications.bind(this)
+	);
 
 	// Check for saved dark mode preference
 	const savedDarkMode = localStorage.getItem("darkMode") === "true";
@@ -224,5 +229,19 @@ document.addEventListener("DOMContentLoaded", () => {
 			"click",
 			() => (header.enableNotifications = true)
 		);
+
+		document.addEventListener("click", (event) => {
+			const header = document.querySelector("#notificationButton");
+			const dropdown = document.querySelector("#notificationDropdown");
+
+			if (dropdown && dropdown.style.display === "block") {
+				if (
+					!header.contains(event.target) &&
+					!dropdown.contains(event.target)
+				) {
+					dropdown.style.display = "none";
+				}
+			}
+		});
 	}, 500);
 });
