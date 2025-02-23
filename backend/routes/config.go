@@ -20,9 +20,9 @@ func NewRoutes(
 	app *forumapp.ForumApp,
 ) *Routes {
 	auth := middlewares.NewAuthContext()
-	postsRepo := postrepo.NewPostsRepo(app)
 	rendersRepo := renders.NewRendersRepo(app)
 	authRepo := authrepo.NewAuthRepo(app, auth)
+	postsRepo := postrepo.NewPostsRepo(app, auth)
 
 	return &Routes{
 		app,

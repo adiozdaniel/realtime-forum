@@ -36,6 +36,10 @@ func (r *Routes) RegisterRoutes(mux *http.ServeMux) http.Handler {
 	mux.Handle("/api/user/editBio", r.auth.AuthMiddleware(http.HandlerFunc(r.authRepo.EditBio)))
 	// === End Auth ===
 
+	// === Notifications ===
+	mux.Handle("/api/notifications/check", r.auth.AuthMiddleware(http.HandlerFunc(r.postsRepo.CheckNotifications)))
+	// === End Notifications ===
+
 	// ===== End Protected RESTFUL API Endpoints ===== //
 
 	// ==== Static files server ====

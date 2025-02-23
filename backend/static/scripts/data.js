@@ -27,6 +27,9 @@ const API_ENDPOINTS = {
 
 	// reply ENDPOINTS
 	createReply: "/api/comments/reply/create",
+
+	// notification ENDPOINTS
+	checkNotifications: "/api/notifications/check",
 };
 
 // Constants

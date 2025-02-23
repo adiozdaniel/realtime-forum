@@ -182,3 +182,19 @@ PostService.prototype.uploadPostImg = async function (formData) {
 		return error;
 	}
 };
+
+// Method to check notifications
+PostService.prototype.checkNotifications = async function () {
+	try {
+		const response = await fetch(this.apiEndpoints.checkNotifications, {
+			method: "GET",
+			headers: {
+				"Content-Type": "application/json",
+			},
+		});
+
+		return response.json();
+	} catch (error) {
+		return error;
+	}
+};

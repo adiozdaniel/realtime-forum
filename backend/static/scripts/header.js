@@ -2,17 +2,23 @@ import { API_ENDPOINTS } from "./data.js";
 import { postManager } from "./postmanager.js";
 import { getUserData } from "./authmiddleware.js";
 import { sidebar } from "./sidebar.js";
+import { PostService } from "./postsservice.js";
 
 class Header {
 	constructor() {
 		this.endpoints = API_ENDPOINTS;
+		this.postService = new PostService();
+		this.unreadNotifications = null;
+		this.noticationsCount = 0;
+		this.enableNotifications = false;
 
 		// DOM Elements
 		this.menuToggleBtn = document.querySelector("#menuToggle");
 		this.searchInput = document.querySelector("#searchInput");
-		this.darkModeToggle = document.querySelector("#darkModeToggle");
 		this.authButton = document.querySelector(".sign-in-button");
 		this.profileImage = document.querySelector("#userProfileImage");
+		this.darkModeToggle = document.querySelector("#darkModeToggle");
+		this.notificationButton = document.querySelector("#notificationButton");
 	}
 }
 
@@ -102,6 +108,40 @@ Header.prototype.handleUserChange = function (userdata) {
 	}
 };
 
+// Watch over notifications
+Header.prototype.watchNotifications = function () {
+	let unreadNotifications = new Set();
+
+	setInterval(async () => {
+		const res = await this.postService.checkNotifications();
+
+		if (res.error) {
+			return;
+		}
+
+		const newUnread = res.data?.filter((n) => !n.is_read);
+		const newUnreadIds = new Set(newUnread?.map((n) => n.notification_id));
+
+		// Update unread count
+		if (newUnreadIds.size > unreadNotifications.size) {
+			this.notificationButton.textContent = newUnreadIds.size;
+
+			const audio = new Audio("/static/audio/bell.mp3");
+
+			if (this.enableNotifications)
+				audio.play().catch((err) => console.error("error ringing bell", err));
+		}
+
+		unreadNotifications = newUnreadIds;
+	}, 5000);
+};
+
+// Handle notifications
+Header.prototype.handleNotifications = function () {
+	// Implement notification handling logic here
+	console.log("Handling notifications...");
+};
+
 // Initialize function
 Header.prototype.init = async function () {
 	const userdata = await getUserData();
@@ -125,6 +165,8 @@ Header.prototype.init = async function () {
 	this.darkModeToggle?.addEventListener("click", this.toggleDarkMode);
 	window.addEventListener("resize", this.handleResize);
 	this.authButton?.addEventListener("click", this.handleAuth.bind(this));
+	this.notificationButton?.addEventListener("click", this.handleNotifications);
+
 	// Check for saved dark mode preference
 	const savedDarkMode = localStorage.getItem("darkMode") === "true";
 	if (savedDarkMode) {
@@ -138,6 +180,8 @@ Header.prototype.init = async function () {
 		const newUserdata = await getUserData();
 		this.handleUserChange(newUserdata);
 	}, 2000);
+
+	this.watchNotifications();
 };
 
 // Start the application
@@ -145,5 +189,10 @@ document.addEventListener("DOMContentLoaded", () => {
 	setTimeout(() => {
 		const header = new Header();
 		header.init();
+
+		document.addEventListener(
+			"click",
+			() => (header.enableNotifications = true)
+		);
 	}, 500);
 });
