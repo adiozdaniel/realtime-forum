@@ -42,6 +42,10 @@
 			rel="stylesheet"
 			href="/static/css/toast.css"
 		/>
+		<!-- <link
+			rel="stylesheet"
+			href="/static/css/admin.css"
+		/> -->
 
 		<!-- Page-Specific Styles -->
 		{{ if or (eq .Page "home") (eq .Page "profile") }}
@@ -65,18 +69,29 @@
 			</ul>
 			{{block "header" .}} {{end}}
 			<div class="main-container">
-				{{ if eq .Page "moderator" }} {{block "moderatorsidebar" .}} {{end}} {{
-				else if eq .Page "home" }} {{block "sidebar" .}} {{end}} {{ else if eq
-				.Page "profile" }} {{block "profilesidebar" .}} {{end}} {{ end }}
-
+				{{ if eq .Page "moderator" }}
+					{{ block "moderatorsidebar" . }} {{ end }}
+				{{ else if eq .Page "home" }}
+					{{ block "sidebar" . }} {{ end }}
+				{{ else if eq .Page "profile" }}
+					{{ block "profilesidebar" . }} {{ end }}
+				{{ else if eq .Page "admin" }}
+					{{ block "adminsidebar" . }} {{ end }}
+				{{ end }}
+			
 				<!-- Page Content -->
 				<main class="main-content">
-					{{ if eq .Page "profile"}} {{block "profileContent" .}} {{end}} {{
-					else if eq .Page "moderator"}} {{block "moderatorcontent" .}} {{end}}
-					{{ else }} {{block "content" .}} {{end}} {{end}}
+					{{ if eq .Page "profile" }}
+						{{ block "profileContent" . }} {{ end }}
+					{{ else if eq .Page "moderator" }}
+						{{ block "moderatorcontent" . }} {{ end }}
+					{{ else if eq .Page "admin" }}
+						{{ block "admincontent" . }} {{ end }}
+					{{ else }}
+						{{ block "content" . }} {{ end }}
+					{{ end }}
 				</main>
 			</div>
-
 			{{ block "footer" .}}{{end}}
 		</div>
 		<script

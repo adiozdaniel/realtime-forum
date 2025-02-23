@@ -146,6 +146,21 @@
     background-color: var(--dark-surface);
 }
 
+/* Dark Mode Upload Button */
+.dark-mode .upload-btn {
+    background-color: var(--dark-surface-2);
+    border-color: var(--dark-border);
+    color: var(--dark-text-secondary);
+}
+
+.dark-mode .upload-btn:hover {
+    background-color: var(--dark-surface);
+}
+
+.dark-mode .upload-info small {
+    color: var(--dark-text-tertiary);
+}
+
 /* Interactive Elements Hover States */
 .dark-mode .post-action-button:hover {
     color: var(--primary-light);
@@ -427,4 +442,64 @@ textarea {
     .submit-button {
         width: 100%;
     }
+}
+
+/* Add these new styles for the custom checkbox design */
+.category-options {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.category-checkbox {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+}
+
+.category-checkbox input[type="checkbox"] {
+    position: absolute;
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.category-checkbox label {
+    display: inline-flex;
+    align-items: center;
+    padding: 8px 16px;
+    background-color: var(--background-primary);
+    border: 1px solid var(--border-color);
+    border-radius: 20px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-size: 14px;
+    margin: 0;  /* Reset the margin since we're using gap */
+}
+
+.category-checkbox input[type="checkbox"]:checked + label {
+    background-color: var(--primary-color);
+    color: white;
+    border-color: var(--primary-color);
+}
+
+.category-checkbox input[type="checkbox"]:focus + label {
+    box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.2);
+}
+
+/* Dark mode styles for the custom checkbox */
+.dark-mode .category-checkbox label {
+    background-color: var(--dark-surface-2);
+    border-color: var(--dark-border);
+    color: var(--dark-text-primary);
+}
+
+.dark-mode .category-checkbox input[type="checkbox"]:checked + label {
+    background-color: var(--primary-color);
+    color: white;
+    border-color: var(--primary-color);
+}
+
+.dark-mode .category-checkbox input[type="checkbox"]:focus + label {
+    box-shadow: 0 0 0 2px rgba(96, 165, 250, 0.2);
 }
