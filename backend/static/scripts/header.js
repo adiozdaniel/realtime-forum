@@ -166,7 +166,6 @@ Header.prototype.watchNotifications = function () {
 Header.prototype.handleNotifications = function (e) {
 	e.stopPropagation();
 
-	console.log("Handling notifications");
 	if (!this.enableNotifications) return;
 	if (!this.newUnread) return;
 
