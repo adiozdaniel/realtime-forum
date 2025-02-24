@@ -23,6 +23,9 @@ PostManager.prototype.createPostHTML = function (post) {
 	const isDisliked =
 		this.dislikeState.posts[post.post_id]?.dislikedBy.has("current-user");
 
+	// Check if the current page is "/dashboard"
+	const isDashboard = window.location.pathname === "/dashboard";
+
 	return `
       <article class="post-card" data-post-id="${post.post_id}">
 	  	${
@@ -33,6 +36,22 @@ PostManager.prototype.createPostHTML = function (post) {
 			</div>`
 					: ""
 			}
+			</div>
+
+		  ${
+				isDashboard
+					? `<div class="post-user-actions">
+						<button class="edit-post-button" data-post-id="${post.post_id}">
+							<i data-lucide="edit"></i>
+						</button>
+						<button class="delete-post-button" data-post-id="${post.post_id}">
+							<i data-lucide="trash-2"></i>
+						</button>
+					</div>`
+					: ""
+			}
+
+        </div>
         <div class="flex items-start justify-between">
           <div>
 			<div class="post-categories">
@@ -43,8 +62,6 @@ PostManager.prototype.createPostHTML = function (post) {
 			</div>
             <h3 class="post-title">${post.post_title}</h3>
             <p class="post-excerpt">${post.post_content}</p>
-          </div>
-        </div>
         <div class="post-footer">
           <div class="post-actions">
             <button class="post-action-button like-button ${
@@ -87,6 +104,7 @@ PostManager.prototype.createPostHTML = function (post) {
       </article>
     `;
 };
+
 
 PostManager.prototype.toggleComments = function (e) {
 	if (window.location.pathname !== "/") return;
