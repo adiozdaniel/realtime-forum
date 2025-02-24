@@ -89,7 +89,7 @@ PostManager.prototype.createPostHTML = function (post) {
 };
 
 PostManager.prototype.toggleComments = function (e) {
-	if (window.location.href !== "/") return;
+	if (window.location.pathname !== "/") return;
 
 	const commentButton = e.target.closest(".comment-toggle");
 	if (!commentButton) return;
