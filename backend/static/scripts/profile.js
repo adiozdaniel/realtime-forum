@@ -51,16 +51,14 @@ ProfileDashboard.prototype.init = async function () {
 	this.updateActiveSection();
 };
 
-
-
 ProfileDashboard.prototype.createCommentHTML = function (comment) {
 	return `
-        <div class="comment" data-comment-id="${comment.comment_id}"> 
+        <div class="comment-item" data-comment-id="${comment.comment_id}">
 			<div class="comment-user-actions">
 				<button class="edit-comment-button" id="editCommentBtn">
               		<i data-lucide="edit"></i>
             	</button>
-				<button class="delete-comment-button">
+				<button class="delete-button">
                     <i data-lucide="trash-2"></i>
             	</button>
 			</div>
