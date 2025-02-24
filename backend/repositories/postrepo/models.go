@@ -2,10 +2,11 @@ package postrepo
 
 import (
 	"database/sql"
+	"time"
+
 	"forum/forumapp"
 	"forum/middlewares"
 	"forum/repositories/shared"
-	"time"
 )
 
 // Post represents a forum post
@@ -31,6 +32,9 @@ type Post struct {
 type Comment struct {
 	CommentID       string         `json:"comment_id"`
 	PostID          string         `json:"post_id"`
+	PostTitle       string         `json:"post_title"`
+	PostAuthor      string         `json:"post_author"`
+	PostAuthorImg   string         `json:"post_author_img"`
 	UserID          string         `json:"user_id"`
 	Author          string         `json:"user_name"`
 	AuthorImg       string         `json:"author_img"`

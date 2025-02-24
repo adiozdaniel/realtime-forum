@@ -215,6 +215,14 @@ func (p *PostService) CreatePostComment(comment *Comment) (*Comment, error) {
 		return nil, errors.New("comment content cannot be empty")
 	}
 
+	post, err := p.post.GetPostByID(comment.PostID)
+	if err != nil {
+		return nil, errors.New("bad request")
+	}
+
+	comment.PostTitle = post.PostTitle
+	comment.PostAuthor = post.PostAuthor
+	comment.PostAuthorImg = post.AuthorImg
 	comment.AuthorImg = "/static/profiles/" + comment.UserID
 	comment.CommentID, _ = p.shared.GenerateUUID()
 	comment.CreatedAt = time.Now()

@@ -138,7 +138,7 @@ func (r *PostRepository) GetDislikesByPostID(postID string) ([]*Like, error) {
 
 // GetCommentsByPostID retrieves all comments for a post by its ID
 func (r *PostRepository) GetCommentsByPostID(postID string) ([]*Comment, error) {
-	query := `SELECT comment_id, post_id, user_id, user_name, author_img, parent_comment_id, comment, created_at, updated_at FROM comments WHERE post_id = ?`
+	query := `SELECT comment_id, post_id, post_title, post_author, post_author_img, user_id, user_name, author_img, parent_comment_id, comment, created_at, updated_at FROM comments WHERE post_id = ?`
 	rows, err := r.DB.Query(query, postID)
 	if err != nil {
 		return nil, err
@@ -148,7 +148,7 @@ func (r *PostRepository) GetCommentsByPostID(postID string) ([]*Comment, error) 
 	var comments []*Comment
 	for rows.Next() {
 		comment := &Comment{}
-		err := rows.Scan(&comment.CommentID, &comment.PostID, &comment.UserID, &comment.Author, &comment.AuthorImg, &comment.ParentCommentID, &comment.Content, &comment.CreatedAt, &comment.UpdatedAt)
+		err := rows.Scan(&comment.CommentID, &comment.PostID, &comment.PostTitle, &comment.PostAuthor, &comment.PostAuthorImg, &comment.UserID, &comment.Author, &comment.AuthorImg, &comment.ParentCommentID, &comment.Content, &comment.CreatedAt, &comment.UpdatedAt)
 		if err != nil {
 			fmt.Printf("Error scanning row: %v\n", err)
 			return nil, err
@@ -329,9 +329,9 @@ func (r *PostRepository) HasUserDisliked(entityID, userID, entityType string) (s
 // Comments
 // CreateComment creates a new comment
 func (r *PostRepository) CreateComment(comment *Comment) (*Comment, error) {
-	query := `INSERT INTO comments (comment_id, post_id, user_id, user_name, author_img, parent_comment_id, comment, created_at, updated_at)
-	          VALUES (?, ?, ?, ?, ?, NULLIF(?, ''), ?, ?, ?)`
-	_, err := r.DB.Exec(query, comment.CommentID, comment.PostID, comment.UserID, comment.Author, comment.AuthorImg, comment.ParentCommentID, comment.Content, comment.CreatedAt, comment.UpdatedAt)
+	query := `INSERT INTO comments (comment_id, post_id, post_title, post_author, post_author_img, user_id, user_name, author_img, parent_comment_id, comment, created_at, updated_at)
+	          VALUES (?, ?, ?, ?, ?, ?, ?, ?, NULLIF(?, ''), ?, ?, ?)`
+	_, err := r.DB.Exec(query, comment.CommentID, comment.PostID, comment.PostTitle, comment.PostAuthor, comment.PostAuthorImg, comment.UserID, comment.Author, comment.AuthorImg, comment.ParentCommentID, comment.Content, comment.CreatedAt, comment.UpdatedAt)
 	return comment, err
 }
 
@@ -370,7 +370,7 @@ func (r *PostRepository) GetPostsByUserID(userID string) ([]*Post, error) {
 
 // GetCommentsByUserID retrieves all comments created by a specific user
 func (r *PostRepository) GetCommentsByUserID(userID string) ([]*Comment, error) {
-	query := `SELECT comment_id, post_id, user_id, user_name, author_img, parent_comment_id, comment, created_at, updated_at FROM comments WHERE user_id = ?`
+	query := `SELECT comment_id, post_id, post_title, post_author, post_author_img, user_id, user_name, author_img, parent_comment_id, comment, created_at, updated_at FROM comments WHERE user_id = ?`
 	rows, err := r.DB.Query(query, userID)
 	if err != nil {
 		return nil, err
@@ -380,7 +380,7 @@ func (r *PostRepository) GetCommentsByUserID(userID string) ([]*Comment, error) 
 	var comments []*Comment
 	for rows.Next() {
 		comment := &Comment{}
-		err := rows.Scan(&comment.CommentID, &comment.PostID, &comment.UserID, &comment.Author, &comment.AuthorImg, &comment.ParentCommentID, &comment.Content, &comment.CreatedAt, &comment.UpdatedAt)
+		err := rows.Scan(&comment.CommentID, &comment.PostID, &comment.PostTitle, &comment.PostAuthor, &comment.PostAuthorImg, &comment.UserID, &comment.Author, &comment.AuthorImg, &comment.ParentCommentID, &comment.Content, &comment.CreatedAt, &comment.UpdatedAt)
 		if err != nil {
 			return nil, err
 		}
@@ -480,13 +480,13 @@ func (r *PostRepository) GetPostByLikeID(likeID, userID string) (*Post, error) {
 
 // GetCommentByLikeID retrieves a comment by its like ID and user ID
 func (r *PostRepository) GetCommentByLikeID(likeID, userID string) (*Comment, error) {
-	query := `SELECT comment_id, user_id, post_id, comment_content, comment_likes, created_at, updated_at 
+	query := `SELECT comment_id, user_id, post_id, post_title, post_author, post_author_img, comment_content, comment_likes, created_at, updated_at 
 	          FROM comments 
 	          WHERE comment_id IN (SELECT comment_id FROM likes WHERE like_id = ? AND user_id = ?) AND user_id = ?`
 
 	var comment Comment
 	err := r.DB.QueryRow(query, likeID, userID, userID).Scan(
-		&comment.CommentID, &comment.UserID, &comment.PostID, &comment.Content,
+		&comment.CommentID, &comment.UserID, &comment.PostID, &comment.PostTitle, &comment.PostAuthor, &comment.PostAuthorImg, &comment.Content,
 		&comment.Likes, &comment.CreatedAt, &comment.UpdatedAt,
 	)
 	if err != nil {
@@ -520,12 +520,12 @@ func (r *PostRepository) GetActivitiesByUserID(userID string) ([]*Activity, erro
 
 // GetCommentByID retrieves a comment by its ID
 func (r *PostRepository) GetCommentByID(id string) (*Comment, error) {
-	query := `SELECT comment_id, post_id, user_id, user_name, author_img, parent_comment_id, comment, created_at, updated_at 
+	query := `SELECT comment_id, post_id, post_title, post_author, post_author_img, user_id, user_name, author_img, parent_comment_id, comment, created_at, updated_at 
 	          FROM comments 
 	          WHERE comment_id = ?`
 	var comment Comment
 	err := r.DB.QueryRow(query, id).Scan(
-		&comment.CommentID, &comment.PostID, &comment.UserID, &comment.Author, &comment.AuthorImg, &comment.ParentCommentID, &comment.Content,
+		&comment.CommentID, &comment.PostID, &comment.PostTitle, &comment.PostAuthor, &comment.PostAuthorImg, &comment.UserID, &comment.Author, &comment.AuthorImg, &comment.ParentCommentID, &comment.Content,
 		&comment.CreatedAt, &comment.UpdatedAt,
 	)
 	if err != nil {

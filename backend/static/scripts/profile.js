@@ -25,6 +25,8 @@ ProfileDashboard.prototype.init = async function () {
 		return;
 	}
 
+	console.log(userData.data);
+
 	if (userData.data) {
 		this.state.profilePic = userData.data.user_info?.image;
 		this.state.posts = userData.data.posts || [];
@@ -45,9 +47,64 @@ ProfileDashboard.prototype.init = async function () {
 	this.updateStats();
 	this.renderActivities();
 	postManager.renderPosts(this.state.posts);
-	// this.renderComments();
+	this.renderComments();
 	this.updateActiveSection();
 };
+
+
+
+ProfileDashboard.prototype.createCommentHTML = function (comment) {
+	return `
+        <div class="comment" data-comment-id="${comment.comment_id}"> 
+            <div class="comment-content"> 
+                <div class="profile-image">
+                    <img src="${comment.author_img}" 
+                         onerror="this.onerror=null;this.src='/static/profiles/avatar.jpg';"/>
+                </div>
+                <div>
+                    <div class="comment-author">${comment.user_name}</div> 
+                    <div class="comment-text">${comment.comment}</div> 
+                </div>
+				<div>|</div>
+				<div class="profile-image">
+                    <img src="${comment.post_author_img}" 
+                         onerror="this.onerror=null;this.src='/static/profiles/avatar.jpg';"/>
+                </div>
+				<div>
+                    <div class="comment-author">${comment.post_title}</div> 
+                    <div class="comment-text"> by ${comment.post_author}</div> 
+                </div>
+            </div>
+            <div class="comment-footer">
+                <div class="comment-actions"> 
+                    <button class="comment-action-button like-button data-comment-id="${comment.comment_id}"> 
+                        <i data-lucide="thumbs-up"></i> 
+                        <span class="likes-count">${comment.likes?.length || 0}</span> 
+                    </button>
+					 <button class="comment-action-button dislike-button data-comment-id="${comment.comment_id}"> 
+                        <i data-lucide="thumbs-down"></i> 
+                        <span class="likes-count">${comment.dislikes?.length || 0}</span> 
+                    </button>
+                </div>
+                <div class="comment-meta">
+                    <span class="comment-time">${formatTimeAgo(comment.created_at)}</span> 
+                </div>
+            </div>
+        </div>`;
+};
+
+ProfileDashboard.prototype.renderComments = function () {
+	this.commentsList = document.getElementById("commentsList");
+
+	let comments = ``;
+
+	this.state.userComments?.forEach((comment) => {
+		comments += this.createCommentHTML(comment);
+	});
+
+	this.commentsList.innerHTML = comments;
+	lucide.createIcons();
+}
 
 ProfileDashboard.prototype.cacheElements = function () {
 	this.elements = {
