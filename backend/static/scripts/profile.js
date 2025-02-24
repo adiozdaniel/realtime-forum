@@ -56,6 +56,14 @@ ProfileDashboard.prototype.init = async function () {
 ProfileDashboard.prototype.createCommentHTML = function (comment) {
 	return `
         <div class="comment" data-comment-id="${comment.comment_id}"> 
+			<div class="comment-user-actions">
+				<button class="edit-comment-button" id="editCommentBtn">
+              		<i data-lucide="edit"></i>
+            	</button>
+				<button class="delete-comment-button">
+                    <i data-lucide="trash-2"></i>
+            	</button>
+			</div>
             <div class="comment-content"> 
                 <div class="profile-image">
                     <img src="${comment.author_img}" 
