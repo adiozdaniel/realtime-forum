@@ -41,7 +41,7 @@ func (p *PostService) CreatePost(post *Post) (*Post, error) {
 	post.UpdatedAt = time.Now()
 	post.HasComments = true
 
-	go p.RecordActivity(post.UserID, "created_post", post.PostTitle)
+	go p.RecordActivity(post.UserID, "created_post", "created a post: " + post.PostTitle)
 
 	return p.post.CreatePost(post)
 }

@@ -196,6 +196,7 @@ ProfileDashboard.prototype.handleImageUpload = async function (e) {
 
 	try {
 		const user = await this.authService.uploadProfilePic(formData);
+		console.log(user.data);
 
 		if (user.error) {
 			alert(user.message);
