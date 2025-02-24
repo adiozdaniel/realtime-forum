@@ -166,8 +166,10 @@ Header.prototype.watchNotifications = function () {
 Header.prototype.handleNotifications = function (e) {
 	e.stopPropagation();
 
-	if (!this.enableNotifications) return;
 	if (!this.newUnread) return;
+
+	if (this.notificationDropdown.style.display === "")
+		this.notificationDropdown.style.display = "none"
 
 	this.notificationDropdown.style.display =
 		this.notificationDropdown.style.display === "none" ? "block" : "none";
