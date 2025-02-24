@@ -102,7 +102,12 @@ PostManager.prototype.toggleComments = function (e) {
 };
 
 PostManager.prototype.renderPosts = function (posts) {
-	if (!posts) return;
+	if (!posts || posts.length === 0) {
+		 postsContainer.innerHTML = `
+		<div> Uh-oh! There are no posts yet</div>
+		`
+		return
+	};
 
 	posts.forEach((post) => {
 		post.post_timeAgo = formatTimeAgo(post.created_at);
