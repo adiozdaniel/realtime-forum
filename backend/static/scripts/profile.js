@@ -105,17 +105,20 @@ ProfileDashboard.prototype.switchView = function (view) {
 };
 
 ProfileDashboard.prototype.updateActiveSection = function () {
+	// Hide all sections
 	Object.values(this.elements.sections).forEach((section) =>
 		section.classList.add("hidden")
 	);
+	
 	this.elements.sections[this.state.currentView].classList.remove("hidden");
-	this.elements.sidebarItems.forEach((item) => {
-		item.classList.toggle(
-			"active",
-			item.dataset.view === this.state.currentView
-		);
-	});
+	this.elements.sidebarItems.forEach((item) => item.classList.remove("active"));
+
+	const activeItem = Array.from(this.elements.sidebarItems).find(
+		(item) => item.dataset.view === this.state.currentView
+	);
+	if (activeItem) activeItem.classList.add("active");
 };
+
 
 ProfileDashboard.prototype.toggleDarkMode = function () {
 	this.state.darkMode = !this.state.darkMode;
