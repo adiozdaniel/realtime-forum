@@ -88,8 +88,9 @@ PostManager.prototype.createPostHTML = function (post) {
     `;
 };
 
-
 PostManager.prototype.toggleComments = function (e) {
+	if (window.location.href !== "/") return;
+
 	const commentButton = e.target.closest(".comment-toggle");
 	if (!commentButton) return;
 	const postId = commentButton.dataset.postId;
@@ -100,7 +101,7 @@ PostManager.prototype.toggleComments = function (e) {
 	commentsSection.classList.toggle("hidden");
 };
 
-PostManager.prototype.renderPosts = function (posts = POSTS) {
+PostManager.prototype.renderPosts = function (posts) {
 	if (!posts) return;
 
 	posts.forEach((post) => {
@@ -262,7 +263,7 @@ PostManager.prototype.searchPosts = function (
 		this.renderPosts(filteredByCategory);
 		return;
 	}
-	this.renderPosts();
+	this.renderPosts(POSTS);
 };
 
 PostManager.prototype.init = async function () {
@@ -272,7 +273,7 @@ PostManager.prototype.init = async function () {
 	if (this.postList === null) return;
 
 	this.postList.forEach((post) => POSTS.unshift(post));
-	if (postsContainer) this.renderPosts();
+	if (postsContainer) this.renderPosts(POSTS);
 };
 
 const postManager = new PostManager();

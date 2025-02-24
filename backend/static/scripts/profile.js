@@ -1,5 +1,6 @@
 import { AuthService } from "./authservice.js";
 import { STATE } from "./data.js";
+import { postManager } from "./postmanager.js";
 import { formatTimeAgo } from "./timestamps.js";
 import { toast } from "./toast.js";
 
@@ -43,8 +44,8 @@ ProfileDashboard.prototype.init = async function () {
 	this.updateTheme();
 	this.updateStats();
 	this.renderActivities();
-	this.renderPosts();
-	this.renderComments();
+	postManager.renderPosts(this.state.posts);
+	// this.renderComments();
 	this.updateActiveSection();
 };
 
@@ -240,136 +241,6 @@ ProfileDashboard.prototype.renderActivities = function () {
 		</div>`
 		)
 		.join(" ");
-	lucide.createIcons();
-};
-
-ProfileDashboard.prototype.renderPosts = function () {
-	if (this.state.posts.length > 0) {
-		document.getElementById("postsList").innerHTML = this.state.posts
-			.map(
-				(post) => `
-		<div class="post-item" data-post-id="${post.post_id}">
-                <article class="post-card" data-post-id="${post.post_id}">
-	  	${
-				post.post_image
-					? `
-			<div class="post-img">
-			<img src="${post.post_image}" alt="Post Image"/>
-			</div>`
-					: ""
-			}
-        <div class="flex items-start justify-between">
-          <div>
-			<div class="post-categories">
-				${post.post_category
-					.split(" ") // Split multiple categories
-					.map(
-						(category) =>
-							`<span class="post-category">${category.trim()}</span>`
-					)
-					.join("")}
-			</div>
-            <h3 class="post-title">${post.post_title}</h3>
-            <p class="post-excerpt">${post.post_content}</p>
-          </div>
-        </div>
-        <div class="post-footer">
-          <div class="post-actions">
-            <button class="post-action-button like-button" data-post-id="${
-							post.post_id
-						}">
-              <i data-lucide="thumbs-up"></i>
-              <span class="likes-count">${post.likes?.length || 0}</span>
-            </button>
-			<button class="post-action-button dislike-button" data-post-id="${
-				post.post_id
-			}">
-			<i data-lucide="thumbs-down"></i>
-			 <span class="likes-count">${post.dislikes?.length || 0}</span>
-			</button>
-            <button class="post-action-button comment-toggle" data-post-id="${
-							post.post_id
-						}">
-              <i data-lucide="message-square"></i>
-              <span class="comments-count">${post.comments?.length || 0}</span>
-            </button>
-          </div>
-          <div class="post-meta">
-		   <div class="profile-image">
-		  		<img src=${
-						post.author_img
-					} onerror="this.onerror=null;this.src='/static/profiles/avatar.jpg';"/>
-			</div>
-            <span>by ${post.post_author}</span>
-            <span>•</span>
-            <span>${formatTimeAgo(post.updated_at)}</span>
-          </div>
-        </div>
-        <div class="comments-section hidden" id="comments-${post.post_id}">
-          <div class="comments-container"></div>
-        </div>
-      </article>
-            </div>
-			`
-			)
-			.join(" ");
-
-		document.querySelectorAll(".post-action-button").forEach((button) => {
-			button.addEventListener("click", (e) => e.stopPropagation());
-		});
-	} else {
-		document.getElementById(
-			"postsList"
-		).innerHTML = `<div class="post-item"><p>There are no posts yet</p></div>`;
-	}
-	lucide.createIcons();
-};
-
-ProfileDashboard.prototype.renderComments = function () {
-	if (this.state.userComments.length > 0) {
-		document.getElementById("commentsList").innerHTML = this.state.userComments
-			.map(
-				(comment) => `
-		<div class="comment-item">
-                <div class="comment" data-comment-id="${comment.comment_id}"> 
-            <div class="comment-content"> 
-                <div class="profile-image">
-                    <img src="${comment.author_img}" 
-                         onerror="this.onerror=null;this.src='/static/profiles/avatar.jpg';"/>
-                </div>
-                <div>
-                    <div class="comment-author">${comment.user_name}</div> 
-                    <div class="comment-text">${comment.comment}</div> 
-                </div>
-            </div>
-            <div class="comment-footer">
-                <div class="comment-actions"> 
-                    <button 
-					class="comment-action-button like-button"
-					data-comment-id="${comment.comment_id}"
-					> 
-                        <i data-lucide="thumbs-up"></i> 
-                        <span class="likes-count">${
-													comment.likes?.length || 0
-												}</span> 
-                    </button> 
-                </div>
-                <div class="comment-meta">
-                    <span class="comment-time">${formatTimeAgo(
-											comment.created_at
-										)}</span> 
-                </div>
-            </div>
-        </div>
-            </div>
-		`
-			)
-			.join(" ");
-	} else {
-		document.getElementById(
-			"commentsList"
-		).innerHTML = `<div class="comment-item"><p>There are no comments yet</p></div>`;
-	}
 	lucide.createIcons();
 };
 
