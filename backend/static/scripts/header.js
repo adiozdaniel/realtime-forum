@@ -3,6 +3,7 @@ import { postManager } from "./postmanager.js";
 import { getUserData } from "./authmiddleware.js";
 import { sidebar } from "./sidebar.js";
 import { PostService } from "./postsservice.js";
+import { PostModalManager } from "./createposts.js";
 
 class Header {
 	constructor() {
@@ -12,6 +13,7 @@ class Header {
 		this.newUnread = null;
 		this.noticationsCount = 0;
 		this.enableNotifications = false;
+		this.postModal = new PostModalManager();
 
 		// DOM Elements
 		this.menuToggleBtn = document.querySelector("#menuToggle");
@@ -21,6 +23,8 @@ class Header {
 		this.darkModeToggle = document.querySelector("#darkModeToggle");
 		this.notificationButton = document.querySelector("#notificationButton");
 		this.notificationDropdown = document.querySelector("#notificationDropdown");
+		this.editPostButton = document.querySelector(".edit-post-button");
+		this.cancelBtn = document.getElementById("cancelPost");
 	}
 }
 
@@ -169,10 +173,17 @@ Header.prototype.handleNotifications = function (e) {
 	if (!this.newUnread) return;
 
 	if (this.notificationDropdown.style.display === "")
-		this.notificationDropdown.style.display = "none"
+		this.notificationDropdown.style.display = "none";
 
 	this.notificationDropdown.style.display =
 		this.notificationDropdown.style.display === "none" ? "block" : "none";
+};
+
+// Edit post button
+Header.prototype.handleEditPost = function (e) {
+	e.stopPropagation();
+	console.log("editing post");
+	this.postModal.openModal();
 };
 
 // Initialize function
@@ -201,6 +212,14 @@ Header.prototype.init = async function () {
 	this.notificationButton?.addEventListener(
 		"click",
 		this.handleNotifications.bind(this)
+	);
+	this.editPostButton?.addEventListener(
+		"click",
+		this.handleEditPost.bind(this)
+	);
+	this.cancelBtn?.addEventListener(
+		"click",
+		this.postModal.closeModal.bind(this.postModal)
 	);
 
 	// Check for saved dark mode preference
