@@ -188,6 +188,7 @@ Header.prototype.handlePostUpdate = async function (e) {
 
 	const formData = {
 		PostID: document.getElementById("postId").value,
+		CreatedAt: document.getElementById("createdAt").value,
 		PostTitle: document.getElementById("postTitle").value,
 		PostCategory: Array.from(
 			document.querySelectorAll('input[name="postCategory"]:checked')
@@ -202,27 +203,29 @@ Header.prototype.handlePostUpdate = async function (e) {
 		formData.PostID = TEMP_DATA.post_id;
 	}
 
-	console.log(formData);
-	return;
-
 	try {
 		const res = await this.postService.createPost(formData);
-		if (!res.error) {
-			this.closeModal();
+		if (res.error) {
+			alert(res.message);
 		}
-		POSTS.unshift(res.data);
 
-		this.posts.renderPosts();
+		if (res.data) {
+			this.postModalManager.closeModal();
+			POSTS.unshift(res.data);
+
+			postManager.renderPosts();
+		}
 	} catch (error) {
 		console.error("Error creating post:", error);
-		this.showUploadError("Error creating post. Please try again.");
+		this.postModalManager.showUploadError(
+			"Error creating post. Please try again."
+		);
 	}
 };
 
 // Edit post button
 Header.prototype.handleEditPost = function (e) {
 	e.stopPropagation();
-	console.log("editing post");
 	this.postModal.openModal();
 };
 

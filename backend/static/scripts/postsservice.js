@@ -63,6 +63,7 @@ PostService.prototype.createPost = async function (postData) {
 		post_image: postData.PostImage,
 		post_id: postData.PostID,
 		post_video: postData.PostVideo,
+		created_at: postData.CreatedAt,
 	};
 
 	try {

@@ -37,6 +37,10 @@ func (p *PostService) CreatePost(post *Post) (*Post, error) {
 		post.PostID, _ = p.shared.GenerateUUID()
 	}
 
+	if !post.CreatedAt.IsZero() {
+		return p.post.UpdatePost(post)
+	}
+
 	post.AuthorImg = "/static/profiles/" + post.UserID
 	post.CreatedAt = time.Now()
 	post.UpdatedAt = time.Now()

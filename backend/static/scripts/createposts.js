@@ -57,6 +57,7 @@ PostModalManager.prototype.openModal = function (post) {
 		this.form["postTitle"].value = post.post_title;
 		this.form["postContent"].value = post.post_content;
 		this.form["postId"].value = post.post_id;
+		this.form["createdAt"].value = post.created_at;
 		this.mediaPreview.classList.remove("hidden");
 		this.imagePreviewContainer.classList.remove("hidden");
 		this.imagePreview.src = post.post_image;
@@ -83,7 +84,6 @@ PostModalManager.prototype.closeModal = function () {
 	this.mediaPreview.classList.add("hidden");
 	this.uploadError.classList.add("hidden");
 	this.uploadError.textContent = "";
-	TEMP_DATA = null;
 };
 
 // Handle image upload
@@ -131,7 +131,6 @@ PostModalManager.prototype.handleImageUpload = async function (e) {
 		if (imgRes.error) alert(imgRes.message);
 
 		if (imgRes.data !== null) TEMP_DATA = imgRes.data;
-		console.log(imgRes);
 	} catch (error) {
 		this.showUploadError("Error uploading image. Please try again.");
 		this.imageUpload.value = "";
