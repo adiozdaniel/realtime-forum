@@ -26,6 +26,7 @@ class Header {
 		this.postEditBtn = document.querySelector("#postEditBtn");
 		this.postDeleteBtn = document.querySelector("#postDeleteBtn");
 		this.cancelBtn = document.querySelector("#cancelPost")
+		this.modalSubmitBtn = document.getElementById("modalSubmitBtn");
 	}
 }
 
@@ -182,6 +183,11 @@ Header.prototype.handleNotifications = function (e) {
 
 // Initialize function
 Header.prototype.init = async function () {
+	if (window.location.pathname === "/dashboard") {
+		this.modalSubmitBtn.textContent = "Update Post"
+	}
+
+
 	const userdata = await getUserData();
 	this.handleUserChange(userdata);
 
