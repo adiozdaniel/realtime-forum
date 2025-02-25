@@ -41,10 +41,10 @@ PostManager.prototype.createPostHTML = function (post) {
 		  ${
 				isDashboard
 					? `<div class="post-user-actions">
-						<button class="edit-button" data-post-id="${post.post_id}">
+						<button class="edit-button" id="postEditBtn" data-post-id="${post.post_id}">
 							<i data-lucide="edit"></i>
 						</button>
-						<button class="delete-button" data-post-id="${post.post_id}">
+						<button class="delete-button" id="postDeleteBtn" data-post-id="${post.post_id}">
 							<i data-lucide="trash-2"></i>
 						</button>
 					</div>`
@@ -153,6 +153,13 @@ PostManager.prototype.renderPosts = function (posts) {
 		.join("");
 	this.attachPostEventListeners();
 };
+
+PostManager.prototype.handlePostEdit = function (e) {
+	console.log("check....");
+	e.stopPropagation();
+
+	postModal.openModal();
+}
 
 PostManager.prototype.attachPostEventListeners = function () {
 	lucide.createIcons();

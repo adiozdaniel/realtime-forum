@@ -21,6 +21,8 @@ class Header {
 		this.darkModeToggle = document.querySelector("#darkModeToggle");
 		this.notificationButton = document.querySelector("#notificationButton");
 		this.notificationDropdown = document.querySelector("#notificationDropdown");
+		this.postEditBtn = document.querySelector("#postEditBtn");
+		this.postDeleteBtn = document.querySelector("#postDeleteBtn");
 	}
 }
 
@@ -202,6 +204,8 @@ Header.prototype.init = async function () {
 		"click",
 		this.handleNotifications.bind(this)
 	);
+
+	this.postEditBtn?.addEventListener("click", postManager.handlePostEdit.bind(postManager));
 
 	// Check for saved dark mode preference
 	const savedDarkMode = localStorage.getItem("darkMode") === "true";
