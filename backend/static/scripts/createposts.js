@@ -63,6 +63,13 @@ PostModalManager.prototype.openModal = function (post) {
 		this.mediaPreview.classList.remove("hidden");
 		this.imagePreviewContainer.classList.remove("hidden");
 		this.imagePreview.src = post.post_image;
+	
+		const categories = post.post_category.split(" "); 
+	
+		categories.forEach(category => {
+			const checkbox = document.querySelector(`input[id="${category.toLowerCase()}"]`);
+			if (checkbox) checkbox.checked = true;
+		});
 	}
 
 	this.modal.classList.remove("hidden");
