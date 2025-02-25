@@ -1,4 +1,4 @@
-{{ template "base" .}} {{ define "profileContent" }}
+{{ template "base" .}} {{template "postModal". }} {{ define "profileContent" }}
 <div id="profileContent">
 	<div
 		class="profile-overview"
@@ -34,7 +34,7 @@
 					<div class="bio-container">
 						<p id="bioText"></p>
 						<button
-							class="edit-bio-button"
+							class="edit-button"
 							id="editBioButton"
 						>
 							<i data-lucide="edit"></i>
@@ -102,7 +102,6 @@
 		class="posts-section-hidden"
 		id="postsSection"
 	>
-		{{template "postmodal" .}}
 		<h2>My Posts</h2>
 		<div
 			class="posts-container"

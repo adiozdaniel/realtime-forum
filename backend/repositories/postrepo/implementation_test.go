@@ -196,7 +196,7 @@ func TestGetLikesByReplyID(t *testing.T) {
 func TestAddLike(t *testing.T) {
 	db := CreateDb()
 	postrepo := &PostRepository{DB: db}
-	like := &Like{LikeID: "0"}
+	like := &Like{LikeID: "1"}
 
 	if _, err := postrepo.AddLike(like); err != nil {
 		t.Errorf("expected %v, got %v", nil, err)
@@ -218,7 +218,7 @@ func TestHasUserLiked(t *testing.T) { // responsive just missing table
 func TestCreateComment(t *testing.T) {
 	db := CreateDb()
 	postrepo := &PostRepository{DB: db}
-	comment := &Comment{CommentID: "1"}
+	comment := &Comment{CommentID: "2"}
 
 	if _, err := postrepo.CreateComment(comment); err != nil {
 		t.Errorf("expected %v, got %v", nil, err)

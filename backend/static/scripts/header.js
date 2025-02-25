@@ -1,4 +1,4 @@
-import { API_ENDPOINTS } from "./data.js";
+import { API_ENDPOINTS, POSTS } from "./data.js";
 import { postManager } from "./postmanager.js";
 import { getUserData } from "./authmiddleware.js";
 import { sidebar } from "./sidebar.js";
@@ -9,6 +9,7 @@ class Header {
 	constructor() {
 		this.endpoints = API_ENDPOINTS;
 		this.postService = new PostService();
+		this.postModalManager = new PostModalManager();
 		this.unreadNotifications = null;
 		this.newUnread = null;
 		this.noticationsCount = 0;
@@ -23,8 +24,9 @@ class Header {
 		this.darkModeToggle = document.querySelector("#darkModeToggle");
 		this.notificationButton = document.querySelector("#notificationButton");
 		this.notificationDropdown = document.querySelector("#notificationDropdown");
-		this.editPostButton = document.querySelector(".edit-post-button");
-		this.cancelBtn = document.getElementById("cancelPost");
+		this.postDeleteBtn = document.querySelector("#postDeleteBtn");
+		this.cancelBtn = document.querySelector("#cancelPost");
+		this.modalSubmitBtn = document.getElementById("modalSubmitBtn");
 	}
 }
 
@@ -188,6 +190,10 @@ Header.prototype.handleEditPost = function (e) {
 
 // Initialize function
 Header.prototype.init = async function () {
+	if (window.location.pathname === "/dashboard") {
+		this.modalSubmitBtn.textContent = "Update Post";
+	}
+
 	const userdata = await getUserData();
 	this.handleUserChange(userdata);
 
@@ -213,14 +219,12 @@ Header.prototype.init = async function () {
 		"click",
 		this.handleNotifications.bind(this)
 	);
-	this.editPostButton?.addEventListener(
-		"click",
-		this.handleEditPost.bind(this)
-	);
-	this.cancelBtn?.addEventListener(
-		"click",
-		this.postModal.closeModal.bind(this.postModal)
-	);
+
+	document.querySelectorAll("#postEditBtn").forEach((btn) => {
+		btn.addEventListener("click", (e) => this.handlePostEdit(e));
+	});
+
+	this.cancelBtn?.addEventListener("click", (e) => this.handleClose(e));
 
 	// Check for saved dark mode preference
 	const savedDarkMode = localStorage.getItem("darkMode") === "true";
@@ -237,6 +241,24 @@ Header.prototype.init = async function () {
 	}, 2000);
 
 	this.watchNotifications();
+};
+
+Header.prototype.handlePostEdit = function (e) {
+	e.stopPropagation();
+
+	const button = e.currentTarget.closest("#postEditBtn");
+	if (!button) return;
+	const postId = button.getAttribute("data-post-id");
+
+	const post = POSTS.find((post) => post.post_id === postId);
+
+	this.postModalManager.openModal(post);
+};
+
+Header.prototype.handleClose = function (e) {
+	e.stopPropagation();
+
+	this.postModalManager.closeModal();
 };
 
 // Start the application
