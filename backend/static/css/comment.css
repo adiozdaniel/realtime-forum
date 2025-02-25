@@ -160,11 +160,6 @@
 	color: var(--dark-text-primary);
 }
 
-/* Modal Dark Mode */
-.dark-mode .modal-content {
-	background-color: var(--dark-surface);
-	border: 1px solid var(--dark-border);
-}
 
 /* Buttons Dark Mode */
 .dark-mode .comment-submit,
