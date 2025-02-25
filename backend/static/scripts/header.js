@@ -1,13 +1,15 @@
-import { API_ENDPOINTS } from "./data.js";
+import { API_ENDPOINTS, POSTS } from "./data.js";
 import { postManager } from "./postmanager.js";
 import { getUserData } from "./authmiddleware.js";
 import { sidebar } from "./sidebar.js";
 import { PostService } from "./postsservice.js";
+import { PostModalManager } from "./createposts.js";
 
 class Header {
 	constructor() {
 		this.endpoints = API_ENDPOINTS;
 		this.postService = new PostService();
+		this.postModalManager = new PostModalManager();
 		this.unreadNotifications = null;
 		this.newUnread = null;
 		this.noticationsCount = 0;
@@ -21,6 +23,9 @@ class Header {
 		this.darkModeToggle = document.querySelector("#darkModeToggle");
 		this.notificationButton = document.querySelector("#notificationButton");
 		this.notificationDropdown = document.querySelector("#notificationDropdown");
+		this.postDeleteBtn = document.querySelector("#postDeleteBtn");
+		this.cancelBtn = document.querySelector("#cancelPost")
+		this.modalSubmitBtn = document.getElementById("modalSubmitBtn");
 	}
 }
 
@@ -177,6 +182,11 @@ Header.prototype.handleNotifications = function (e) {
 
 // Initialize function
 Header.prototype.init = async function () {
+	if (window.location.pathname === "/dashboard") {
+		this.modalSubmitBtn.textContent = "Update Post"
+	}
+
+
 	const userdata = await getUserData();
 	this.handleUserChange(userdata);
 
@@ -203,6 +213,12 @@ Header.prototype.init = async function () {
 		this.handleNotifications.bind(this)
 	);
 
+	document.querySelectorAll("#postEditBtn").forEach((btn) => {
+		btn.addEventListener("click", (e) => this.handlePostEdit(e))
+	});
+
+	this.cancelBtn?.addEventListener("click", (e) => this.handleClose(e));
+
 	// Check for saved dark mode preference
 	const savedDarkMode = localStorage.getItem("darkMode") === "true";
 	if (savedDarkMode) {
@@ -219,6 +235,25 @@ Header.prototype.init = async function () {
 
 	this.watchNotifications();
 };
+
+
+Header.prototype.handlePostEdit = function (e) {
+	e.stopPropagation();
+
+	const button = e.currentTarget.closest("#postEditBtn");
+	if (!button) return;
+	const postId = button.getAttribute("data-post-id");
+
+	const post = POSTS.find((post) => post.post_id === postId);
+
+	this.postModalManager.openModal(post);
+}
+
+Header.prototype.handleClose = function (e) {
+	e.stopPropagation();
+
+	this.postModalManager.closeModal();
+}
 
 // Start the application
 document.addEventListener("DOMContentLoaded", () => {
