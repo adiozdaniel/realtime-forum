@@ -25,6 +25,7 @@ class Header {
 		this.notificationDropdown = document.querySelector("#notificationDropdown");
 		this.postEditBtn = document.querySelector("#postEditBtn");
 		this.postDeleteBtn = document.querySelector("#postDeleteBtn");
+		this.cancelBtn = document.querySelector("#cancelPost")
 	}
 }
 
@@ -206,8 +207,9 @@ Header.prototype.init = async function () {
 		"click",
 		this.handleNotifications.bind(this)
 	);
-	
+
 	this.postEditBtn?.addEventListener("click", (e) => this.handlePostEdit(e));
+	this.cancelBtn?.addEventListener("click", (e) => this.handleClose(e));
 
 	// Check for saved dark mode preference
 	const savedDarkMode = localStorage.getItem("darkMode") === "true";
@@ -235,6 +237,13 @@ Header.prototype.handlePostEdit = function (e) {
 
 	// postModal.openModal();
 }
+
+Header.prototype.handleClose = function (e) {
+	e.stopPropagation();
+
+	this.postModalManager.closeModal();
+}
+
 // Start the application
 document.addEventListener("DOMContentLoaded", () => {
 	setTimeout(() => {
