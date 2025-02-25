@@ -1,0 +1,154 @@
+{{ define "postmodal"}}
+<div
+	id="createPostModal"
+	class="hidden"
+>
+	<div class="modal-content">
+		<h2>Create a New Post</h2>
+		<form id="createPostForm">
+			<div class="form-group">
+				<label>Title</label>
+				<input
+					type="text"
+					id="postTitle"
+					required
+				/>
+			</div>
+
+			<div class="form-group">
+				<label>Category</label>
+				<div class="category-options">
+					<div class="category-checkbox">
+						<input
+							type="checkbox"
+							id="tutorial"
+							name="postCategory"
+							value="Tutorial"
+						/>
+						<label for="tutorial">Tutorial</label>
+					</div>
+					<div class="category-checkbox">
+						<input
+							type="checkbox"
+							id="discussion"
+							name="postCategory"
+							value="Discussion"
+						/>
+						<label for="discussion">Discussion</label>
+					</div>
+					<div class="category-checkbox">
+						<input
+							type="checkbox"
+							id="guide"
+							name="postCategory"
+							value="Guide"
+						/>
+						<label for="guide">Guide</label>
+					</div>
+					<div class="category-checkbox">
+						<input
+							type="checkbox"
+							id="question"
+							name="postCategory"
+							value="Question"
+						/>
+						<label for="question">Question</label>
+					</div>
+				</div>
+			</div>
+
+			<div class="form-group">
+				<label>Content</label>
+				<textarea
+					id="postContent"
+					rows="4"
+					required
+				></textarea>
+			</div>
+			<div class="form-group">
+				<label>Add Media</label>
+				<div class="media-options">
+					<div class="image-upload">
+						<label
+							for="imageUpload"
+							class="upload-btn"
+						>
+							<i data-lucide="image"></i> Upload Image
+						</label>
+						<input
+							type="file"
+							id="imageUpload"
+							accept=".jpg,.jpeg,.png,.gif,image/jpeg,image/png,image/gif"
+							class="hidden"
+						/>
+						<div class="upload-info">
+							<small>Accepted formats: JPEG, PNG, GIF (max 20MB)</small>
+							<div
+								id="uploadError"
+								class="upload-error hidden"
+							></div>
+						</div>
+					</div>
+					<div class="video-upload">
+						<input
+							type="url"
+							id="videoLink"
+							placeholder="Paste video URL (YouTube/Vimeo)"
+						/>
+					</div>
+				</div>
+			</div>
+			<div
+				id="mediaPreview"
+				class="media-preview hidden"
+			>
+				<div
+					id="imagePreviewContainer"
+					class="image-preview-container hidden"
+				>
+					<img
+						id="imagePreview"
+						src=""
+						alt="Preview"
+					/>
+					<button
+						type="button"
+						id="removeImage"
+						class="remove-media"
+					>
+						<i data-lucide="x"></i>
+					</button>
+				</div>
+				<div
+					id="videoPreviewContainer"
+					class="video-preview-container hidden"
+				>
+					<div id="videoPreview"></div>
+					<button
+						type="button"
+						id="removeVideo"
+						class="remove-media"
+					>
+						<i data-lucide="x"></i>
+					</button>
+				</div>
+			</div>
+			<div class="form-actions">
+				<button
+					type="button"
+					id="cancelPost"
+					class="cancel-button"
+				>
+					Cancel
+				</button>
+				<button
+					type="submit"
+					class="submit-button"
+				>
+					Create Post
+				</button>
+			</div>
+		</form>
+	</div>
+</div>
+{{ end }}
