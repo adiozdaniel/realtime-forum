@@ -3,11 +3,13 @@ import { postManager } from "./postmanager.js";
 import { getUserData } from "./authmiddleware.js";
 import { sidebar } from "./sidebar.js";
 import { PostService } from "./postsservice.js";
+import { PostModalManager } from "./createposts.js";
 
 class Header {
 	constructor() {
 		this.endpoints = API_ENDPOINTS;
 		this.postService = new PostService();
+		this.postModalManager = new PostModalManager();
 		this.unreadNotifications = null;
 		this.newUnread = null;
 		this.noticationsCount = 0;
@@ -204,8 +206,8 @@ Header.prototype.init = async function () {
 		"click",
 		this.handleNotifications.bind(this)
 	);
-
-	this.postEditBtn?.addEventListener("click", postManager.handlePostEdit.bind(postManager));
+	
+	this.postEditBtn?.addEventListener("click", (e) => this.handlePostEdit(e));
 
 	// Check for saved dark mode preference
 	const savedDarkMode = localStorage.getItem("darkMode") === "true";
@@ -224,6 +226,15 @@ Header.prototype.init = async function () {
 	this.watchNotifications();
 };
 
+
+Header.prototype.handlePostEdit = function (e) {
+	console.log("check....");
+	e.stopPropagation();
+
+	this.postModalManager.openModal();
+
+	// postModal.openModal();
+}
 // Start the application
 document.addEventListener("DOMContentLoaded", () => {
 	setTimeout(() => {
