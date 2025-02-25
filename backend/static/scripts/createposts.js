@@ -1,4 +1,4 @@
-import { POSTS } from "./data.js";
+import { POSTS, TEMP_DATA } from "./data.js";
 import { postManager } from "./postmanager.js";
 import { PostService } from "./postsservice.js";
 
@@ -26,9 +26,6 @@ class PostModalManager {
 		this.ALLOWED_TYPES = ["image/jpeg", "image/png", "image/gif"];
 		this.postService = new PostService();
 		this.posts = postManager;
-
-		// Temporary storage for uploaded image data
-		this.tempImageData = null;
 	}
 }
 
@@ -56,18 +53,20 @@ PostModalManager.prototype.init = function () {
 };
 
 PostModalManager.prototype.openModal = function (post) {
-	console.log(post);
 	if (window.location.pathname === "/dashboard") {
 		this.form["postTitle"].value = post.post_title;
 		this.form["postContent"].value = post.post_content;
+		this.form["postId"].value = post.post_id;
 		this.mediaPreview.classList.remove("hidden");
 		this.imagePreviewContainer.classList.remove("hidden");
 		this.imagePreview.src = post.post_image;
-	
-		const categories = post.post_category.split(" "); 
-	
-		categories.forEach(category => {
-			const checkbox = document.querySelector(`input[id="${category.toLowerCase()}"]`);
+
+		const categories = post.post_category.split(" ");
+
+		categories.forEach((category) => {
+			const checkbox = document.querySelector(
+				`input[id="${category.toLowerCase()}"]`
+			);
 			if (checkbox) checkbox.checked = true;
 		});
 	}
@@ -84,7 +83,7 @@ PostModalManager.prototype.closeModal = function () {
 	this.mediaPreview.classList.add("hidden");
 	this.uploadError.classList.add("hidden");
 	this.uploadError.textContent = "";
-	this.tempImageData = null;
+	TEMP_DATA = null;
 };
 
 // Handle image upload
@@ -131,7 +130,7 @@ PostModalManager.prototype.handleImageUpload = async function (e) {
 
 		if (imgRes.error) alert(imgRes.message);
 
-		if (imgRes.data !== null) this.tempImageData = imgRes.data;
+		if (imgRes.data !== null) TEMP_DATA = imgRes.data;
 		console.log(imgRes);
 	} catch (error) {
 		this.showUploadError("Error uploading image. Please try again.");
@@ -162,7 +161,7 @@ PostModalManager.prototype.removeImagePreview = function () {
 	if (this.videoPreviewContainer.classList.contains("hidden")) {
 		this.mediaPreview.classList.add("hidden");
 	}
-	this.tempImageData = null;
+	TEMP_DATA = null;
 };
 
 PostModalManager.prototype.removeVideoPreview = function () {
@@ -184,8 +183,8 @@ PostModalManager.prototype.handleSubmit = async function (e) {
 			.map((checkbox) => checkbox.value)
 			.join(" "),
 		PostContent: document.getElementById("postContent").value,
-		PostImage: this.tempImageData?.img || null,
-		PostID: this.tempImageData?.post_id || null,
+		PostImage: TEMP_DATA?.img || null,
+		PostID: TEMP_DATA?.post_id || null,
 		PostVideo: this.videoLink.value || null,
 	};
 

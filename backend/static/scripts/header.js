@@ -1,4 +1,4 @@
-import { API_ENDPOINTS, POSTS } from "./data.js";
+import { API_ENDPOINTS, POSTS, TEMP_DATA } from "./data.js";
 import { postManager } from "./postmanager.js";
 import { getUserData } from "./authmiddleware.js";
 import { sidebar } from "./sidebar.js";
@@ -27,6 +27,7 @@ class Header {
 		this.postDeleteBtn = document.querySelector("#postDeleteBtn");
 		this.cancelBtn = document.querySelector("#cancelPost");
 		this.modalSubmitBtn = document.getElementById("modalSubmitBtn");
+		this.videoLink = document.getElementById("videoLink");
 	}
 }
 
@@ -181,6 +182,43 @@ Header.prototype.handleNotifications = function (e) {
 		this.notificationDropdown.style.display === "none" ? "block" : "none";
 };
 
+Header.prototype.handlePostUpdate = async function (e) {
+	e.preventDefault();
+	e.stopPropagation();
+
+	const formData = {
+		PostID: document.getElementById("postId").value,
+		PostTitle: document.getElementById("postTitle").value,
+		PostCategory: Array.from(
+			document.querySelectorAll('input[name="postCategory"]:checked')
+		)
+			.map((checkbox) => checkbox.value)
+			.join(" "),
+		PostContent: document.getElementById("postContent").value,
+	};
+
+	if (TEMP_DATA !== null) {
+		formData.PostImage = TEMP_DATA.img;
+		formData.PostID = TEMP_DATA.post_id;
+	}
+
+	console.log(formData);
+	return;
+
+	try {
+		const res = await this.postService.createPost(formData);
+		if (!res.error) {
+			this.closeModal();
+		}
+		POSTS.unshift(res.data);
+
+		this.posts.renderPosts();
+	} catch (error) {
+		console.error("Error creating post:", error);
+		this.showUploadError("Error creating post. Please try again.");
+	}
+};
+
 // Edit post button
 Header.prototype.handleEditPost = function (e) {
 	e.stopPropagation();
@@ -225,6 +263,9 @@ Header.prototype.init = async function () {
 	});
 
 	this.cancelBtn?.addEventListener("click", (e) => this.handleClose(e));
+	this.modalSubmitBtn?.addEventListener("click", (e) =>
+		this.handlePostUpdate(e)
+	);
 
 	// Check for saved dark mode preference
 	const savedDarkMode = localStorage.getItem("darkMode") === "true";

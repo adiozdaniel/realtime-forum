@@ -38,6 +38,9 @@ const CONSTANTS = {
 	MAX_PASSWORD_LENGTH: 35,
 };
 
+// Temp Data
+let TEMP_DATA = null;
+
 // Posts Data
 const POSTS = [];
 const COMMENTS = {};
@@ -133,4 +136,5 @@ export {
 	postDislikeState,
 	COMMENTS,
 	REPLIES,
+	TEMP_DATA,
 };
