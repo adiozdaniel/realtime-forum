@@ -55,7 +55,16 @@ PostModalManager.prototype.init = function () {
 	this.form.addEventListener("submit", this.handleSubmit.bind(this));
 };
 
-PostModalManager.prototype.openModal = function () {
+PostModalManager.prototype.openModal = function (post) {
+	console.log(post);
+	if (window.location.pathname === "/dashboard") {
+		this.form["postTitle"].value = post.post_title;
+		this.form["postContent"].value = post.post_content;
+		this.mediaPreview.classList.remove("hidden");
+		this.imagePreviewContainer.classList.remove("hidden");
+		this.imagePreview.src = post.post_image;
+	}
+
 	this.modal.classList.remove("hidden");
 };
 
