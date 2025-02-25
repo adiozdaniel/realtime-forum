@@ -154,13 +154,6 @@ PostManager.prototype.renderPosts = function (posts) {
 	this.attachPostEventListeners();
 };
 
-PostManager.prototype.handlePostEdit = function (e) {
-	console.log("check....");
-	e.stopPropagation();
-
-	postModal.openModal();
-}
-
 PostManager.prototype.attachPostEventListeners = function () {
 	lucide.createIcons();
 	document.querySelectorAll(".like-button").forEach((button) => {
