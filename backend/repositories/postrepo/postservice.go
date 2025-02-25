@@ -2,6 +2,7 @@ package postrepo
 
 import (
 	"errors"
+	"log"
 	"time"
 
 	"forum/repositories/shared"
@@ -41,7 +42,7 @@ func (p *PostService) CreatePost(post *Post) (*Post, error) {
 	post.UpdatedAt = time.Now()
 	post.HasComments = true
 
-	go p.RecordActivity(post.UserID, "created_post", "created a post: " + post.PostTitle)
+	go p.RecordActivity(post.UserID, "created_post", "created a post: "+post.PostTitle)
 
 	return p.post.CreatePost(post)
 }
@@ -89,7 +90,7 @@ func (p *PostService) PostAddLike(like *Like) (*Like, error) {
 	go p.RecordActivity(like.UserID, msg, msg+post.PostTitle)
 
 	nId, _ := p.shared.GenerateUUID()
-	go p.CreateNotification(&Notification{
+	_, err = p.CreateNotification(&Notification{
 		NotificationID:   nId,
 		UserId:           post.UserID,
 		SenderID:         like.UserID,
@@ -99,6 +100,9 @@ func (p *PostService) PostAddLike(like *Like) (*Like, error) {
 		IsRead:           false,
 		CreatedAt:        time.Now(),
 	})
+	if err != nil {
+		log.Println(err)
+	}
 
 	return p.post.AddLike(like)
 }
@@ -137,7 +141,7 @@ func (p *PostService) PostDisLike(dislike *Like) (*Like, error) {
 	go p.RecordActivity(dislike.UserID, msg, msg+" : "+post.PostTitle)
 
 	nId, _ := p.shared.GenerateUUID()
-	go p.CreateNotification(&Notification{
+	_, err = p.CreateNotification(&Notification{
 		NotificationID:   nId,
 		UserId:           post.UserID,
 		SenderID:         dislike.UserID,
@@ -147,6 +151,9 @@ func (p *PostService) PostDisLike(dislike *Like) (*Like, error) {
 		IsRead:           false,
 		CreatedAt:        time.Now(),
 	})
+	if err != nil {
+		log.Println(err)
+	}
 
 	return p.post.PostDislike(dislike)
 }
@@ -179,7 +186,7 @@ func (p *PostService) CommentAddLike(like *Like) (*Like, error) {
 	go p.RecordActivity(like.UserID, msg, msg+comment.Content)
 
 	nId, _ := p.shared.GenerateUUID()
-	go p.CreateNotification(&Notification{
+	_, err = p.CreateNotification(&Notification{
 		NotificationID:   nId,
 		UserId:           comment.UserID,
 		SenderID:         like.UserID,
@@ -189,6 +196,9 @@ func (p *PostService) CommentAddLike(like *Like) (*Like, error) {
 		IsRead:           false,
 		CreatedAt:        time.Now(),
 	})
+	if err != nil {
+		log.Println(err)
+	}
 
 	return p.post.AddLike(like)
 }
@@ -260,7 +270,7 @@ func (p *PostService) CreateCommentReply(reply *Reply) (*Reply, error) {
 	go p.RecordActivity(reply.UserID, "replied to a comment", "replied: "+reply.Content)
 
 	nId, _ := p.shared.GenerateUUID()
-	go p.CreateNotification(&Notification{
+	_, err = p.CreateNotification(&Notification{
 		NotificationID:   nId,
 		UserId:           com.UserID,
 		SenderID:         reply.UserID,
@@ -270,6 +280,9 @@ func (p *PostService) CreateCommentReply(reply *Reply) (*Reply, error) {
 		IsRead:           false,
 		CreatedAt:        time.Now(),
 	})
+	if err != nil {
+		log.Println(err)
+	}
 
 	return p.post.CreateReply(reply)
 }
