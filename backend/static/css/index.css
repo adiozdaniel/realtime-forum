@@ -370,24 +370,6 @@ a {
     transition: background 0.2s ease-in-out;
 }
 
-/* Icon colors */
-.edit-post-button i {
-    color: #007bff; /* Blue for edit */
-}
-
-.delete-post-button i {
-    color: #dc3545; /* Red for delete */
-}
-
-/* Button hover effects */
-.edit-post-button:hover {
-    background: rgba(0, 123, 255, 0.1);
-}
-
-.delete-post-button:hover {
-    background: rgba(220, 53, 69, 0.1);
-}
-
 .post-category {
 	display: inline-block;
 	padding: 0.25rem 0.5rem;

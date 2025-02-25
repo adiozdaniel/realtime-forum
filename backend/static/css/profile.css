@@ -227,13 +227,14 @@
     margin-bottom: 0.75rem;
 }
 
-.post-item, .comment-item {
-    background-color: var(--card-bg);
-    border: 1px solid var(--border-color);
+.comment-item {
+    background-color: var(--white);
+    border: 1px solid var(--gray-200);
     border-radius: 0.5rem;
     padding: 1rem;
     margin-bottom: 1rem;
     position: relative;
+    transition: box-shadow 0.2s;
 }
 
 .comment-user-actions {
@@ -242,7 +243,7 @@
     right: 1rem;
     gap: 1rem;
     opacity: 0;
-    transition: opacity 0.2s ease;
+    transition: opacity 0.2s ease-in-out;
     display: flex;
 }
 
