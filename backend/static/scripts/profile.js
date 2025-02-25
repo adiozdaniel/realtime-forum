@@ -58,7 +58,7 @@ ProfileDashboard.prototype.createCommentHTML = function (comment) {
 				<button class="edit-button" id="editCommentBtn" data-comment-id="${comment.comment_id}">
               		<i data-lucide="edit"></i>
             	</button>
-				<button class="delete-button">
+				<button class="delete-button" id="deleteCommentBtn">
                     <i data-lucide="trash-2"></i>
             	</button>
 			</div>
