@@ -259,6 +259,18 @@ func (p *PostService) CreatePostComment(comment *Comment) (*Comment, error) {
 
 	go p.RecordActivity(comment.UserID, "created_comment", "added a comment: "+comment.Content)
 
+	nId, _ := p.shared.GenerateUUID()
+	go p.CreateNotification(&Notification{
+		NotificationID:   nId,
+		UserId:           post.UserID,
+		SenderID:         comment.UserID,
+		PostID:           p.shared.ToNullString(post.PostID),
+		NotificationType: "success",
+		Message:          "commented: " + post.PostTitle,
+		IsRead:           false,
+		CreatedAt:        time.Now(),
+	})
+
 	return p.post.CreateComment(comment)
 }
 
