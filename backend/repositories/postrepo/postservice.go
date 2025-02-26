@@ -262,6 +262,19 @@ func (p *PostService) CreatePostComment(comment *Comment) (*Comment, error) {
 	return p.post.CreateComment(comment)
 }
 
+// UpdateComment updates a comment
+func (p *PostService) UpdateComment(comment *Comment) (*Comment, error) {
+	if comment.CommentID == "" {
+		return nil, errors.New("comment ID cannot be empty")
+	}
+
+	if comment.Content == "" {
+		return nil, errors.New("comment content cannot be empty")
+	}
+
+	return p.post.UpdateComment(comment)
+}
+
 // CreateReply creates a new reply
 func (p *PostService) CreateCommentReply(reply *Reply) (*Reply, error) {
 	if reply.UserID == "" {

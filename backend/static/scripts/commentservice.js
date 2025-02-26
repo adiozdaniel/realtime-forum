@@ -65,6 +65,24 @@ CommentService.prototype.createComment = async function (commentData) {
 	}
 };
 
+// Method to update a comment by ID
+CommentService.prototype.updateComment = async function (commentData) {
+	try {
+		const response = await fetch(this.apiEndpoints.updatecomment, {
+			method: "POST",
+			body: JSON.stringify(commentData),
+			headers: { "Content-Type": "application/json" },
+		});
+
+		return await response.json();
+	} catch (error) {
+		return {
+			error: true,
+			message: "Failed to edit comment. Please try again.",
+		};
+	}
+};
+
 // Method to delete a comment by ID
 CommentService.prototype.deleteComment = async function (commentID) {
 	try {
