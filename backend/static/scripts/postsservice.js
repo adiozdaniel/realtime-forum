@@ -63,8 +63,11 @@ PostService.prototype.createPost = async function (postData) {
 		post_image: postData.PostImage,
 		post_id: postData.PostID,
 		post_video: postData.PostVideo,
-		created_at: postData.CreatedAt,
 	};
+
+	if (postData.CreatedAt) {
+		formData.created_at = postData.CreatedAt;
+	}
 
 	try {
 		const response = await fetch(this.apiEndpoints.createpost, {
