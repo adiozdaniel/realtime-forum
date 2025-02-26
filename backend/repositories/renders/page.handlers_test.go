@@ -9,13 +9,8 @@ import (
 	"forum/forumapp"
 )
 
-// type fort struct {
-// 	h *RendersRepo
-// }
-
 func TestHomePageHandler(t *testing.T) {
 	t.Run("template", func(t *testing.T) {
-		// Template cache
 		r := make(map[string]*template.Template)
 		r["home.ipage.html"] = template.New("home.ipage.html")
 		tmplcach := &forumapp.TemplateCache{Pages: r}
@@ -30,7 +25,6 @@ func TestHomePageHandler(t *testing.T) {
 		}
 	})
 	t.Run("Method", func(t *testing.T) {
-		// Template cache
 		r := make(map[string]*template.Template)
 		r["home.page.html"] = template.New("home.page.html")
 		tmplcach := &forumapp.TemplateCache{Pages: r}
@@ -48,7 +42,6 @@ func TestHomePageHandler(t *testing.T) {
 
 func TestLoginPageHandler(t *testing.T) {
 	t.Run("Test httpmethod", func(t *testing.T) {
-		// Template cache
 		r := make(map[string]*template.Template)
 		r["home.page.html"] = template.New("home.page.html")
 		tmplcach := &forumapp.TemplateCache{Pages: r}
@@ -86,7 +79,6 @@ func TestLoginPageHandler(t *testing.T) {
 
 func TestSignUpPageHandler(t *testing.T) {
 	t.Run("Test httpmethod", func(t *testing.T) {
-		// Template cache
 		r := make(map[string]*template.Template)
 		r["home.page.html"] = template.New("home.page.html")
 		tmplcach := &forumapp.TemplateCache{Pages: r}
@@ -104,7 +96,6 @@ func TestSignUpPageHandler(t *testing.T) {
 		}
 	})
 	t.Run("template", func(t *testing.T) {
-		// Template cache
 		r := make(map[string]*template.Template)
 		r["home.page.html"] = template.New("home.page.html")
 		tmplcach := &forumapp.TemplateCache{Pages: r}
