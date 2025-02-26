@@ -193,8 +193,7 @@ func (tm *TableManager) CreateTables() error {
 			FOREIGN KEY (post_id) REFERENCES posts(post_id) ON DELETE CASCADE,
 			FOREIGN KEY (comment_id) REFERENCES comments(comment_id) ON DELETE CASCADE,
 			FOREIGN KEY (reply_id) REFERENCES replies(reply_id) ON DELETE CASCADE,
-			FOREIGN KEY (like_id) REFERENCES likes(like_id) ON DELETE CASCADE,
-			FOREIGN KEY (dislike_id) REFERENCES dislikes(dislike_id) ON DELETE CASCADE
+			FOREIGN KEY (like_id) REFERENCES likes(like_id) ON DELETE CASCADE
 		);`,
 	}
 
