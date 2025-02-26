@@ -27,15 +27,15 @@ func CreateDb() *DB {
 		user_name TEXT,
 		image TEXT,
 		role TEXT,
+		bio TEXT,
 		created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
 		updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
 	);`
 	_, err = db.Exec(dbString)
 	if err != nil {
-		fmt.Println("error creating table")
+		fmt.Println("error creating  users' table of test.db")
 	}
 	return &DB{Db: db}
-
 }
 
 func TestRegister(t *testing.T) {
@@ -43,7 +43,7 @@ func TestRegister(t *testing.T) {
 	db := CreateDb()
 
 	userserv := &UserService{user: &UserRepository{DB: db.Db}}
-	user := &User{Email: "", Password: "Naaahshshs786$", UserID: "4", UserName: "Abas", CreatedAt: time.Now(), UpdatedAt: time.Now()}
+	user := &User{Email: "", Password: "Naaahshshs786$", UserID: "4", UserName: "Abas", Bio: "ama", CreatedAt: time.Now(), UpdatedAt: time.Now()}
 	err := userserv.Register(user)
 	if err.Error() != "email or password cannot be empty" {
 		t.Errorf("expected: %v Got %v", errors.New("email or password cannot be empty"), err)

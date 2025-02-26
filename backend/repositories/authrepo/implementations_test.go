@@ -9,9 +9,9 @@ import (
 func TestCreateUser(t *testing.T) {
 	db := CreateDb()
 	userrepo := &UserRepository{DB: db.Db}
-	user := &User{Email: "h@R.COM", Password: "Naaahshshs786$", UserID: "2", UserName: "Abas", CreatedAt: time.Now(), UpdatedAt: time.Now().Add(1 * time.Hour)}
+	user := &User{Email: "h1@R.COM", Password: "Naaahshshs786$", UserID: "1", UserName: "Abasa", Bio: "Wanderer", CreatedAt: time.Now(), UpdatedAt: time.Now().Add(1 * time.Hour)}
 	err := userrepo.CreateUser(user)
-	if err == nil {
+	if err != nil {
 		t.Errorf("expected %v got %v", nil, err)
 	}
 }
@@ -19,7 +19,7 @@ func TestCreateUser(t *testing.T) {
 func TestGetUserByEmail(t *testing.T) {
 	db := CreateDb()
 	userrepo := &UserRepository{DB: db.Db}
-	_, err := userrepo.GetUserByEmail("yut@fmail.com")
+	_, err := userrepo.GetUserByEmail("h@R.COM")
 	if err != nil {
 		t.Errorf("expected %v got %v", nil, err)
 	}

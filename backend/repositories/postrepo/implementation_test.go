@@ -49,6 +49,9 @@ func CreateDb() *sql.DB {
 		CREATE TABLE IF NOT EXISTS comments (
 			comment_id TEXT PRIMARY KEY,
 			post_id TEXT NOT NULL,
+			post_title TEXT,
+			post_author TEXT,
+			post_author_img TEXT,
 			user_id TEXT NOT NULL,
 			user_name TEXT NOT NULL,
 			author_img TEXT,
