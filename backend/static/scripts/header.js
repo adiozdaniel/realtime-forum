@@ -223,12 +223,6 @@ Header.prototype.handlePostUpdate = async function (e) {
 	}
 };
 
-// Edit post button
-Header.prototype.handleEditPost = function (e) {
-	e.stopPropagation();
-	this.postModal.openModal();
-};
-
 // Initialize function
 Header.prototype.init = async function () {
 	if (window.location.pathname === "/dashboard") {
