@@ -27,8 +27,6 @@ ProfileDashboard.prototype.init = async function () {
 		return;
 	}
 
-	console.log(userData.data);
-
 	if (userData.data) {
 		this.state.profilePic = userData.data.user_info?.image;
 		this.state.posts = userData.data.posts || [];
@@ -166,11 +164,11 @@ ProfileDashboard.prototype.deleteComment = async function (e) {
 	if (!button) return;
 	const commentId = button.getAttribute("data-comment-id");
 
-	const commentData = {
-		comment_id: commentId,
-	};
+	const comment = this.state.userComments?.find(
+		(comment) => comment.comment_id === commentId
+	);
 
-	const res = await this.commentService.deleteComment(commentData);
+	const res = await this.commentService.deleteComment(comment);
 	if (res.error) {
 		toast.createToast("error", res.message);
 		return;
