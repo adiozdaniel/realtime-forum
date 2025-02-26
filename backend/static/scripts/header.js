@@ -1,9 +1,10 @@
-import { API_ENDPOINTS, POSTS } from "./data.js";
+import { API_ENDPOINTS, POSTS, TEMP_DATA } from "./data.js";
 import { postManager } from "./postmanager.js";
 import { getUserData } from "./authmiddleware.js";
 import { sidebar } from "./sidebar.js";
 import { PostService } from "./postsservice.js";
 import { PostModalManager } from "./createposts.js";
+import { toast } from "./toast.js";
 
 class Header {
 	constructor() {
@@ -14,6 +15,7 @@ class Header {
 		this.newUnread = null;
 		this.noticationsCount = 0;
 		this.enableNotifications = false;
+		this.postModal = new PostModalManager();
 
 		// DOM Elements
 		this.menuToggleBtn = document.querySelector("#menuToggle");
@@ -24,8 +26,9 @@ class Header {
 		this.notificationButton = document.querySelector("#notificationButton");
 		this.notificationDropdown = document.querySelector("#notificationDropdown");
 		this.postDeleteBtn = document.querySelector("#postDeleteBtn");
-		this.cancelBtn = document.querySelector("#cancelPost")
+		this.cancelBtn = document.querySelector("#cancelPost");
 		this.modalSubmitBtn = document.getElementById("modalSubmitBtn");
+		this.videoLink = document.getElementById("videoLink");
 	}
 }
 
@@ -174,18 +177,58 @@ Header.prototype.handleNotifications = function (e) {
 	if (!this.newUnread) return;
 
 	if (this.notificationDropdown.style.display === "")
-		this.notificationDropdown.style.display = "none"
+		this.notificationDropdown.style.display = "none";
 
 	this.notificationDropdown.style.display =
 		this.notificationDropdown.style.display === "none" ? "block" : "none";
 };
 
+Header.prototype.handlePostUpdate = async function (e) {
+	e.preventDefault();
+	e.stopPropagation();
+
+	const formData = {
+		PostID: document.getElementById("postId").value,
+		CreatedAt: document.getElementById("createdAt").value,
+		PostTitle: document.getElementById("postTitle").value,
+		PostCategory: Array.from(
+			document.querySelectorAll('input[name="postCategory"]:checked')
+		)
+			.map((checkbox) => checkbox.value)
+			.join(" "),
+		PostContent: document.getElementById("postContent").value,
+	};
+
+	if (TEMP_DATA !== null) {
+		formData.PostImage = TEMP_DATA.img;
+		formData.PostID = TEMP_DATA.post_id;
+	}
+
+	try {
+		const res = await this.postService.createPost(formData);
+		if (res.error) {
+			alert(res.message);
+		}
+
+		if (res.data) {
+			this.postModalManager.closeModal();
+			POSTS.unshift(res.data);
+
+			postManager.renderPosts();
+		}
+	} catch (error) {
+		console.error("Error creating post:", error);
+		this.postModalManager.showUploadError(
+			"Error creating post. Please try again."
+		);
+	}
+};
+
 // Initialize function
 Header.prototype.init = async function () {
 	if (window.location.pathname === "/dashboard") {
-		this.modalSubmitBtn.textContent = "Update Post"
+		this.modalSubmitBtn.textContent = "Update Post";
 	}
-
 
 	const userdata = await getUserData();
 	this.handleUserChange(userdata);
@@ -214,10 +257,17 @@ Header.prototype.init = async function () {
 	);
 
 	document.querySelectorAll("#postEditBtn").forEach((btn) => {
-		btn.addEventListener("click", (e) => this.handlePostEdit(e))
+		btn.addEventListener("click", (e) => this.handlePostEdit(e));
+	});
+
+	document.querySelectorAll("#postDeleteBtn").forEach((btn) => {
+		btn.addEventListener("click", (e) => this.handlePostDelete(e));
 	});
 
 	this.cancelBtn?.addEventListener("click", (e) => this.handleClose(e));
+	this.modalSubmitBtn?.addEventListener("click", (e) =>
+		this.handlePostUpdate(e)
+	);
 
 	// Check for saved dark mode preference
 	const savedDarkMode = localStorage.getItem("darkMode") === "true";
@@ -236,7 +286,6 @@ Header.prototype.init = async function () {
 	this.watchNotifications();
 };
 
-
 Header.prototype.handlePostEdit = function (e) {
 	e.stopPropagation();
 
@@ -247,13 +296,42 @@ Header.prototype.handlePostEdit = function (e) {
 	const post = POSTS.find((post) => post.post_id === postId);
 
 	this.postModalManager.openModal(post);
-}
+};
+
+Header.prototype.handlePostDelete = async function (e) {
+	e.preventDefault();
+	e.stopPropagation();
+
+	const button = e.currentTarget.closest("#postDeleteBtn");
+	if (!button) return;
+	const postId = button.getAttribute("data-post-id");
+
+	const deletePost = confirm("Delete this post?");
+	if (!deletePost) return;
+
+	const postData = {
+		post_id: postId,
+	};
+
+	const res = await this.postService.deletePost(postData);
+	if (res.error) {
+		toast.createToast("error", res.message);
+		return;
+	}
+
+	const postIndex = POSTS.findIndex((post) => post.post_id === postId);
+	if (postIndex !== -1) {
+		POSTS.splice(postIndex, 1);
+	}
+
+	toast.createToast("success", "Post deleted successfully!");
+};
 
 Header.prototype.handleClose = function (e) {
 	e.stopPropagation();
 
 	this.postModalManager.closeModal();
-}
+};
 
 // Start the application
 document.addEventListener("DOMContentLoaded", () => {

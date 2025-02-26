@@ -31,6 +31,8 @@ type PostRepo interface {
 	// Comments
 	CreateComment(post *Comment) (*Comment, error)
 	GetCommentByID(id string) (*Comment, error)
+	UpdateComment(comment *Comment) (*Comment, error)
+	DeleteComment(id string) error
 
 	// Replies
 	CreateReply(post *Reply) (*Reply, error)

@@ -335,6 +335,20 @@ func (r *PostRepository) CreateComment(comment *Comment) (*Comment, error) {
 	return comment, err
 }
 
+// UpdateComment updates an existing comment
+func (r *PostRepository) UpdateComment(comment *Comment) (*Comment, error) {
+	query := `UPDATE comments SET post_title = ?, post_author = ?, post_author_img = ?, user_id = ?, user_name = ?, author_img = ?, parent_comment_id = ?, comment = ?, updated_at = ? WHERE comment_id = ?`
+	_, err := r.DB.Exec(query, comment.PostTitle, comment.PostAuthor, comment.PostAuthorImg, comment.UserID, comment.Author, comment.AuthorImg, comment.ParentCommentID, comment.Content, comment.UpdatedAt, comment.CommentID)
+	return comment, err
+}
+
+// DeleteComment deletes a comment
+func (r *PostRepository) DeleteComment(id string) error {
+	query := `DELETE FROM comments WHERE comment_id = ?`
+	_, err := r.DB.Exec(query, id)
+	return err
+}
+
 // CreateReply creates a new reply
 func (r *PostRepository) CreateReply(reply *Reply) (*Reply, error) {
 	query := `INSERT INTO replies (reply_id, comment_id, user_id, user_name, author_img, parent_reply_id, content, created_at, updated_at)

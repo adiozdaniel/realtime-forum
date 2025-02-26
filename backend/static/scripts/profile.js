@@ -1,4 +1,5 @@
 import { AuthService } from "./authservice.js";
+import { CommentService } from "./commentservice.js";
 import { STATE } from "./data.js";
 import { postManager } from "./postmanager.js";
 import { formatTimeAgo } from "./timestamps.js";
@@ -11,6 +12,7 @@ function toTitleCase(str) {
 class ProfileDashboard {
 	constructor() {
 		this.authService = new AuthService();
+		this.commentService = new CommentService();
 		this.state = STATE;
 		this.userData = null;
 	}
@@ -55,10 +57,14 @@ ProfileDashboard.prototype.createCommentHTML = function (comment) {
 	return `
         <div class="comment-item" data-comment-id="${comment.comment_id}">
 			<div class="comment-user-actions">
-				<button class="edit-button" id="editCommentBtn" data-comment-id="${comment.comment_id}">
+				<button class="edit-button" id="editCommentBtn" data-comment-id="${
+					comment.comment_id
+				}">
               		<i data-lucide="edit"></i>
             	</button>
-				<button class="delete-button" id="deleteCommentBtn">
+				<button class="delete-button" id="deleteCommentBtn" data-comment-id="${
+					comment.comment_id
+				}">
                     <i data-lucide="trash-2"></i>
             	</button>
 			</div>
@@ -83,17 +89,27 @@ ProfileDashboard.prototype.createCommentHTML = function (comment) {
             </div>
             <div class="comment-footer">
                 <div class="comment-actions"> 
-                    <button class="comment-action-button like-button data-comment-id="${comment.comment_id}"> 
+                    <button class="comment-action-button like-button data-comment-id="${
+											comment.comment_id
+										}"> 
                         <i data-lucide="thumbs-up"></i> 
-                        <span class="likes-count">${comment.likes?.length || 0}</span> 
+                        <span class="likes-count">${
+													comment.likes?.length || 0
+												}</span> 
                     </button>
-					 <button class="comment-action-button dislike-button data-comment-id="${comment.comment_id}"> 
+					 <button class="comment-action-button dislike-button data-comment-id="${
+							comment.comment_id
+						}"> 
                         <i data-lucide="thumbs-down"></i> 
-                        <span class="likes-count">${comment.dislikes?.length || 0}</span> 
+                        <span class="likes-count">${
+													comment.dislikes?.length || 0
+												}</span> 
                     </button>
                 </div>
                 <div class="comment-meta">
-                    <span class="comment-time">${formatTimeAgo(comment.created_at)}</span> 
+                    <span class="comment-time">${formatTimeAgo(
+											comment.created_at
+										)}</span> 
                 </div>
             </div>
         </div>`;
@@ -110,7 +126,58 @@ ProfileDashboard.prototype.renderComments = function () {
 
 	this.commentsList.innerHTML = comments;
 	lucide.createIcons();
-}
+
+	document.querySelectorAll("#editCommentBtn").forEach((button) => {
+		button.addEventListener("click", (e) => this.editComment(e));
+	});
+
+	document.querySelectorAll("#deleteCommentBtn").forEach((button) => {
+		button.addEventListener("click", (e) => this.deleteComment(e));
+	});
+};
+
+ProfileDashboard.prototype.editComment = async function (e) {
+	const button = e.currentTarget.closest("#editCommentBtn");
+	if (!button) return;
+	const commentId = button.getAttribute("data-comment-id");
+
+	const comment = this.state.userComments?.find(
+		(comment) => comment.comment_id === commentId
+	);
+
+	const editComment = prompt("Edit this comment?", comment.comment);
+	if (!editComment) return;
+
+	comment.comment = editComment;
+
+	const res = await this.commentService.updateComment(comment);
+	if (res.error) {
+		toast.createToast("error", res.message);
+		return;
+	}
+
+	if (res.data) {
+		toast.createToast("success", res.message || "Comment updated!");
+	}
+};
+
+ProfileDashboard.prototype.deleteComment = async function (e) {
+	const button = e.currentTarget.closest("#deleteCommentBtn");
+	if (!button) return;
+	const commentId = button.getAttribute("data-comment-id");
+
+	const commentData = {
+		comment_id: commentId,
+	};
+
+	const res = await this.commentService.deleteComment(commentData);
+	if (res.error) {
+		toast.createToast("error", res.message);
+		return;
+	}
+
+	toast.createToast("success", "Comment deleted!");
+};
 
 ProfileDashboard.prototype.cacheElements = function () {
 	this.elements = {
@@ -153,13 +220,6 @@ ProfileDashboard.prototype.setupEventListeners = function () {
 	this.elements.sidebarItems.forEach((item) =>
 		item.addEventListener("click", () => this.switchView(item.dataset.view))
 	);
-
-	//temporary handler for deleting posts
-	window.deletePost = (postId) => {
-		this.state.posts = this.state.posts.filter((post) => post.id !== postId);
-		this.renderPosts();
-		this.updateStats();
-	};
 };
 
 ProfileDashboard.prototype.switchView = function (view) {
@@ -172,7 +232,7 @@ ProfileDashboard.prototype.updateActiveSection = function () {
 	Object.values(this.elements.sections).forEach((section) =>
 		section.classList.add("hidden")
 	);
-	
+
 	this.elements.sections[this.state.currentView].classList.remove("hidden");
 	this.elements.sidebarItems.forEach((item) => item.classList.remove("active"));
 
@@ -181,7 +241,6 @@ ProfileDashboard.prototype.updateActiveSection = function () {
 	);
 	if (activeItem) activeItem.classList.add("active");
 };
-
 
 ProfileDashboard.prototype.toggleDarkMode = function () {
 	this.state.darkMode = !this.state.darkMode;

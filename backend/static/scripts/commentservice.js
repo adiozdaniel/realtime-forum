@@ -65,20 +65,40 @@ CommentService.prototype.createComment = async function (commentData) {
 	}
 };
 
-// Method to delete a comment by ID
-CommentService.prototype.deleteComment = async function (commentID) {
+// Method to update a comment by ID
+CommentService.prototype.updateComment = async function (commentData) {
 	try {
-		const response = await fetch(
-			`${this.apiEndpoints.deleteComment}/${commentID}`,
-			{
-				method: "DELETE",
-			}
-		);
+		const response = await fetch(this.apiEndpoints.updatecomment, {
+			method: "POST",
+			body: JSON.stringify(commentData),
+			headers: { "Content-Type": "application/json" },
+		});
 
-		return response.ok; // Returns true if deletion is successful
+		return await response.json();
+	} catch (error) {
+		return {
+			error: true,
+			message: "Failed to edit comment. Please try again.",
+		};
+	}
+};
+
+// Method to delete a comment by ID
+CommentService.prototype.deleteComment = async function (commentData) {
+	try {
+		const response = await fetch(this.apiEndpoints.deletecomment, {
+			method: "POST",
+			body: JSON.stringify(commentData),
+			headers: { "Content-Type": "application/json" },
+		});
+
+		return await response.json();
 	} catch (error) {
 		console.error("Error deleting comment:", error);
-		return false;
+		return {
+			error: true,
+			message: "Failed to delete comment. Please try again.",
+		};
 	}
 };
 

@@ -53,6 +53,33 @@ func (p *PostsRepo) CreatePost(w http.ResponseWriter, r *http.Request) {
 	p.res.WriteJSON(w, *p.res, http.StatusOK)
 }
 
+// DeletePost deletes a post
+func (p *PostsRepo) DeletePost(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodPost {
+		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+		return
+	}
+
+	var req Post
+
+	err := json.NewDecoder(r.Body).Decode(&req)
+	if err != nil {
+		p.res.SetError(w, err, http.StatusBadRequest)
+		return
+	}
+
+	err = p.post.DeletePost(&req)
+	if err != nil {
+		p.res.SetError(w, err, http.StatusBadRequest)
+		return
+	}
+
+	p.res.Err = false
+	p.res.Message = "Success"
+	p.res.Data = nil
+	p.res.WriteJSON(w, *p.res, http.StatusOK)
+}
+
 // AddLike adds a like to a post
 func (p *PostsRepo) PostAddLike(w http.ResponseWriter, r *http.Request) {
 	// Ensure the request method is POST
@@ -129,7 +156,7 @@ func (p *PostsRepo) PostDislike(w http.ResponseWriter, r *http.Request) {
 	// Call the PostDisLike method to remove dislike a post
 	dislike, err := p.post.PostDisLike(&req)
 	if err != nil {
-		p.res.SetError(w, fmt.Errorf("failed to dislike post: %v", err), http.StatusInternalServerError)
+		p.res.SetError(w, fmt.Errorf("failed to dislike post: %v", err), http.StatusBadRequest)
 		return
 	}
 
@@ -151,19 +178,73 @@ func (p *PostsRepo) CreatePostComment(w http.ResponseWriter, r *http.Request) {
 
 	err := json.NewDecoder(r.Body).Decode(&req)
 	if err != nil {
-		p.res.SetError(w, err, http.StatusInternalServerError)
+		p.res.SetError(w, err, http.StatusBadRequest)
 		return
 	}
 
-	post, err := p.post.CreatePostComment(&req)
+	comment, err := p.post.CreatePostComment(&req)
 	if err != nil {
-		p.res.SetError(w, err, http.StatusInternalServerError)
+		p.res.SetError(w, err, http.StatusBadRequest)
 		return
 	}
 
 	p.res.Err = false
 	p.res.Message = "Success"
-	p.res.Data = post
+	p.res.Data = comment
+	p.res.WriteJSON(w, *p.res, http.StatusOK)
+}
+
+// UpdateComment updates a comment
+func (p *PostsRepo) UpdateComment(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodPost {
+		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+		return
+	}
+
+	var req Comment
+
+	err := json.NewDecoder(r.Body).Decode(&req)
+	if err != nil {
+		p.res.SetError(w, err, http.StatusBadRequest)
+		return
+	}
+
+	comment, err := p.post.UpdateComment(&req)
+	if err != nil {
+		p.res.SetError(w, err, http.StatusBadRequest)
+		return
+	}
+
+	p.res.Err = false
+	p.res.Message = "Success"
+	p.res.Data = comment
+	p.res.WriteJSON(w, *p.res, http.StatusOK)
+}
+
+// DeleteComment deletes a comment
+func (p *PostsRepo) DeleteComment(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodPost {
+		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+		return
+	}
+
+	var req Comment
+
+	err := json.NewDecoder(r.Body).Decode(&req)
+	if err != nil {
+		p.res.SetError(w, err, http.StatusBadRequest)
+		return
+	}
+
+	err = p.post.DeleteComment(&req)
+	if err != nil {
+		p.res.SetError(w, err, http.StatusBadRequest)
+		return
+	}
+
+	p.res.Err = false
+	p.res.Message = "Success"
+	p.res.Data = nil
 	p.res.WriteJSON(w, *p.res, http.StatusOK)
 }
 
@@ -209,7 +290,7 @@ func (p *PostsRepo) CreatePostReply(w http.ResponseWriter, r *http.Request) {
 
 	post, err := p.post.CreateCommentReply(&req)
 	if err != nil {
-		p.res.SetError(w, err, http.StatusInternalServerError)
+		p.res.SetError(w, err, http.StatusBadRequest)
 		return
 	}
 
@@ -234,7 +315,7 @@ func (p *PostsRepo) CheckNotifications(w http.ResponseWriter, r *http.Request) {
 
 	notifications, err := p.post.GetNotificationsByUserID(userID)
 	if err != nil {
-		p.res.SetError(w, err, http.StatusInternalServerError)
+		p.res.SetError(w, err, http.StatusBadRequest)
 		return
 	}
 
