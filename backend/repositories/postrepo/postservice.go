@@ -272,7 +272,20 @@ func (p *PostService) UpdateComment(comment *Comment) (*Comment, error) {
 		return nil, errors.New("comment content cannot be empty")
 	}
 
+	go p.RecordActivity(comment.UserID, "updated_comment", "updated a comment: "+comment.Content)
+
 	return p.post.UpdateComment(comment)
+}
+
+// DeleteComment deletes a comment
+func (p *PostService) DeleteComment(comment *Comment) error {
+	if comment.CommentID == "" {
+		return errors.New("comment ID cannot be empty")
+	}
+
+	go p.RecordActivity(comment.UserID, "deleted_comment", "deleted a comment: "+comment.Content)
+
+	return p.post.DeleteComment(comment.CommentID)
 }
 
 // CreateReply creates a new reply

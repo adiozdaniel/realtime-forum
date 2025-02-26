@@ -62,7 +62,9 @@ ProfileDashboard.prototype.createCommentHTML = function (comment) {
 				}">
               		<i data-lucide="edit"></i>
             	</button>
-				<button class="delete-button">
+				<button class="delete-button" id="deleteCommentBtn" data-comment-id="${
+					comment.comment_id
+				}">
                     <i data-lucide="trash-2"></i>
             	</button>
 			</div>
@@ -128,6 +130,10 @@ ProfileDashboard.prototype.renderComments = function () {
 	document.querySelectorAll("#editCommentBtn").forEach((button) => {
 		button.addEventListener("click", (e) => this.editComment(e));
 	});
+
+	document.querySelectorAll("#deleteCommentBtn").forEach((button) => {
+		button.addEventListener("click", (e) => this.deleteComment(e));
+	});
 };
 
 ProfileDashboard.prototype.editComment = async function (e) {
@@ -153,6 +159,24 @@ ProfileDashboard.prototype.editComment = async function (e) {
 	if (res.data) {
 		toast.createToast("success", res.message || "Comment updated!");
 	}
+};
+
+ProfileDashboard.prototype.deleteComment = async function (e) {
+	const button = e.currentTarget.closest("#deleteCommentBtn");
+	if (!button) return;
+	const commentId = button.getAttribute("data-comment-id");
+
+	const commentData = {
+		comment_id: commentId,
+	};
+
+	const res = await this.commentService.deleteComment(commentData);
+	if (res.error) {
+		toast.createToast("error", res.message);
+		return;
+	}
+
+	toast.createToast("success", "Comment deleted!");
 };
 
 ProfileDashboard.prototype.cacheElements = function () {

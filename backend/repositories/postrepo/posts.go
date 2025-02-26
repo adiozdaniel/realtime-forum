@@ -221,6 +221,33 @@ func (p *PostsRepo) UpdateComment(w http.ResponseWriter, r *http.Request) {
 	p.res.WriteJSON(w, *p.res, http.StatusOK)
 }
 
+// DeleteComment deletes a comment
+func (p *PostsRepo) DeleteComment(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodPost {
+		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+		return
+	}
+
+	var req Comment
+
+	err := json.NewDecoder(r.Body).Decode(&req)
+	if err != nil {
+		p.res.SetError(w, err, http.StatusBadRequest)
+		return
+	}
+
+	err = p.post.DeleteComment(&req)
+	if err != nil {
+		p.res.SetError(w, err, http.StatusBadRequest)
+		return
+	}
+
+	p.res.Err = false
+	p.res.Message = "Success"
+	p.res.Data = nil
+	p.res.WriteJSON(w, *p.res, http.StatusOK)
+}
+
 // Posts image uploads a post image and stores on the server
 func (p *PostsRepo) UploadPostImage(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
