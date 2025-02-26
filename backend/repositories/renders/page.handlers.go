@@ -15,7 +15,10 @@ func (m *RendersRepo) HomePageHandler(w http.ResponseWriter, r *http.Request) {
 		"Page": "home",
 	}
 
-	_ = m.RenderTemplate(w, "home.page.html", data)
+	err := m.RenderTemplate(w, "home.page.html", data)
+	if err != nil {
+		http.Error(w, "couldnt get the template", http.StatusInternalServerError)
+	}
 }
 
 // Login page
