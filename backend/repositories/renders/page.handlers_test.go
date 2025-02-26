@@ -133,4 +133,21 @@ func TestModeratorPageHandler(t *testing.T) {
 			t.Errorf("Expected Method %d,got %d", http.StatusForbidden, writer.Code)
 		}
 	})
+	t.Run("Template", func(t *testing.T) {
+		r := make(map[string]*template.Template)
+		r["home.page.html"] = template.New("home.page.html")
+		tmplcach := &forumapp.TemplateCache{Pages: r}
+
+		fapp := &forumapp.ForumApp{}
+		fapp.Tmpls = tmplcach
+		h := &RendersRepo{app: fapp}
+
+		req := httptest.NewRequest(http.MethodGet, "/moderator", nil)
+		writer := httptest.NewRecorder()
+
+		h.ModeratorPageHandler(writer, req)
+		if writer.Code != http.StatusInternalServerError {
+			t.Errorf("Expected Method %d,got %d", http.StatusInternalServerError, writer.Code)
+		}
+	})
 }
