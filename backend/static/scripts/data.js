@@ -30,6 +30,7 @@ const API_ENDPOINTS = {
 
 	// notification ENDPOINTS
 	checkNotifications: "/api/notifications/check",
+	readNotifications: "/api/notifications/read"
 };
 
 // Constants

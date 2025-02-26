@@ -134,30 +134,11 @@ Header.prototype.watchNotifications = function () {
 		}
 
 		this.newUnread = res.data?.filter((n) => !n.is_read);
-		const newUnreadIds = new Set(this.newUnread?.map((n) => n.notification_id));
+		this.newUnreadIds = new Set(this.newUnread?.map((n) => n.notification_id));
 
 		// Update unread count
-		if (newUnreadIds.size > unreadNotifications.size) {
-			const existingCount = this.notificationButton.querySelector(
-				".notification-count"
-			);
-			if (existingCount) existingCount.remove();
-
-			// create and append new notification count
-			const countSpan = document.createElement("span");
-			countSpan.className = "notification-count";
-			countSpan.textContent = newUnreadIds.size;
-
-			this.notificationButton.appendChild(countSpan);
-			this.notificationButton.classList.add("has-notifications");
-
-			this.notificationDropdown.innerHTML = "";
-			this.newUnread.forEach((n) => {
-				const notifItem = document.createElement("div");
-				notifItem.classList.add("notification-item");
-				notifItem.textContent = n.message;
-				this.notificationDropdown.appendChild(notifItem);
-			});
+		if (this.newUnreadIds.size > unreadNotifications.size) {
+			this.updateNots(this.newUnread);
 
 			const audio = new Audio("/static/audio/bell.mp3");
 			if (this.enableNotifications)
@@ -166,8 +147,63 @@ Header.prototype.watchNotifications = function () {
 			this.notificationButton.classList.remove("has-notifications");
 		}
 
-		unreadNotifications = newUnreadIds;
+		unreadNotifications = this.newUnreadIds;
 	}, 5000);
+};
+
+Header.prototype.updateNots = function (nots) {
+	const existingCount = this.notificationButton.querySelector(
+		".notification-count"
+	);
+	if (existingCount) existingCount.remove();
+
+	// create and append new notification count
+	const countSpan = document.createElement("span");
+	countSpan.className = "notification-count";
+	countSpan.textContent = this.newUnreadIds.size;
+
+	this.notificationButton.appendChild(countSpan);
+	this.notificationButton.classList.add("has-notifications");
+
+	this.notificationDropdown.innerHTML = "";
+	nots.forEach((n) => {
+		const notifItem = document.createElement("div");
+		notifItem.dataset.notificationId = n.notification_id;
+		notifItem.classList.add("notification-item");
+		notifItem.textContent = n.message;
+		this.notificationDropdown.appendChild(notifItem);
+
+		notifItem.addEventListener("click", this.handleNotificationReading.bind(this));
+	});
+}
+
+// Handle notification click
+Header.prototype.handleNotificationReading = function (e) {
+	const notificationId = e.currentTarget.dataset.notificationId;
+	console.log("Reading notification:", notificationId);
+
+	const notification = this.newUnread.find((not) => not.notification_id === notificationId);
+
+	this.markNotificationAsRead(notification);
+};
+
+// Example function to mark a notification as read (You need to implement it)
+Header.prototype.markNotificationAsRead = async function (not) {
+	not.is_read = true;
+
+	const res = await this.postService.markNotificationAsRead(not);
+
+	if (res.error){
+		toast.createToast("error", res.message);
+		return
+	}
+
+	toast.createToast("success", `Marked: ${not.message}, as read`)
+
+	this.newUnread = this.newUnread.filter(n => n.notification_id !== not.notification_id);
+	this.newUnreadIds = new Set(this.newUnread?.map((n) => n.notification_id));
+	console.log(this.newUnread);
+	this.updateNots(this.newUnread);
 };
 
 // Handle notifications

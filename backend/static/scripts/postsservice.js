@@ -171,7 +171,8 @@ PostService.prototype.uploadPostImg = async function (formData) {
 			body: formData,
 		});
 
-		return response.json();
+		const res = await response.json();
+		return res;
 	} catch (error) {
 		return error;
 	}
@@ -187,8 +188,27 @@ PostService.prototype.checkNotifications = async function () {
 			},
 		});
 
-		return response.json();
+		const res = await response.json();
+		return res;
 	} catch (error) {
 		return error;
 	}
 };
+
+// Method to update read notifications
+PostService.prototype.markNotificationAsRead = async function (not){
+	try {
+		const response = await fetch(this.apiEndpoints.readNotifications, {
+			method: "POST",
+			body: JSON.stringify(not),
+			headers: {
+				"Content-Type": "application/json",
+			}
+		})
+
+		const res = await response.json();
+		return res;
+	} catch (error) {
+
+	}
+}
