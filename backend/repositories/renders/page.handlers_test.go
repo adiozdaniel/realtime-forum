@@ -30,4 +30,19 @@ func TestHomePageHandler(t *testing.T) {
 			t.Errorf("Expected Method %d,got %d", http.StatusInternalServerError, writer.Code)
 		}
 	})
+	t.Run("Method", func(t *testing.T) {
+		// Template cache
+		r := make(map[string]*template.Template)
+		r["home.page.html"] = template.New("home.page.html")
+		tmplcach := &forumapp.TemplateCache{Pages: r}
+		fapp := &forumapp.ForumApp{}
+		fapp.Tmpls = tmplcach
+		h := &RendersRepo{app: fapp}
+		req := httptest.NewRequest(http.MethodPost, "/", nil)
+		writer := httptest.NewRecorder()
+		h.HomePageHandler(writer, req)
+		if writer.Code != http.StatusForbidden {
+			t.Errorf("Expected Method %d,got %d", http.StatusForbidden, writer.Code)
+		}
+	})
 }
