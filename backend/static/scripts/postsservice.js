@@ -88,34 +88,24 @@ PostService.prototype.createPost = async function (postData) {
 	}
 };
 
-// Method to update an existing post
-PostService.prototype.updatePost = async function (postId, postData) {
+// Method to delete a post by ID
+PostService.prototype.deletePost = async function (postData) {
 	try {
-		const response = await fetch(`${this.apiEndpoints.updatepost}/${postId}`, {
-			method: "PUT",
+		const response = await fetch(this.apiEndpoints.deletepost, {
+			method: "POST",
+			body: JSON.stringify(postData),
 			headers: {
 				"Content-Type": "application/json",
 			},
-			body: JSON.stringify(postData), // Convert post data to JSON
 		});
 
-		const updatedPost = await response.json(); // Parse response as JSON
-		return updatedPost;
+		const success = await response.json();
+		return success;
 	} catch (error) {
-		return null; // Return null on failure
-	}
-};
-
-// Method to delete a post by ID
-PostService.prototype.deletePost = async function (postId) {
-	try {
-		const response = await fetch(`${this.apiEndpoints.deletepost}/${postId}`, {
-			method: "DELETE",
-		});
-
-		return true; // Return true if deletion is successful
-	} catch (error) {
-		return false; // Return false on failure
+		return {
+			error: true,
+			message: "Failed to delete post. Please try again.",
+		};
 	}
 };
 

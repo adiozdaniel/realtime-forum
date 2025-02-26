@@ -4,6 +4,7 @@ import { getUserData } from "./authmiddleware.js";
 import { sidebar } from "./sidebar.js";
 import { PostService } from "./postsservice.js";
 import { PostModalManager } from "./createposts.js";
+import { toast } from "./toast.js";
 
 class Header {
 	constructor() {
@@ -259,6 +260,10 @@ Header.prototype.init = async function () {
 		btn.addEventListener("click", (e) => this.handlePostEdit(e));
 	});
 
+	document.querySelectorAll("#postDeleteBtn").forEach((btn) => {
+		btn.addEventListener("click", (e) => this.handlePostDelete(e));
+	});
+
 	this.cancelBtn?.addEventListener("click", (e) => this.handleClose(e));
 	this.modalSubmitBtn?.addEventListener("click", (e) =>
 		this.handlePostUpdate(e)
@@ -291,6 +296,35 @@ Header.prototype.handlePostEdit = function (e) {
 	const post = POSTS.find((post) => post.post_id === postId);
 
 	this.postModalManager.openModal(post);
+};
+
+Header.prototype.handlePostDelete = async function (e) {
+	e.preventDefault();
+	e.stopPropagation();
+
+	const button = e.currentTarget.closest("#postDeleteBtn");
+	if (!button) return;
+	const postId = button.getAttribute("data-post-id");
+
+	const deletePost = confirm("Delete this post?");
+	if (!deletePost) return;
+
+	const postData = {
+		post_id: postId,
+	};
+
+	const res = await this.postService.deletePost(postData);
+	if (res.error) {
+		toast.createToast("error", res.message);
+		return;
+	}
+
+	const postIndex = POSTS.findIndex((post) => post.post_id === postId);
+	if (postIndex !== -1) {
+		POSTS.splice(postIndex, 1);
+	}
+
+	toast.createToast("success", "Post deleted successfully!");
 };
 
 Header.prototype.handleClose = function (e) {

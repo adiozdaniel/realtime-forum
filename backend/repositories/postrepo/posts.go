@@ -53,6 +53,33 @@ func (p *PostsRepo) CreatePost(w http.ResponseWriter, r *http.Request) {
 	p.res.WriteJSON(w, *p.res, http.StatusOK)
 }
 
+// DeletePost deletes a post
+func (p *PostsRepo) DeletePost(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodPost {
+		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+		return
+	}
+
+	var req Post
+
+	err := json.NewDecoder(r.Body).Decode(&req)
+	if err != nil {
+		p.res.SetError(w, err, http.StatusBadRequest)
+		return
+	}
+
+	err = p.post.DeletePost(&req)
+	if err != nil {
+		p.res.SetError(w, err, http.StatusBadRequest)
+		return
+	}
+
+	p.res.Err = false
+	p.res.Message = "Success"
+	p.res.Data = nil
+	p.res.WriteJSON(w, *p.res, http.StatusOK)
+}
+
 // AddLike adds a like to a post
 func (p *PostsRepo) PostAddLike(w http.ResponseWriter, r *http.Request) {
 	// Ensure the request method is POST

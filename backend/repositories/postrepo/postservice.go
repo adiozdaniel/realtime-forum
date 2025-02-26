@@ -59,6 +59,21 @@ func (p *PostService) ListPosts() ([]*Post, error) {
 	return posts, nil
 }
 
+func (p *PostService) DeletePost(post *Post) error {
+	if post.PostID == "" {
+		return errors.New("bad request")
+	}
+
+	post, err := p.post.GetPostByID(post.PostID)
+	if err != nil {
+		return errors.New("bad request")
+	}
+
+	go p.RecordActivity(post.UserID, "deleted_post", "deleted a post: "+post.PostTitle)
+
+	return p.post.DeletePost(post.PostID)
+}
+
 func (p *PostService) PostAddLike(like *Like) (*Like, error) {
 	if like.UserID == "" {
 		return nil, errors.New("user ID cannot be empty")
