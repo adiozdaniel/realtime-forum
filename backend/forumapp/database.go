@@ -3,7 +3,6 @@ package forumapp
 import (
 	"database/sql"
 	"fmt"
-	"log"
 
 	_ "github.com/mattn/go-sqlite3"
 )
@@ -53,7 +52,6 @@ func (d *DataConfig) InitDB(dbPath string) error {
 		return fmt.Errorf("failed to create tables: %v", err)
 	}
 
-	log.Println("Database initialized successfully")
 	return nil
 }
 
@@ -205,7 +203,6 @@ func (tm *TableManager) CreateTables() error {
 	defer func() {
 		if r := recover(); r != nil {
 			tx.Rollback()
-			log.Printf("Recovered from panic: %v", r)
 		} else if err != nil {
 			tx.Rollback()
 		} else {
@@ -223,7 +220,6 @@ func (tm *TableManager) CreateTables() error {
 		if _, err = tx.Exec(query); err != nil {
 			return fmt.Errorf("failed to create %s table: %v", name, err)
 		}
-		log.Printf("Table %s created or already exists\n", name)
 	}
 
 	// Verify tables exist
@@ -242,9 +238,8 @@ func (tm *TableManager) CreateTables() error {
 func (d *DataConfig) Close() {
 	if d.Query != nil {
 		if err := d.Query.Close(); err != nil {
-			log.Printf("Error closing database: %v", err)
 		} else {
-			log.Println("Database connection closed")
+			fmt.Println("Database connection closed")
 		}
 	}
 }
