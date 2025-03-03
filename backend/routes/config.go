@@ -19,7 +19,7 @@ type Routes struct {
 func NewRoutes(
 	app *forumapp.ForumApp,
 ) *Routes {
-	auth := middlewares.NewAuthContext()
+	auth := middlewares.NewAuthContext(app)
 	rendersRepo := renders.NewRendersRepo(app)
 	authRepo := authrepo.NewAuthRepo(app, auth)
 	postsRepo := postrepo.NewPostsRepo(app, auth)

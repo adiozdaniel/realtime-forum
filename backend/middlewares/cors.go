@@ -2,6 +2,7 @@ package middlewares
 
 import (
 	"net/http"
+	"strings"
 )
 
 // CorsMiddleware handles CORS headers
@@ -22,6 +23,30 @@ func (a *AuthContext) CorsMiddleware(next http.Handler) http.Handler {
 		}
 
 		// Pass control to the next handler
+		next.ServeHTTP(w, r)
+	})
+}
+
+// AllowedRoutes handles allowed routes
+func (a *AuthContext) AllowedRoutes(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		// Allow static file serving without checking allowed routes
+		if strings.HasPrefix(r.URL.Path, "/static/") {
+			next.ServeHTTP(w, r)
+			return
+		}
+
+		// Check if the route is allowed
+		if ok := a.app.AllowedRoutes[r.URL.Path]; !ok {
+			data := map[string]interface{}{
+				"Message": r.URL.Path + " is unknown",
+			}
+			w.WriteHeader(http.StatusNotFound)
+			_ = a.render.RenderTemplate(w, "pageNotFound.page.html", data)
+			return
+		}
+
+		// Proceed with the next handler
 		next.ServeHTTP(w, r)
 	})
 }

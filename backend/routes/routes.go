@@ -6,7 +6,6 @@ import (
 
 // Register routes
 func (r *Routes) RegisterRoutes(mux *http.ServeMux) http.Handler {
-
 	// ===== Protected RESTFUL API Endpoints ===== //
 
 	// === Posts ===
@@ -67,6 +66,10 @@ func (r *Routes) RegisterRoutes(mux *http.ServeMux) http.Handler {
 	mux.HandleFunc("/admin", r.rendersRepo.AdminPageHandler)
 
 	// CORS middleware
-	handler := r.auth.CorsMiddleware(r.auth.UserContextMiddleware(mux))
+	handler := r.auth.CorsMiddleware(
+		r.auth.UserContextMiddleware(
+			r.auth.AllowedRoutes(mux),
+		),
+	)
 	return handler
 }
