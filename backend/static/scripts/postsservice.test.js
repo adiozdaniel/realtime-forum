@@ -8,3 +8,12 @@ test("deletePost",async()=>{
     const post=new PostService
     expect(await post.deletePost({we:'hff'}))  
   })
+  test("likePost",async()=>{
+    const post=new PostService
+    const postdata={}
+    const message={
+        error: true,
+        message: "You need to login to like the post!",
+    }
+    expect(await post.likePost(postdata)).toEqual(message) 
+  })
