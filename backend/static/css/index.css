@@ -308,11 +308,62 @@ a {
 
 .category-dropdown {
 	display: flex;
-	flex-direction: column;
-	gap: 1rem;
+	flex-direction: row;
+	flex-wrap: wrap;
+	gap: 0.25rem;
 	margin-left: 15%;
 	margin-top: 5%;
-	height: fit-content;
+	padding: 0.5rem;
+	background-color: var(--background-primary);
+	border: 1px solid var(--border-color);
+	border-radius: 0.5rem;
+	box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+
+/* Category Pill Buttons */
+.category-pill {
+    display: inline-block;
+    padding: 0.4rem 0.8rem;
+    margin: 0.25rem;
+    border: 1px solid var(--gray-200);
+    border-radius: 9999px;
+    background-color: var(--white);
+    color: var(--gray-600);
+    font-size: 0.75rem;
+    cursor: pointer;
+    transition: var(--transition);
+}
+
+.category-pill:hover {
+    background-color: var(--gray-100);
+    color: var(--gray-700);
+}
+
+.category-pill.active {
+    background-color: var(--primary-color);
+    color: var(--white);
+    border-color: var(--primary-color);
+}
+
+.dark-mode .category-pill {
+    background-color: var(--dark-surface);
+    border-color: var(--dark-border);
+    color: var(--dark-text-secondary);
+}
+
+.dark-mode .category-pill:hover {
+    background-color: var(--dark-surface-2);
+}
+
+.dark-mode .category-pill.active {
+    background-color: var(--primary-color);
+    color: var(--dark-text-primary);
+    border-color: var(--primary-hover);
+}
+
+.dark-mode .category-dropdown {
+    background-color: var(--dark-surface);
+    border-color: var(--dark-border);
 }
 
 /* Main Content Styles */
