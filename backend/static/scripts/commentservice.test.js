@@ -21,3 +21,12 @@ test("deletecomment",async()=>{
     }
      expect(await auth.deleteComment({})).toEqual(message)
 })
+test("dislikecomment",async()=>{
+    const auth=new CommentService()
+    const commentId='34'
+    const message={
+        error: true,
+        message: "Failed to delete comment. Please try again.",
+    }
+     expect(!await auth.dislikeComment(commentId))
+})
