@@ -15,26 +15,29 @@ Sidebar.prototype.createCategoryDropdown = function () {
 	// Hardcoded categories
 	const categories = ["tutorial", "discussion", "guide", "question"];
 
-	// Populate the category dropdown with checkboxes
+	// Populate the category dropdown with pill buttons instead of checkboxes
 	categoryDropdown.innerHTML = categories
 		.map(
 			(category) =>
-				`<label><input type="checkbox" class="category-checkbox" value="${category}"> ${category}</label>`
+				`<button class="category-pill" data-category="${category}">${category}</button>`
 		)
 		.join("");
 
 	// Add "All Posts" option at the top
-	const allCategoriesLabel = document.createElement("label");
-	allCategoriesLabel.innerHTML = `<input type="checkbox" class="category-checkbox" value="all" checked> All Posts`;
+	const allCategoriesButton = document.createElement("button");
+	allCategoriesButton.className = "category-pill active";
+	allCategoriesButton.dataset.category = "all";
+	allCategoriesButton.textContent = "All Posts";
 
 	// Ensure "All Posts" appears at the top
-	categoryDropdown.insertBefore(allCategoriesLabel, categoryDropdown.firstChild);
+	categoryDropdown.insertBefore(allCategoriesButton, categoryDropdown.firstChild);
 };
 
-Sidebar.prototype.filterPosts = function () {
-	const selectedCategories = Array.from(
-		document.querySelectorAll(".category-checkbox:checked")
-	).map((checkbox) => checkbox.value);
+Sidebar.prototype.filterPosts = function (selectedCategory) {
+	// Convert single category to array for compatibility with existing code
+	const selectedCategories = selectedCategory === "all" 
+	    ? ["all"] 
+	    : [selectedCategory];
 
 	postManager.searchPosts("", selectedCategories);
 };
@@ -57,18 +60,20 @@ Sidebar.prototype.init = function () {
 	}
 
 	if (categoryDropdown) {
-		categoryDropdown.addEventListener("change", (e) => {
-			if (e.target.classList.contains("category-checkbox")) {
-				const checkbox = e.target;
-				const checkboxes = document.querySelectorAll(".category-checkbox");
-				if (checkbox.value === "all") {
-					checkboxes.forEach((cb) => {
-						if (cb !== checkbox) cb.checked = false;
-					});
-				} else {
-					document.querySelector('.category-checkbox[value="all"]').checked = false;
-				}
-				this.filterPosts();
+		categoryDropdown.addEventListener("click", (e) => {
+			// Handle pill button clicks
+			if (e.target.classList.contains("category-pill")) {
+				const pillButtons = document.querySelectorAll(".category-pill");
+				
+				// Remove active class from all buttons
+				pillButtons.forEach(pill => pill.classList.remove("active"));
+				
+				// Add active class to clicked button
+				e.target.classList.add("active");
+				
+				// Get selected category and filter posts
+				const selectedCategory = e.target.dataset.category;
+				this.filterPosts(selectedCategory);
 			}
 		});
 	}
