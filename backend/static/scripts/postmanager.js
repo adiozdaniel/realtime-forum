@@ -120,7 +120,7 @@ PostManager.prototype.toggleComments = function (e) {
 };
 
 PostManager.prototype.renderPosts = function (posts) {
-	if (!posts || posts.length === 0) {
+	if (posts.length === 0) {
 		 postsContainer.innerHTML = `
 		<div> Uh-oh! There are no posts yet</div>
 		`

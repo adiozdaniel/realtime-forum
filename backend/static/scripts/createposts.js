@@ -194,7 +194,7 @@ PostModalManager.prototype.handleSubmit = async function (e) {
 		}
 		POSTS.unshift(res.data);
 
-		this.posts.renderPosts();
+		this.posts.renderPosts(POSTS);
 	} catch (error) {
 		console.error("Error creating post:", error);
 		this.showUploadError("Error creating post. Please try again.");
