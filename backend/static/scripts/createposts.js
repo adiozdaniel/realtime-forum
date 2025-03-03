@@ -1,6 +1,7 @@
 import { POSTS, TEMP_DATA } from "./data.js";
 import { postManager } from "./postmanager.js";
 import { PostService } from "./postsservice.js";
+import { getUserData } from "./authmiddleware.js";
 
 class PostModalManager {
 	constructor() {
@@ -52,7 +53,14 @@ PostModalManager.prototype.init = function () {
 	this.form.addEventListener("submit", this.handleSubmit.bind(this));
 };
 
-PostModalManager.prototype.openModal = function (post) {
+PostModalManager.prototype.openModal = async function (post) {
+	const userData = await getUserData();
+    if (!userData) {
+        alert("Please login to create posts");
+        window.location.href = "/auth";
+        return;
+    }
+
 	if (window.location.pathname === "/dashboard") {
 		this.form["postTitle"].value = post.post_title;
 		this.form["postContent"].value = post.post_content;
