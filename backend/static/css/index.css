@@ -685,3 +685,19 @@ dark-mode .sidebar-content {
 		display: none;
 	}
 }
+
+.home-button {
+	text-decoration: none;
+	margin-left: 0.5rem;
+	padding: 0.5rem 1rem;
+	background-color: var(--primary-color);
+	color: var(--white);
+	border: none;
+	border-radius: 0.5rem;
+	cursor: pointer;
+	transition: var(--transition);
+}
+
+.home-button:hover {
+	background-color: var(--primary-hover);
+}

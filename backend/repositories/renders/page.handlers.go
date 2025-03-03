@@ -101,3 +101,11 @@ func (m *RendersRepo) ProfilePageHandler(w http.ResponseWriter, r *http.Request)
 		return
 	}
 }
+
+func (m *RendersRepo) NotFoundPageHandler( w http.ResponseWriter, r *http.Request) {
+	err := m.RenderTemplate(w, "pageNotFound.page.html", nil )
+	if err != nil {
+		http.Error(w, "Oops, something went wrong while rendering the page!", http.StatusInternalServerError)
+		return
+	}
+}

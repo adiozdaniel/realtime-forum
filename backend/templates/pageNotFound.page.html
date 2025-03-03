@@ -1,0 +1,8 @@
+{{ template "base" . }}
+{{ define "content" }} 
+<div class="pageNotFound-container">
+    <h1>Oops! We could not find what you're looking for</h1>
+    <p>{{ if .Message }} {{ .Message }} {{ end }}</p>
+    <a href="/" class="home-button">back home</a>
+</div>
+{{ end }}
