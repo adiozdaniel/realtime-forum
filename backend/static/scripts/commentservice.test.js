@@ -5,3 +5,11 @@ test("listComments",async()=>{
     const postID='56'
      expect(!await auth.listCommentsByPost(postID))
 })
+test("updatecomment",async()=>{
+    const auth=new CommentService()
+    const message={
+        error: true,
+        message: "Failed to edit comment. Please try again.",
+    }
+     expect(await auth.updateComment({})).toEqual(message)
+})
