@@ -50,67 +50,12 @@ const REPLIES = {};
 // User Data
 const STATE = {
 	currentView: "overview",
-	darkMode: localStorage.getItem("darkMode") === "true",
+	darkMode: "",
 	profilePic: "",
-	bio:
-		localStorage.getItem("userBio") ||
-		"Hi, I love coding and sharing knowledge with the community!",
-	posts: [
-		{
-			id: 1,
-			content: "Just learned about React hooks!",
-			comments: 5,
-			likes: 12,
-			timestamp: "2h ago",
-		},
-		{
-			id: 2,
-			content: "Working on a new project using TypeScript",
-			comments: 3,
-			likes: 8,
-			timestamp: "5h ago",
-		},
-		{
-			id: 3,
-			content: "Check out my latest blog post about web performance",
-			comments: 8,
-			likes: 15,
-			timestamp: "1d ago",
-		},
-	],
-	userComments: [
-		{
-			id: 1,
-			postTitle: "Introduction to GraphQL",
-			content: "Great explanation!",
-			likes: 5,
-			timestamp: "3h ago",
-		},
-		{
-			id: 2,
-			postTitle: "Docker Best Practices",
-			content: "Very effective!",
-			likes: 3,
-			timestamp: "1d ago",
-		},
-	],
-	activities: [
-		{
-			type: "post",
-			content: "Created a new post",
-			timestamp: "2h ago",
-		},
-		{
-			type: "comment",
-			content: "Commented on 'Docker Best Practices'",
-			timestamp: "1d ago",
-		},
-		{
-			type: "like",
-			content: "Liked 'Introduction to GraphQL'",
-			timestamp: "1d ago",
-		},
-	],
+	bio: "Hi, I love coding and sharing knowledge with the community!",
+	posts: [],
+	userComments: [],
+	activities: [],
 };
 
 const commentLikeState = {
