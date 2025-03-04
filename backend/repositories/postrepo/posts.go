@@ -37,13 +37,13 @@ func (p *PostsRepo) CreatePost(w http.ResponseWriter, r *http.Request) {
 
 	err := json.NewDecoder(r.Body).Decode(&req)
 	if err != nil {
-		p.res.SetError(w, err, http.StatusInternalServerError)
+		p.res.SetError(w, err, http.StatusBadRequest)
 		return
 	}
 
 	post, err := p.post.CreatePost(&req)
 	if err != nil {
-		p.res.SetError(w, err, http.StatusInternalServerError)
+		p.res.SetError(w, err, http.StatusBadRequest)
 		return
 	}
 
