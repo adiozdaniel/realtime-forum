@@ -18,6 +18,8 @@ class PostManager {
 }
 
 PostManager.prototype.createPostHTML = function (post) {
+	if (!post) return;
+	
 	const isLiked =
 		this.likeState.posts[post.post_id]?.likedBy.has("current-user");
 	const isDisliked =
@@ -127,7 +129,10 @@ PostManager.prototype.renderPosts = function (posts) {
 		return
 	};
 
+	console.log(posts);
+
 	posts.forEach((post) => {
+		if (post){
 		post.post_timeAgo = formatTimeAgo(post.created_at);
 		post.post_likes = post.likes?.length || 0;
 		post.post_dislikes = post.dislikes?.length || 0;
@@ -146,6 +151,7 @@ PostManager.prototype.renderPosts = function (posts) {
 			count: post?.post_dislikes || 0,
 			dislikedBy: new Set(),
 		};
+	}
 	});
 
 	postsContainer.innerHTML = posts

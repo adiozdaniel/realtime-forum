@@ -54,6 +54,7 @@ const STATE = {
 	profilePic: "",
 	bio: "Hi, I love coding and sharing knowledge with the community!",
 	posts: [],
+	likedPosts: [],
 	userComments: [],
 	activities: [],
 };

@@ -30,6 +30,7 @@ ProfileDashboard.prototype.init = async function () {
 	if (userData.data) {
 		this.state.profilePic = userData.data.user_info?.image;
 		this.state.posts = userData.data.posts || [];
+		this.state.likedPosts = userData.data.liked_posts || [];
 		this.state.userComments = userData.data.comments || [];
 		this.state.activities = userData.data.activities || [];
 		this.state.likes = userData.data.likes;
@@ -39,6 +40,8 @@ ProfileDashboard.prototype.init = async function () {
 		this.state.username = userData.data.user_info?.user_name;
 
 		this.userData = userData.data.user_info;
+
+		console.log(userData.data);
 	}
 
 	this.cacheElements();
@@ -189,6 +192,7 @@ ProfileDashboard.prototype.cacheElements = function () {
 		sections: {
 			overview: document.getElementById("overviewSection"),
 			posts: document.getElementById("postsSection"),
+			likedPosts : document.getElementById("likedPostsSection"),
 			comments: document.getElementById("commentsSection"),
 			settings: document.getElementById("settingsSection"),
 		},
@@ -215,8 +219,13 @@ ProfileDashboard.prototype.setupEventListeners = function () {
 		"click",
 		this.editBio.bind(this)
 	);
-	this.elements.sidebarItems.forEach((item) =>
+	this.elements.sidebarItems.forEach((item) =>{
 		item.addEventListener("click", () => this.switchView(item.dataset.view))
+		
+		const data = item.getAttribute("data-view");
+
+		if (data === "likedPosts") item.addEventListener("click", this.renderLikedPosts.bind(this));
+	}
 	);
 };
 
@@ -227,7 +236,7 @@ ProfileDashboard.prototype.switchView = function (view) {
 
 ProfileDashboard.prototype.updateActiveSection = function () {
 	// Hide all sections
-	Object.values(this.elements.sections).forEach((section) =>
+	Object.values(this.elements.sections).forEach((section) => 
 		section.classList.add("hidden")
 	);
 
@@ -239,6 +248,12 @@ ProfileDashboard.prototype.updateActiveSection = function () {
 	);
 	if (activeItem) activeItem.classList.add("active");
 };
+
+ProfileDashboard.prototype.renderLikedPosts = function (e) {
+	e.stopPropagation();
+	e.preventDefault();
+	postManager.renderPosts(this.state.likedPosts);
+}
 
 ProfileDashboard.prototype.toggleDarkMode = function () {
 	this.state.darkMode = !this.state.darkMode;
