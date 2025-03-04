@@ -22,6 +22,7 @@ type PostRepo interface {
 	GetCommentsByUserID(userID string) ([]*Comment, error)
 	GetRepliesByUserID(userID string) ([]*Reply, error)
 	GetLikesByUserID(userID string) ([]*Like, error)
+	GetLikedPostsByUserID(userID string) ([]*Post, error)
 	GetDislikesByUserID(userID string) ([]*Like, error)
 	AddActivity(activity *Activity) (*Activity, error)
 	GetActivitiesByUserID(userID string) ([]*Activity, error)

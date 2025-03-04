@@ -69,6 +69,10 @@ func (p *PostService) ListPosts() ([]*Post, error) {
 	return posts, nil
 }
 
+func (p *PostService) GetLikedPosts(userId string) ([]*Post, error) {
+	return p.post.GetLikedPostsByUserID(userId)
+}
+
 func (p *PostService) DeletePost(post *Post) error {
 	if post.PostID == "" {
 		return errors.New("bad request")

@@ -200,5 +200,11 @@ func (u *UserService) GetUserDashboard(user string) (*UserData, error) {
 	}
 	userData.Activities = activities
 
+	likedPosts, err := u.postService.GetLikedPosts(user)
+	if err != nil {
+		return nil, err
+	}
+	userData.LikedPosts = likedPosts
+
 	return &userData, nil
 }

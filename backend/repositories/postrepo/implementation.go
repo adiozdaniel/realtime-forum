@@ -406,6 +406,24 @@ func (r *PostRepository) GetPostsByUserID(userID string) ([]*Post, error) {
 	return posts, nil
 }
 
+// GetLikedPostsByUserID retrieves all posts liked by a user
+func (r *PostRepository)GetLikedPostsByUserID(userID string) ([]*Post, error){
+	likes, err := r.GetLikesByUserID(userID)
+	if err != nil {
+		return nil, err
+	}
+
+	var posts []*Post
+	for _, like := range likes {
+		if like.CommentID == "" && like.ReplyID == "" {
+			post, _ := r.GetPostByLikeID(like.LikeID, userID)
+			posts = append(posts, post)
+		}
+	}
+
+	return posts, nil
+}
+
 // GetCommentsByUserID retrieves all comments created by a specific user
 func (r *PostRepository) GetCommentsByUserID(userID string) ([]*Comment, error) {
 	query := `SELECT comment_id, post_id, post_title, post_author, post_author_img, user_id, user_name, author_img, parent_comment_id, comment, created_at, updated_at FROM comments WHERE user_id = ?`
