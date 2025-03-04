@@ -296,8 +296,9 @@ Header.prototype.init = async function () {
 	});
 
 	this.cancelBtn?.addEventListener("click", (e) => this.handleClose(e));
-	this.modalSubmitBtn?.addEventListener("click", (e) =>
-		this.handlePostUpdate(e)
+	this.modalSubmitBtn?.addEventListener("click", (e) => {
+	 if (window.location.pathname === "/dashboard")	this.handlePostUpdate(e)
+	}
 	);
 
 	// Check for saved dark mode preference
