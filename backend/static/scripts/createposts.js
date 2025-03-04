@@ -2,6 +2,7 @@ import { POSTS, TEMP_DATA } from "./data.js";
 import { postManager } from "./postmanager.js";
 import { PostService } from "./postsservice.js";
 import { getUserData } from "./authmiddleware.js";
+import { toast } from "./toast.js";
 
 class PostModalManager {
 	constructor() {
@@ -55,11 +56,11 @@ PostModalManager.prototype.init = function () {
 
 PostModalManager.prototype.openModal = async function (post) {
 	const userData = await getUserData();
-    if (!userData) {
-        alert("Please login to create posts");
-        window.location.href = "/auth";
-        return;
-    }
+	if (!userData) {
+		alert("Please login to create posts");
+		window.location.href = "/auth";
+		return;
+	}
 
 	if (window.location.pathname === "/dashboard") {
 		this.form["postTitle"].value = post.post_title;
@@ -135,10 +136,14 @@ PostModalManager.prototype.handleImageUpload = async function (e) {
 
 	try {
 		const imgRes = await this.postService.uploadPostImg(formData);
+		console.log(imgRes)
 
 		if (imgRes.error) alert(imgRes.message);
+		console.log("before pop", TEMP_DATA)
 
-		if (imgRes.data !== null) TEMP_DATA = imgRes.data;
+		if (imgRes?.data?.data) TEMP_DATA = imgRes.data.data;
+
+		console.log("after pop", TEMP_DATA)
 	} catch (error) {
 		this.showUploadError("Error uploading image. Please try again.");
 		this.imageUpload.value = "";
@@ -195,17 +200,16 @@ PostModalManager.prototype.handleSubmit = async function (e) {
 		PostVideo: this.videoLink.value || null,
 	};
 
-	try {
-		const res = await this.postService.createPost(formData);
-		if (!res.error) {
-			this.closeModal();
-		}
-		POSTS.unshift(res.data);
+	const res = await this.postService.createPost(formData);
+	if (res.error) {
+		toast.createToast("error", res.message)
+		return
+	}
 
+	if (res.data) {
+		this.closeModal();
+		POSTS.unshift(res.data);
 		this.posts.renderPosts(POSTS);
-	} catch (error) {
-		console.error("Error creating post:", error);
-		this.showUploadError("Error creating post. Please try again.");
 	}
 };
 
