@@ -232,6 +232,57 @@ func (p *PostService) CommentAddLike(like *Like) (*Like, error) {
 	return p.post.AddLike(like)
 }
 
+func (p *PostService) CommentAddDisLike(dislike *Like) (*Like, error) {
+	if dislike.UserID == "" {
+		return nil, errors.New("user ID cannot be empty")
+	}
+
+	comment, err := p.post.GetCommentByID(dislike.CommentID)
+	if err != nil {
+		return nil, errors.New("bad request")
+	}
+
+	msg := "removed a comment dislike"
+
+	haslike, _ := p.post.HasUserLiked(dislike.CommentID, dislike.UserID, "Comment")
+	if haslike != "" {
+		dislike.LikeID = haslike
+		go p.DeleteLike(dislike, "likes")
+	}
+
+	hasDisLike, _ := p.post.HasUserDisliked(dislike.CommentID, dislike.UserID, "Comment")
+	if haslike != "" {
+		dislike.LikeID = hasDisLike
+
+		go p.RecordActivity(dislike.UserID, msg, msg+" on: "+comment.Content)
+
+		return nil, p.DeleteLike(dislike, "dislikes")
+	}
+
+	dislike.LikeID, _ = p.shared.GenerateUUID()
+	dislike.CreatedAt = time.Now()
+
+	msg = "disliked a comment: "
+	go p.RecordActivity(dislike.UserID, msg, msg+comment.Content)
+
+	nId, _ := p.shared.GenerateUUID()
+	_, err = p.CreateNotification(&Notification{
+		NotificationID:   nId,
+		UserId:           comment.UserID,
+		SenderID:         dislike.UserID,
+		CommentID:        p.shared.ToNullString(comment.CommentID),
+		NotificationType: "success",
+		Message:          "disliked: " + comment.Content,
+		IsRead:           false,
+		CreatedAt:        time.Now(),
+	})
+	if err != nil {
+		log.Println(err)
+	}
+
+	return p.post.PostDislike(dislike)
+}
+
 func (p *PostService) DeleteLike(dislike *Like, entityType string) error {
 	if dislike.LikeID == "" {
 		return errors.New("like ID cannot be empty")

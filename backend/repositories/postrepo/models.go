@@ -43,6 +43,7 @@ type Comment struct {
 	CreatedAt       time.Time      `json:"created_at"`
 	UpdatedAt       time.Time      `json:"updated_at"`
 	Likes           []*Like        `json:"likes"`
+	Dislikes        []*Like        `json:"dislikes"`
 	Replies         []*Reply       `json:"replies"`
 }
 

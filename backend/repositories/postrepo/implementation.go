@@ -157,6 +157,9 @@ func (r *PostRepository) GetCommentsByPostID(postID string) ([]*Comment, error) 
 		// Fetch likes for this comment
 		comment.Likes, _ = r.GetLikesByCommentID(comment.CommentID)
 
+		// Fetch dislikes for this comment
+		comment.Dislikes, _ = r.GetDislikesByCommentID(comment.CommentID)
+
 		// Fetch replies for this comment
 		comment.Replies, _ = r.GetRepliesByCommentID(comment.CommentID)
 
@@ -212,6 +215,27 @@ func (r *PostRepository) GetLikesByCommentID(commentID string) ([]*Like, error) 
 	return likes, nil
 }
 
+// GetDislikesByCommentID retrieves all dislikes for a comment by its ID
+func (r *PostRepository) GetDislikesByCommentID(commentID string) ([]*Like, error) {
+	query := `SELECT like_id, user_id FROM dislikes WHERE comment_id = ?`
+	rows, err := r.DB.Query(query, commentID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var likes []*Like
+	for rows.Next() {
+		like := &Like{}
+		err := rows.Scan(&like.LikeID, &like.UserID)
+		if err != nil {
+			return nil, err
+		}
+		likes = append(likes, like)
+	}
+	return likes, nil
+}
+
 // GetLikesByReplyID retrieves all likes for a reply by its ID
 func (r *PostRepository) GetLikesByReplyID(replyID string) ([]*Like, error) {
 	query := `SELECT like_id, user_id FROM likes WHERE reply_id = ?`
@@ -236,7 +260,7 @@ func (r *PostRepository) GetLikesByReplyID(replyID string) ([]*Like, error) {
 // PostDisLike removes a like from a post
 func (r *PostRepository) PostDislike(dislike *Like) (*Like, error) {
 	query := `INSERT INTO dislikes (like_id, user_id, post_id, comment_id, reply_id, created_at)
-	          VALUES (?, ?, ?, NULLIF(?, ''), NULLIF(?, ''), ?)`
+	          VALUES (?, ?, NULLIF(?, ''), NULLIF(?, ''), NULLIF(?, ''), ?)`
 	_, err := r.DB.Exec(query, dislike.LikeID, dislike.UserID, dislike.PostID, dislike.CommentID, dislike.ReplyID, dislike.CreatedAt)
 	return dislike, err
 }

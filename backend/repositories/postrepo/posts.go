@@ -138,6 +138,35 @@ func (p *PostsRepo) CommentAddLike(w http.ResponseWriter, r *http.Request) {
 	p.res.WriteJSON(w, *p.res, http.StatusOK)
 }
 
+// CommentAddDisLike adds a like to a post
+func (p *PostsRepo) CommentAddDisLike(w http.ResponseWriter, r *http.Request) {
+	// Ensure the request method is POST
+	if r.Method != http.MethodPost {
+		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+		return
+	}
+
+	// Decode the request body into a PostLike struct
+	var req Like
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		p.res.SetError(w, fmt.Errorf("invalid request payload: %v", err), http.StatusBadRequest)
+		return
+	}
+
+	// Call the AddLike method to add a like to the post
+	commentLike, err := p.post.CommentAddDisLike(&req)
+	if err != nil {
+		p.res.SetError(w, fmt.Errorf("failed to add like to post: %v", err), http.StatusBadRequest)
+		return
+	}
+
+	// Prepare and send the success response
+	p.res.Err = false
+	p.res.Message = "Success"
+	p.res.Data = commentLike
+	p.res.WriteJSON(w, *p.res, http.StatusOK)
+}
+
 // Dislike removes a like from a post
 func (p *PostsRepo) PostDislike(w http.ResponseWriter, r *http.Request) {
 	// Ensure the request method is POST
