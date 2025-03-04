@@ -5,7 +5,7 @@ import { postLikeState, postDislikeState, POSTS, COMMENTS } from "./data.js";
 import { getUserData } from "./authmiddleware.js";
 import { PostModalManager } from "./createposts.js";
 
-const postsContainer = document.querySelector("#postsContainer");
+const postsContainers = document.querySelectorAll("#postsContainer");
 
 const commentManager = new CommentManager();
 
@@ -19,7 +19,7 @@ class PostManager {
 
 PostManager.prototype.createPostHTML = function (post) {
 	if (!post) return;
-	
+
 	const isLiked =
 		this.likeState.posts[post.post_id]?.likedBy.has("current-user");
 	const isDisliked =
@@ -59,7 +59,10 @@ PostManager.prototype.createPostHTML = function (post) {
 			<div class="post-categories">
 				${post.post_category
 					.split(" ") // Split multiple categories
-					.map((category) => `<span class="post-category">${category.trim()}</span>`)
+					.map(
+						(category) =>
+							`<span class="post-category">${category.trim()}</span>`
+					)
 					.join("")}
 			</div>
             <h3 class="post-title">${post.post_title}</h3>
@@ -107,7 +110,6 @@ PostManager.prototype.createPostHTML = function (post) {
     `;
 };
 
-
 PostManager.prototype.toggleComments = function (e) {
 	if (window.location.pathname !== "/") return;
 
@@ -123,40 +125,44 @@ PostManager.prototype.toggleComments = function (e) {
 
 PostManager.prototype.renderPosts = function (posts) {
 	if (posts.length === 0) {
-		 postsContainer.innerHTML = `
-		<div> Uh-oh! There are no posts yet</div>
-		`
-		return
-	};
-
-	console.log(posts);
+		postsContainers.forEach((container) => {
+			if (!container.classList.contains("hidden")) {
+				container.innerHTML = `<div>Uh-oh! There are no posts yet</div>`;
+			}
+		});
+		return;
+	}
 
 	posts.forEach((post) => {
-		if (post){
-		post.post_timeAgo = formatTimeAgo(post.created_at);
-		post.post_likes = post.likes?.length || 0;
-		post.post_dislikes = post.dislikes?.length || 0;
-		post.post_comments = post.comments?.length || 0;
+		if (post) {
+			post.post_timeAgo = formatTimeAgo(post.created_at);
+			post.post_likes = post.likes?.length || 0;
+			post.post_dislikes = post.dislikes?.length || 0;
+			post.post_comments = post.comments?.length || 0;
 
-		if (post.post_hasComments) {
-			COMMENTS[post.post_id] = post.comments;
+			if (post.post_hasComments) {
+				COMMENTS[post.post_id] = post.comments;
+			}
+
+			post.post_likes = this.likeState.posts[post.post_id] = {
+				count: post?.post_likes || 0,
+				likedBy: new Set(),
+			};
+
+			post.post_dislikes = this.dislikeState.posts[post.post_id] = {
+				count: post?.post_dislikes || 0,
+				dislikedBy: new Set(),
+			};
 		}
-
-		post.post_likes = this.likeState.posts[post.post_id] = {
-			count: post?.post_likes || 0,
-			likedBy: new Set(),
-		};
-
-		post.post_dislikes = this.dislikeState.posts[post.post_id] = {
-			count: post?.post_dislikes || 0,
-			dislikedBy: new Set(),
-		};
-	}
 	});
 
-	postsContainer.innerHTML = posts
-		.map((post) => this.createPostHTML(post))
-		.join("");
+	const postsHTML = posts.map((post) => this.createPostHTML(post)).join("");
+	postsContainers.forEach((container) => {
+		if (!container.classList.contains("hidden")) {
+			container.innerHTML = postsHTML;
+		}
+	});
+
 	this.attachPostEventListeners();
 };
 
