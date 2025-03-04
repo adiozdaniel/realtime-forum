@@ -28,6 +28,7 @@ class PostModalManager {
 		this.ALLOWED_TYPES = ["image/jpeg", "image/png", "image/gif"];
 		this.postService = new PostService();
 		this.posts = postManager;
+		this.tempData = null;
 	}
 }
 
@@ -51,7 +52,7 @@ PostModalManager.prototype.init = function () {
 		"click",
 		this.removeVideoPreview.bind(this)
 	);
-	this.form.addEventListener("submit", this.handleSubmit.bind(this));
+	this.form.addEventListener("submit", ((e) => this.handleSubmit(e)));
 };
 
 PostModalManager.prototype.openModal = async function (post) {
@@ -131,22 +132,22 @@ PostModalManager.prototype.handleImageUpload = async function (e) {
 	};
 	reader.readAsDataURL(file);
 
+	this.tempData = null;
 	const formData = new FormData();
 	formData.append("image", file);
 
-	try {
-		const imgRes = await this.postService.uploadPostImg(formData);
-		console.log(imgRes)
+	const imgRes = await this.postService.uploadPostImg(formData);
 
-		if (imgRes.error) alert(imgRes.message);
-		console.log("before pop", TEMP_DATA)
-
-		if (imgRes?.data?.data) TEMP_DATA = imgRes.data.data;
-
-		console.log("after pop", TEMP_DATA)
-	} catch (error) {
-		this.showUploadError("Error uploading image. Please try again.");
+	if (imgRes.error) {
+		toast.createToast("error", imgRes.message)
+		this.showUploadError(imgRes.message);
 		this.imageUpload.value = "";
+		this.tempData = null;
+		return;
+	};
+
+	if (imgRes.data) {
+		this.tempData = imgRes.data;
 	}
 };
 
@@ -173,7 +174,7 @@ PostModalManager.prototype.removeImagePreview = function () {
 	if (this.videoPreviewContainer.classList.contains("hidden")) {
 		this.mediaPreview.classList.add("hidden");
 	}
-	TEMP_DATA = null;
+	this.tempData = null;
 };
 
 PostModalManager.prototype.removeVideoPreview = function () {
@@ -187,18 +188,33 @@ PostModalManager.prototype.removeVideoPreview = function () {
 PostModalManager.prototype.handleSubmit = async function (e) {
 	e.preventDefault();
 
-	const formData = {
-		PostTitle: document.getElementById("postTitle").value,
-		PostCategory: Array.from(
-			document.querySelectorAll('input[name="postCategory"]:checked')
-		)
-			.map((checkbox) => checkbox.value)
-			.join(" "),
-		PostContent: document.getElementById("postContent").value,
-		PostImage: TEMP_DATA?.img || null,
-		PostID: TEMP_DATA?.post_id || null,
-		PostVideo: this.videoLink.value || null,
-	};
+	let formData = {};
+
+	if (this.tempData) {
+		formData = {
+			PostTitle: document.getElementById("postTitle").value,
+			PostCategory: Array.from(
+				document.querySelectorAll('input[name="postCategory"]:checked')
+			)
+				.map((checkbox) => checkbox.value)
+				.join(" "),
+			PostContent: document.getElementById("postContent").value,
+			PostVideo: this.videoLink.value || null,
+			PostImage: this.tempData.img || null,
+			PostID: this.tempData.post_id || null
+		}
+	} else {
+		formData = {
+			PostTitle: document.getElementById("postTitle").value,
+			PostCategory: Array.from(
+				document.querySelectorAll('input[name="postCategory"]:checked')
+			)
+				.map((checkbox) => checkbox.value)
+				.join(" "),
+			PostContent: document.getElementById("postContent").value,
+			PostVideo: this.videoLink.value || null,
+		}
+	}
 
 	const res = await this.postService.createPost(formData);
 	if (res.error) {
