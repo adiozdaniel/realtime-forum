@@ -31,6 +31,13 @@ func (u *UserService) Register(user *User) error {
 		return errors.New("email or password cannot be empty")
 	}
 
+	name := u.shared.CleanUsername(user.UserName)
+	if name == "" {
+		return errors.New("username cannot be empty and contains only letters")
+	}
+
+	user.UserName = name
+
 	existingUser, _ := u.user.GetUserByEmail(user.Email)
 	if existingUser != nil {
 		return errors.New("this email is already in use")

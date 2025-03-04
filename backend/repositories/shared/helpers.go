@@ -6,6 +6,7 @@ import (
 	"errors"
 	"fmt"
 	"reflect"
+	"regexp"
 	"strings"
 )
 
@@ -33,7 +34,7 @@ func (s *SharedConfig) ToNullString(str string) sql.NullString {
 }
 
 // Helper function to trims spaces
-func SanitizeString(value string) string {
+func (s *SharedConfig) SanitizeString(value string) string {
 	return strings.TrimSpace(value)
 }
 
@@ -61,13 +62,13 @@ func (s *SharedConfig) SanitizeInput(input any) (any, error) {
 
 		switch field.Kind() {
 		case reflect.String:
-			field.SetString(SanitizeString(field.String()))
+			field.SetString(s.SanitizeString(field.String()))
 
 		case reflect.Struct:
 			// Special case for sql.NullString and similar types
 			if fieldType.Type == reflect.TypeOf(sql.NullString{}) {
 				ns := field.Interface().(sql.NullString)
-				ns.String = SanitizeString(ns.String)
+				ns.String = s.SanitizeString(ns.String)
 				field.Set(reflect.ValueOf(ns))
 				continue
 			}
@@ -109,4 +110,11 @@ func (s *SharedConfig) SanitizeInput(input any) (any, error) {
 		}
 	}
 	return input, nil
+}
+
+// Helper function to sanitize name
+func (s *SharedConfig) CleanUsername(name string) string {
+	name = strings.TrimSpace(name)
+	re := regexp.MustCompile(`[^a-zA-Z]`)
+	return s.SanitizeString(re.ReplaceAllString(name, " "))
 }
