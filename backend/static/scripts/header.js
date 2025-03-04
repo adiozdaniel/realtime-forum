@@ -193,7 +193,7 @@ Header.prototype.markNotificationAsRead = async function (not) {
 
 	const res = await this.postService.markNotificationAsRead(not);
 
-	if (res.error){
+	if (res.error) {
 		toast.createToast("error", res.message);
 		return
 	}
@@ -240,23 +240,18 @@ Header.prototype.handlePostUpdate = async function (e) {
 		formData.PostID = TEMP_DATA.post_id;
 	}
 
-	try {
-		const res = await this.postService.createPost(formData);
-		if (res.error) {
-			alert(res.message);
-		}
-
-		if (res.data) {
-			this.postModalManager.closeModal();
-			POSTS.unshift(res.data);
-
-			postManager.renderPosts();
-		}
-	} catch (error) {
-		console.error("Error creating post:", error);
+	const res = await this.postService.createPost(formData);
+	if (res.error) {
+		toast.createToast("error", res.message);
 		this.postModalManager.showUploadError(
 			"Error creating post. Please try again."
 		);
+	}
+
+	if (res.data) {
+		this.postModalManager.closeModal();
+		POSTS.unshift(res.data);
+		postManager.renderPosts(POSTS);
 	}
 };
 
