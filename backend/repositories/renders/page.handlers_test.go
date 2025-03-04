@@ -12,7 +12,7 @@ import (
 func TestHomePageHandler(t *testing.T) {
 	t.Run("template", func(t *testing.T) {
 		r := make(map[string]*template.Template)
-		r["home.ipage.html"] = template.New("home.ipage.html")
+		r["home.page.html"] = template.New("home.page.html")
 		tmplcach := &forumapp.TemplateCache{Pages: r}
 		fapp := &forumapp.ForumApp{}
 		fapp.Tmpls = tmplcach
@@ -20,8 +20,8 @@ func TestHomePageHandler(t *testing.T) {
 		req := httptest.NewRequest(http.MethodGet, "/", nil)
 		writer := httptest.NewRecorder()
 		h.HomePageHandler(writer, req)
-		if writer.Code != http.StatusInternalServerError {
-			t.Errorf("Expected Method %d,got %d", http.StatusInternalServerError, writer.Code)
+		if writer.Code != http.StatusOK {
+			t.Errorf("Expected Method %d,got %d", http.StatusOK, writer.Code)
 		}
 	})
 	t.Run("Method", func(t *testing.T) {
@@ -60,7 +60,7 @@ func TestLoginPageHandler(t *testing.T) {
 	})
 	t.Run("template", func(t *testing.T) {
 		r := make(map[string]*template.Template)
-		r["home.page.html"] = template.New("home.page.html")
+		r["login.page.html"] = template.New("login.page.html")
 		tmplcach := &forumapp.TemplateCache{Pages: r}
 
 		fapp := &forumapp.ForumApp{}
@@ -71,8 +71,8 @@ func TestLoginPageHandler(t *testing.T) {
 		writer := httptest.NewRecorder()
 
 		h.LoginPageHandler(writer, req)
-		if writer.Code != http.StatusInternalServerError {
-			t.Errorf("Expected Method %d,got %d", http.StatusInternalServerError, writer.Code)
+		if writer.Code != http.StatusOK {
+			t.Errorf("Expected Method %d,got %d", http.StatusOK, writer.Code)
 		}
 	})
 }
@@ -80,7 +80,7 @@ func TestLoginPageHandler(t *testing.T) {
 func TestSignUpPageHandler(t *testing.T) {
 	t.Run("Test httpmethod", func(t *testing.T) {
 		r := make(map[string]*template.Template)
-		r["home.page.html"] = template.New("home.page.html")
+		r["signup.page.html"] = template.New("signup.page.html")
 		tmplcach := &forumapp.TemplateCache{Pages: r}
 
 		fapp := &forumapp.ForumApp{}
@@ -97,7 +97,7 @@ func TestSignUpPageHandler(t *testing.T) {
 	})
 	t.Run("template", func(t *testing.T) {
 		r := make(map[string]*template.Template)
-		r["home.page.html"] = template.New("home.page.html")
+		r["signup.page.html"] = template.New("signup.page.html")
 		tmplcach := &forumapp.TemplateCache{Pages: r}
 
 		fapp := &forumapp.ForumApp{}
@@ -109,8 +109,8 @@ func TestSignUpPageHandler(t *testing.T) {
 		writer := httptest.NewRecorder()
 
 		h.SignUpPageHandler(writer, req)
-		if writer.Code != http.StatusInternalServerError {
-			t.Errorf("Expected Method %d,got %d", http.StatusInternalServerError, writer.Code)
+		if writer.Code != http.StatusOK {
+			t.Errorf("Expected Method %d,got %d", http.StatusOK, writer.Code)
 		}
 	})
 }
@@ -118,7 +118,7 @@ func TestSignUpPageHandler(t *testing.T) {
 func TestModeratorPageHandler(t *testing.T) {
 	t.Run("Test httpmethod", func(t *testing.T) {
 		r := make(map[string]*template.Template)
-		r["home.page.html"] = template.New("home.page.html")
+		r["moderator.page.html"] = template.New("moderator.page.html")
 		tmplcach := &forumapp.TemplateCache{Pages: r}
 
 		fapp := &forumapp.ForumApp{}
@@ -135,7 +135,7 @@ func TestModeratorPageHandler(t *testing.T) {
 	})
 	t.Run("Template", func(t *testing.T) {
 		r := make(map[string]*template.Template)
-		r["home.page.html"] = template.New("home.page.html")
+		r["moderator.page.html"] = template.New("moderator.page.html")
 		tmplcach := &forumapp.TemplateCache{Pages: r}
 
 		fapp := &forumapp.ForumApp{}
@@ -146,8 +146,8 @@ func TestModeratorPageHandler(t *testing.T) {
 		writer := httptest.NewRecorder()
 
 		h.ModeratorPageHandler(writer, req)
-		if writer.Code != http.StatusInternalServerError {
-			t.Errorf("Expected Method %d,got %d", http.StatusInternalServerError, writer.Code)
+		if writer.Code != http.StatusOK {
+			t.Errorf("Expected Method %d,got %d", http.StatusOK, writer.Code)
 		}
 	})
 }
@@ -155,7 +155,7 @@ func TestModeratorPageHandler(t *testing.T) {
 func TestAdminPageHandler(t *testing.T) {
 	t.Run("Test httpmethod", func(t *testing.T) {
 		r := make(map[string]*template.Template)
-		r["home.page.html"] = template.New("home.page.html")
+		r["admin.page.html"] = template.New("admin.page.html")
 		tmplcach := &forumapp.TemplateCache{Pages: r}
 
 		fapp := &forumapp.ForumApp{}
@@ -172,7 +172,7 @@ func TestAdminPageHandler(t *testing.T) {
 	})
 	t.Run("Template", func(t *testing.T) {
 		r := make(map[string]*template.Template)
-		r["home.page.html"] = template.New("home.page.html")
+		r["admin.page.html"] = template.New("admin.page.html")
 		tmplcach := &forumapp.TemplateCache{Pages: r}
 
 		fapp := &forumapp.ForumApp{}
@@ -183,8 +183,8 @@ func TestAdminPageHandler(t *testing.T) {
 		writer := httptest.NewRecorder()
 
 		h.AdminPageHandler(writer, req)
-		if writer.Code != http.StatusInternalServerError {
-			t.Errorf("Expected Method %d,got %d", http.StatusInternalServerError, writer.Code)
+		if writer.Code != http.StatusOK {
+			t.Errorf("Expected Method %d,got %d", http.StatusOK, writer.Code)
 		}
 	})
 }
