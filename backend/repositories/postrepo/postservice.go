@@ -104,7 +104,7 @@ func (p *PostService) PostAddLike(like *Like) (*Like, error) {
 	if hasDisliked != "" {
 		like.LikeID = hasDisliked
 
-		go p.DeleteLike(like, "dislikes")
+		p.DeleteLike(like, "dislikes")
 	}
 
 	haslike, _ := p.post.HasUserLiked(post.PostID, like.UserID, "Post")
@@ -155,7 +155,7 @@ func (p *PostService) PostDisLike(dislike *Like) (*Like, error) {
 	haslike, _ := p.post.HasUserLiked(post.PostID, dislike.UserID, "Post")
 	if haslike != "" {
 		dislike.LikeID = haslike
-		go p.DeleteLike(dislike, "likes")
+		p.DeleteLike(dislike, "likes")
 	}
 
 	hasDisliked, _ := p.post.HasUserDisliked(post.PostID, dislike.UserID, "Post")
