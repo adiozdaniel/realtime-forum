@@ -2,14 +2,22 @@ package authrepo
 
 import (
 	//"database/sql"
+	"math/rand"
+	"strconv"
 	"testing"
 	"time"
+)
+
+var (
+	id    = rand.Intn(100)
+	idstr = strconv.Itoa(id)
 )
 
 func TestCreateUser(t *testing.T) {
 	db := CreateDb()
 	userrepo := &UserRepository{DB: db.Db}
-	user := &User{Email: "h1@R.COM", Password: "Naaahshshs786$", UserID: "1", UserName: "Abasa", Bio: "Wanderer", CreatedAt: time.Now(), UpdatedAt: time.Now().Add(1 * time.Hour)}
+
+	user := &User{Email: "h" + idstr + "@R.COM", Password: "Naaahshshs786$", UserID: idstr, UserName: "Abasa", Bio: "Wanderer", CreatedAt: time.Now(), UpdatedAt: time.Now().Add(1 * time.Hour)}
 	err := userrepo.CreateUser(user)
 	if err != nil {
 		t.Errorf("expected %v got %v", nil, err)
@@ -19,7 +27,7 @@ func TestCreateUser(t *testing.T) {
 func TestGetUserByEmail(t *testing.T) {
 	db := CreateDb()
 	userrepo := &UserRepository{DB: db.Db}
-	_, err := userrepo.GetUserByEmail("h@R.COM")
+	_, err := userrepo.GetUserByEmail("h" + idstr + "@R.COM")
 	if err != nil {
 		t.Errorf("expected %v got %v", nil, err)
 	}
@@ -28,7 +36,7 @@ func TestGetUserByEmail(t *testing.T) {
 func TestDeleteUser(t *testing.T) {
 	db := CreateDb()
 	userrepo := &UserRepository{DB: db.Db}
-	err := userrepo.DeleteUser("")
+	err := userrepo.DeleteUser("h" + idstr + "@R.COM")
 	if err != nil {
 		t.Errorf("expected %v got %v", nil, err)
 	}
