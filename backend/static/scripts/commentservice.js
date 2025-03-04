@@ -131,11 +131,11 @@ CommentService.prototype.likeComment = async function (commentData) {
 };
 
 // Method to dislike a comment by ID
-CommentService.prototype.dislikeComment = async function (commentID) {
+CommentService.prototype.dislikeComment = async function (commentData) {
 	try {
-		const response = await fetch(this.apiEndpoints.dislikeComment, {
+		const response = await fetch(this.apiEndpoints.dislikecomment, {
 			method: "POST",
-			body: JSON.stringify({ comment_id: commentID }),
+			body: JSON.stringify(commentData),
 			headers: { "Content-Type": "application/json" },
 		});
 

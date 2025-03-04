@@ -30,7 +30,7 @@ const API_ENDPOINTS = {
 
 	// notification ENDPOINTS
 	checkNotifications: "/api/notifications/check",
-	readNotifications: "/api/notifications/read"
+	readNotifications: "/api/notifications/read",
 };
 
 // Constants
@@ -62,6 +62,10 @@ const commentLikeState = {
 	comments: {},
 };
 
+const commentDisLikeState = {
+	comments: {},
+};
+
 const postLikeState = {
 	posts: {},
 	comments: {},
@@ -78,6 +82,7 @@ export {
 	CONSTANTS,
 	STATE,
 	commentLikeState,
+	commentDisLikeState,
 	postLikeState,
 	postDislikeState,
 	COMMENTS,

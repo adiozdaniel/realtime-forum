@@ -1,12 +1,18 @@
 import { CommentService } from "./commentservice.js";
 import { formatTimeAgo } from "./timestamps.js";
 import { getUserData } from "./authmiddleware.js";
-import { COMMENTS, REPLIES, commentLikeState } from "./data.js";
+import {
+	COMMENTS,
+	REPLIES,
+	commentDisLikeState,
+	commentLikeState,
+} from "./data.js";
 import { ReplyManager } from "./replies.js";
 
 class CommentManager {
 	constructor() {
 		this.likeState = commentLikeState;
+		this.disLikeState = commentDisLikeState;
 		this.commentService = new CommentService();
 		this.replyManager = new ReplyManager();
 	}
@@ -15,6 +21,11 @@ class CommentManager {
 CommentManager.prototype.createCommentHTML = function (comment, postId) {
 	const isLiked =
 		this.likeState.comments[comment.comment_id]?.likedBy.has("current-user");
+
+	const isDisliked =
+		this.disLikeState.comments[comment.comment_id]?.disLikedBy.has(
+			"current-user"
+		);
 
 	const repliesHTML = (REPLIES[comment.comment_id] || [])
 		.map((reply) => this.replyManager.createReplyHTML(reply))
@@ -44,6 +55,19 @@ CommentManager.prototype.createCommentHTML = function (comment, postId) {
                         <span class="likes-count">${
 													this.likeState.comments[comment.comment_id]?.count ||
 													0
+												}</span> 
+                    </button>
+                    <button class="comment-action-button dislike-button ${
+											isDisliked ? "liked text-blue-600" : ""
+										}" 
+                        data-post-id="${postId}" data-comment-id="${
+		comment.comment_id
+	}"> 
+
+                        <i data-lucide="thumbs-down"></i> 
+                        <span class="dislikes-count">${
+													this.disLikeState.comments[comment.comment_id]
+														?.count || 0
 												}</span> 
                     </button>
                     <button 
@@ -94,15 +118,17 @@ CommentManager.prototype.loadComments = function (postId) {
 	// Use event delegation for like and reply buttons
 	commentsSection.addEventListener("click", (event) => {
 		const likeButton = event.target.closest(".like-button");
+		const disLikeButton = event.target.closest(".dislike-button");
 		const replyButton = event.target.closest(".reply-button");
 
-		if (likeButton && likeButton.dataset.commentId) {
+		if (likeButton && likeButton.dataset.commentId)
 			this.handleCommentLikes(event);
-		}
 
-		if (replyButton && replyButton.dataset.commentId) {
+		if (disLikeButton && disLikeButton.dataset.commentId)
+			this.handleCommentDisLikes(event);
+
+		if (replyButton && replyButton.dataset.commentId)
 			this.replyManager.showReplyForm(event);
-		}
 	});
 
 	lucide.createIcons();
@@ -195,6 +221,60 @@ CommentManager.prototype.handleCommentLikes = async function (event) {
 	setTimeout(() => likeButton.classList.remove("like-animation"), 300);
 };
 
+CommentManager.prototype.handleCommentDisLikes = async function (event) {
+	const disLikeButton = event.target.closest(".dislike-button");
+	if (!disLikeButton) return;
+
+	const commentId = disLikeButton.dataset.commentId;
+	const postId = disLikeButton.dataset.postId;
+
+	if (!commentId || !postId) return;
+
+	const disLikeData = (this.disLikeState.comments[commentId] ??= {
+		count: 0,
+		disLikedBy: new Set(),
+	});
+
+	// Get current user (this should be an authenticated user)
+	const currentUser = await getUserData();
+	if (!currentUser?.user_id) {
+		alert("Please log in to like comments.");
+		window.location.href = "/auth";
+		return;
+	}
+
+	const commentData = {
+		user_id: currentUser.user_id,
+		post_id: postId,
+		comment_id: commentId,
+	};
+
+	// Send request to backend
+	const res = await this.commentService.dislikeComment(commentData);
+
+	if (res.error) {
+		alert(res.message);
+		return;
+	}
+
+	if (res.data) {
+		disLikeData.count++;
+		disLikeData.disLikedBy.add(currentUser.user_id);
+		disLikeButton.classList.add("liked", "text-blue-600");
+	} else if (res.data === null) {
+		disLikeData.count = Math.max(0, disLikeData.count - 1);
+		disLikeData.disLikedBy.delete(currentUser.user_id);
+		disLikeButton.classList.remove("liked", "text-blue-600");
+	}
+
+	const disLikesCount = disLikeButton.querySelector(".dislikes-count");
+
+	if (disLikesCount) disLikesCount.textContent = disLikeData.count;
+
+	disLikeButton.classList.add("like-animation");
+	setTimeout(() => disLikeButton.classList.remove("like-animation"), 300);
+};
+
 CommentManager.prototype.attachEventListeners = function () {
 	document.querySelectorAll(".comments-section").forEach((section) => {
 		const postId = section.id.replace("comments-", "");
@@ -214,6 +294,11 @@ CommentManager.prototype.initLikeState = function (comments) {
 			this.likeState.comments[comment.comment_id] = {
 				count: comment.likes?.length || 0,
 				likedBy: new Set(),
+			};
+
+			this.disLikeState.comments[comment.comment_id] = {
+				count: comment.dislikes?.length || 0,
+				disLikedBy: new Set(),
 			};
 
 			REPLIES[comment.comment_id] = comment.replies || [];
