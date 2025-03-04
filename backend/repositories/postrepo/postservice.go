@@ -20,7 +20,17 @@ func NewPostService(post PostRepo) *PostService {
 	return &PostService{post, shared}
 }
 
-func (p *PostService) CreatePost(post *Post) (*Post, error) {
+func (p *PostService) CreatePost(recievedPost *Post) (*Post, error) {
+	sanitized, err := p.shared.SanitizeInput(recievedPost)
+	if err != nil {
+		return nil, err
+	}
+
+	post, ok := sanitized.(*Post)
+	if !ok {
+		return nil, errors.New("bad request")
+	}
+
 	if post.UserID == "" {
 		return nil, errors.New("user ID cannot be empty")
 	}
@@ -231,7 +241,17 @@ func (p *PostService) DeleteLike(dislike *Like, entityType string) error {
 }
 
 // CreateComment creates a new comment
-func (p *PostService) CreatePostComment(comment *Comment) (*Comment, error) {
+func (p *PostService) CreatePostComment(receivedComment *Comment) (*Comment, error) {
+	sanitized, err := p.shared.SanitizeInput(receivedComment)
+	if err != nil {
+		return nil, err
+	}
+
+	comment, ok := sanitized.(*Comment)
+	if !ok {
+		return nil, errors.New("bad request")
+	}
+
 	if comment.UserID == "" {
 		return nil, errors.New("user ID cannot be empty")
 	}
