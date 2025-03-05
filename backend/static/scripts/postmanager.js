@@ -68,7 +68,27 @@ PostManager.prototype.createPostHTML = function (post) {
             <h3 class="post-title">${post.post_title}</h3>
             <p class="post-excerpt">${post.post_content}</p>
         <div class="post-footer">
-          <div class="post-actions">
+		${
+			isDashboard?
+			`<div class="post-actions">
+            <div>
+              <i data-lucide="thumbs-up"></i>
+              <span class="likes-count">${
+								this.likeState.posts[post.post_id]?.count || 0
+							}</span>
+            </div>
+			<div>
+			<i data-lucide="thumbs-down"></i>
+			 <span class="likes-count">${
+					this.dislikeState.posts[post.post_id]?.count || 0
+				}</span>
+			</div>
+            <div>
+              <i data-lucide="message-square"></i>
+              <span class="comments-count">${post.post_comments}</span>
+            </div>
+          </div>`:
+		  `<div class="post-actions">
             <button class="post-action-button like-button ${
 							isLiked ? "liked text-blue-600" : ""
 						}" data-post-id="${post.post_id}">
@@ -91,12 +111,12 @@ PostManager.prototype.createPostHTML = function (post) {
               <i data-lucide="message-square"></i>
               <span class="comments-count">${post.post_comments}</span>
             </button>
-          </div>
+          </div>`
+		}
+          
           <div class="post-meta">
 		   <div class="profile-image">
-		  		<img src=${
-						post.author_img
-					} onerror="this.onerror=null;this.src='/static/profiles/avatar.jpg';"/>
+		  		<img src=${post.author_img} onerror="this.onerror=null;this.src='/static/profiles/avatar.jpg';"/>
 			</div>
             <span>by ${post.post_author}</span>
             <span>•</span>
