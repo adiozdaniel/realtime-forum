@@ -201,8 +201,14 @@ func (p *PostService) CommentAddLike(like *Like) (*Like, error) {
 		return nil, errors.New("bad request")
 	}
 
-	msg := "removed a comment like"
+	hasDisLike, _ := p.post.HasUserDisliked(like.CommentID, like.UserID, "Comment")
+	if hasDisLike != "" {
+		like.LikeID = hasDisLike
 
+		p.DeleteLike(like, "dislikes")
+	}
+
+	msg := "removed a comment like"
 	haslike, _ := p.post.HasUserLiked(like.CommentID, like.UserID, "Comment")
 	if haslike != "" {
 		like.LikeID = haslike
@@ -251,11 +257,11 @@ func (p *PostService) CommentAddDisLike(dislike *Like) (*Like, error) {
 	haslike, _ := p.post.HasUserLiked(dislike.CommentID, dislike.UserID, "Comment")
 	if haslike != "" {
 		dislike.LikeID = haslike
-		go p.DeleteLike(dislike, "likes")
+		p.DeleteLike(dislike, "likes")
 	}
 
 	hasDisLike, _ := p.post.HasUserDisliked(dislike.CommentID, dislike.UserID, "Comment")
-	if haslike != "" {
+	if hasDisLike != "" {
 		dislike.LikeID = hasDisLike
 
 		go p.RecordActivity(dislike.UserID, msg, msg+" on: "+comment.Content)
