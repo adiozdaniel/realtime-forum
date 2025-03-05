@@ -96,7 +96,7 @@ func (repo *PostRepository) ListPosts() ([]*Post, error) {
 
 // GetLikesByPostID retrieves all likes for a post by its ID
 func (r *PostRepository) GetLikesByPostID(postID string) ([]*Like, error) {
-	query := `SELECT like_id, user_id FROM likes WHERE post_id = ?`
+	query := `SELECT like_id, user_id, post_id, comment_id, reply_id FROM likes WHERE post_id = ?`
 	rows, err := r.DB.Query(query, postID)
 	if err != nil {
 		return nil, err
@@ -106,11 +106,14 @@ func (r *PostRepository) GetLikesByPostID(postID string) ([]*Like, error) {
 	var likes []*Like
 	for rows.Next() {
 		like := &Like{}
-		err := rows.Scan(&like.LikeID, &like.UserID)
+		err := rows.Scan(&like.LikeID, &like.UserID, &like.PostID, &like.CommentID, &like.ReplyID)
 		if err != nil {
 			return nil, err
 		}
-		likes = append(likes, like)
+
+		if like.CommentID == "" && like.ReplyID == "" {
+			likes = append(likes, like)
+		}
 	}
 	return likes, nil
 }
@@ -303,11 +306,11 @@ func (r *PostRepository) HasUserLiked(entityID, userID, entityType string) (stri
 
 	switch entityType {
 	case "Post":
-		query = `SELECT like_id FROM likes WHERE post_id = ? AND user_id = ?`
+		query = `SELECT like_id FROM likes WHERE post_id = ? AND user_id = ? AND (comment_id IS NULL OR comment_id = '') AND (reply_id IS NULL OR reply_id = '')`
 	case "Comment":
-		query = `SELECT like_id FROM likes WHERE comment_id = ? AND user_id = ?`
+		query = `SELECT like_id FROM likes WHERE post_id = ? AND user_id = ? AND comment_id = ? AND (reply_id IS NULL OR reply_id = '')`
 	case "Reply":
-		query = `SELECT like_id FROM likes WHERE reply_id = ? AND user_id = ?`
+		query = `SELECT like_id FROM likes WHERE post_id = ? AND user_id = ? AND comment_id = ? AND reply_id = ?`
 	default:
 		return "", errors.New("invalid entity type")
 	}
@@ -330,12 +333,11 @@ func (r *PostRepository) HasUserDisliked(entityID, userID, entityType string) (s
 
 	switch entityType {
 	case "Post":
-		query = `SELECT like_id FROM dislikes WHERE post_id = ? AND user_id = ?`
+		query = `SELECT like_id FROM dislikes WHERE post_id = ? AND user_id = ? AND (comment_id IS NULL OR comment_id = '') AND (reply_id IS NULL OR reply_id = '')`
 	case "Comment":
-		query = `SELECT like_id FROM dislikes WHERE comment_id = ? AND user_id = ?`
+		query = `SELECT like_id FROM dislikes WHERE post_id = ? AND user_id = ? AND comment_id = ? AND (reply_id IS NULL OR reply_id = '')`
 	case "Reply":
-		query = `SELECT like_id FROM dislikes WHERE reply_id = ? AND user_id = ?`
-	default:
+		query = `SELECT like_id FROM dislikes WHERE post_id = ? AND user_id = ? AND comment_id = ? AND reply_id = ?`
 		return "", errors.New("invalid entity type")
 	}
 
@@ -407,7 +409,7 @@ func (r *PostRepository) GetPostsByUserID(userID string) ([]*Post, error) {
 }
 
 // GetLikedPostsByUserID retrieves all posts liked by a user
-func (r *PostRepository)GetLikedPostsByUserID(userID string) ([]*Post, error){
+func (r *PostRepository) GetLikedPostsByUserID(userID string) ([]*Post, error) {
 	likes, err := r.GetLikesByUserID(userID)
 	if err != nil {
 		return nil, err
