@@ -80,15 +80,16 @@ AuthHandler.prototype.handleLogin = async function (e) {
     this.removeError(this.emailInput);
     this.removeError(this.passwordInput);
 
-    if (!this.emailInput.value.trim() || !this.passwordInput.value.trim()) {
+    if (!this.emailInput.value.trim() && !this.passwordInput.value.trim()) {
         toast.createToast("error", "Please fill in all fields");
-
-        if (!this.emailInput.value.trim()) {
-            this.showError(this.emailInput, "Email is required");
-        }
-        if (!this.passwordInput.value.trim()) {
-            this.showError(this.passwordInput, "Password is required");
-        }
+        return;
+    } else if (!this.emailInput.value.trim()) {
+        this.showError(this.emailInput, "Email is required");
+        toast.createToast("error", "Email is required");
+        return;
+    } else if (!this.passwordInput.value.trim()) {
+        this.showError(this.passwordInput, "Password is required");
+        toast.createToast("error", "Password is required");
         return;
     }
 
