@@ -443,6 +443,7 @@ func (r *PostRepository) GetLikedPostsByUserID(userID string) ([]*Post, error) {
 	for _, like := range likes {
 		if like.CommentID == "" && like.ReplyID == "" {
 			post, _ := r.GetPostByLikeID(like.LikeID, userID)
+
 			posts = append(posts, post)
 		}
 	}
@@ -494,7 +495,7 @@ func (r *PostRepository) GetRepliesByUserID(userID string) ([]*Reply, error) {
 
 // GetLikesByUserID retrieves all likes created by a specific user
 func (r *PostRepository) GetLikesByUserID(userID string) ([]*Like, error) {
-	query := `SELECT like_id, user_id FROM likes WHERE user_id = ?`
+	query := `SELECT like_id, user_id, post_id, comment_id, reply_id FROM likes WHERE user_id = ?`
 	rows, err := r.DB.Query(query, userID)
 	if err != nil {
 		return nil, err
@@ -504,12 +505,24 @@ func (r *PostRepository) GetLikesByUserID(userID string) ([]*Like, error) {
 	var likes []*Like
 	for rows.Next() {
 		like := &Like{}
-		err := rows.Scan(&like.LikeID, &like.UserID)
+		var commentID, replyID sql.NullString
+
+		err := rows.Scan(&like.LikeID, &like.UserID, &like.PostID, &commentID, &replyID)
 		if err != nil {
 			return nil, err
 		}
+
+		// Convert NULL values to empty strings
+		like.CommentID = commentID.String
+		like.ReplyID = replyID.String
+
 		likes = append(likes, like)
 	}
+
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+
 	return likes, nil
 }
 
@@ -544,19 +557,28 @@ func (r *PostRepository) AddActivity(activity *Activity) (*Activity, error) {
 
 // GetPostByLikeID retrieves a post by its like ID and user ID
 func (r *PostRepository) GetPostByLikeID(likeID, userID string) (*Post, error) {
-	query := `SELECT post_id, user_id, post_author, author_img, post_title, post_content, post_image, post_video, post_category, post_hasComments, created_at, updated_at 
+	query := `SELECT post_id, user_id, post_author, author_img, post_title, post_content, 
+	                 post_image, post_video, post_category, post_hasComments, created_at, updated_at
 	          FROM posts 
-	          WHERE post_id IN (SELECT post_id FROM likes WHERE like_id = ? AND user_id = ?) AND user_id = ?`
+	          WHERE post_id = (SELECT post_id FROM likes WHERE like_id = ? AND user_id = ?)`
 
 	var post Post
-	err := r.DB.QueryRow(query, likeID, userID, userID).Scan(
-		&post.PostID, &post.UserID, &post.PostAuthor, &post.AuthorImg,
-		&post.PostTitle, &post.PostContent, &post.PostImage, &post.PostVideo,
+	var authorImg, postImage, postVideo sql.NullString // Handle NULL values
+
+	err := r.DB.QueryRow(query, likeID, userID).Scan(
+		&post.PostID, &post.UserID, &post.PostAuthor, &authorImg,
+		&post.PostTitle, &post.PostContent, &postImage, &postVideo,
 		&post.PostCategory, &post.HasComments, &post.CreatedAt, &post.UpdatedAt,
 	)
 	if err != nil {
 		return nil, err
 	}
+
+	// Convert NULL values to empty strings
+	post.AuthorImg = authorImg.String
+	post.PostImage = postImage.String
+	post.PostVideo = postVideo.String
+
 	return &post, nil
 }
 
