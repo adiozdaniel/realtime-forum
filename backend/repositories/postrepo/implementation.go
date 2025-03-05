@@ -106,15 +106,26 @@ func (r *PostRepository) GetLikesByPostID(postID string) ([]*Like, error) {
 	var likes []*Like
 	for rows.Next() {
 		like := &Like{}
-		err := rows.Scan(&like.LikeID, &like.UserID, &like.PostID, &like.CommentID, &like.ReplyID)
+		var commentID, replyID sql.NullString
+
+		err := rows.Scan(&like.LikeID, &like.UserID, &like.PostID, &commentID, &replyID)
 		if err != nil {
 			return nil, err
 		}
+
+		// Convert NULL values to empty strings
+		like.CommentID = commentID.String
+		like.ReplyID = replyID.String
 
 		if like.CommentID == "" && like.ReplyID == "" {
 			likes = append(likes, like)
 		}
 	}
+
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+
 	return likes, nil
 }
 
