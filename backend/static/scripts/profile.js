@@ -49,7 +49,6 @@ ProfileDashboard.prototype.init = async function () {
 	this.updateTheme();
 	this.updateStats();
 	this.renderActivities();
-	postManager.renderPosts(this.state.posts);
 	this.renderComments();
 	this.updateActiveSection();
 };
@@ -225,6 +224,7 @@ ProfileDashboard.prototype.setupEventListeners = function () {
 		const data = item.getAttribute("data-view");
 
 		if (data === "likedPosts") item.addEventListener("click", this.renderLikedPosts.bind(this));
+		if (data === "posts") item.addEventListener("click", this.renderMyPosts.bind(this));
 	}
 	);
 };
@@ -248,6 +248,12 @@ ProfileDashboard.prototype.updateActiveSection = function () {
 	);
 	if (activeItem) activeItem.classList.add("active");
 };
+
+ProfileDashboard.prototype.renderMyPosts = function (e) {
+	e.stopPropagation();
+	e.preventDefault();
+	postManager.renderPosts(this.state.posts);
+}
 
 ProfileDashboard.prototype.renderLikedPosts = function (e) {
 	e.stopPropagation();
