@@ -1,4 +1,4 @@
-import { API_ENDPOINTS, POSTS, TEMP_DATA } from "./data.js";
+import { API_ENDPOINTS, POSTS, TEMP_DATA, recyclebinState } from "./data.js";
 import { postManager } from "./postmanager.js";
 import { getUserData } from "./authmiddleware.js";
 import { sidebar } from "./sidebar.js";
@@ -298,8 +298,15 @@ Header.prototype.init = async function () {
 	this.cancelBtn?.addEventListener("click", (e) => this.handleClose(e));
 	this.modalSubmitBtn?.addEventListener("click", (e) => {
 	 if (window.location.pathname === "/dashboard")	this.handlePostUpdate(e)
-	}
-	);
+	});
+
+	document.querySelectorAll(".sidebar-item").forEach((item) => {
+		const data = item.getAttribute("data-view");
+		if (data === "posts") 
+			item.addEventListener("click", this.addRecyleBin.bind(this));
+		
+		if (data === "likedPosts") item.addEventListener("click", this.removeRecyleBin.bind(this));
+	});
 
 	// Check for saved dark mode preference
 	const savedDarkMode = localStorage.getItem("darkMode") === "true";
@@ -317,6 +324,20 @@ Header.prototype.init = async function () {
 
 	this.watchNotifications();
 };
+
+Header.prototype.removeRecyleBin = function (e) {
+	e.preventDefault();
+	e.stopPropagation();
+
+	recyclebinState.RECYCLEBIN = null;
+}
+
+Header.prototype.addRecyleBin = function (e) {
+	e.preventDefault();
+	e.stopPropagation();
+
+	recyclebinState.RECYCLEBIN = "items";
+}
 
 Header.prototype.handlePostEdit = function (e) {
 	e.stopPropagation();

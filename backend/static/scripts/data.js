@@ -42,6 +42,11 @@ const CONSTANTS = {
 // Temp Data
 let TEMP_DATA = null;
 
+const recyclebinState = {
+	TEMP_DATA : null,
+	RECYCLEBIN : null
+}
+
 // Posts Data
 const POSTS = [];
 const COMMENTS = {};
@@ -89,4 +94,5 @@ export {
 	COMMENTS,
 	REPLIES,
 	TEMP_DATA,
+	recyclebinState
 };

@@ -1,7 +1,7 @@
 import { PostService } from "./postsservice.js";
 import { formatTimeAgo } from "./timestamps.js";
 import { CommentManager } from "./comment.js";
-import { postLikeState, postDislikeState, POSTS, COMMENTS } from "./data.js";
+import { postLikeState, postDislikeState, POSTS, COMMENTS, recyclebinState } from "./data.js";
 import { getUserData } from "./authmiddleware.js";
 import { PostModalManager } from "./createposts.js";
 
@@ -28,6 +28,10 @@ PostManager.prototype.createPostHTML = function (post) {
 	// Check if the current page is "/dashboard"
 	const isDashboard = window.location.pathname === "/dashboard";
 
+	// Determine if the delete and edit buttons should be shown
+	const showPostActions = isDashboard && !recyclebinState.RECYCLEBIN;
+
+
 	return `
       <article class="post-card" data-post-id="${post.post_id}">
 	  	${
@@ -40,18 +44,19 @@ PostManager.prototype.createPostHTML = function (post) {
 			}
 			</div>
 
-		  ${
-				isDashboard
-					? `<div class="post-user-actions">
-						<button class="edit-button" id="postEditBtn" data-post-id="${post.post_id}">
-							<i data-lucide="edit"></i>
-						</button>
-						<button class="delete-button" id="postDeleteBtn" data-post-id="${post.post_id}">
-							<i data-lucide="trash-2"></i>
-						</button>
-					</div>`
+			${
+				showPostActions 
+					? `
+						<div class="post-user-actions">
+							<button class="edit-button" id="postEditBtn" data-post-id="${post.post_id}">
+								<i data-lucide="edit"></i>
+							</button>
+							<button class="delete-button" id="postDeleteBtn" data-post-id="${post.post_id}">
+								<i data-lucide="trash-2"></i>
+							</button>
+						</div>`
 					: ""
-			}
+			}			
 
         </div>
         <div class="flex items-start justify-between">
