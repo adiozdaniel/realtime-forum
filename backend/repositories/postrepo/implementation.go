@@ -443,6 +443,10 @@ func (r *PostRepository) GetLikedPostsByUserID(userID string) ([]*Post, error) {
 	for _, like := range likes {
 		if like.CommentID == "" && like.ReplyID == "" {
 			post, _ := r.GetPostByLikeID(like.LikeID, userID)
+			
+			post.Likes, _ = r.GetLikesByPostID(post.PostID)
+			post.Dislikes, _ = r.GetDislikesByPostID(post.PostID)
+			post.Comments, _ = r.GetCommentsByPostID(post.PostID)
 
 			posts = append(posts, post)
 		}
