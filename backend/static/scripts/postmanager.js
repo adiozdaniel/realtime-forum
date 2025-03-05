@@ -308,7 +308,7 @@ PostManager.prototype.init = async function () {
 	if (this.postList === null) return;
 
 	this.postList.forEach((post) => POSTS.unshift(post));
-	if (postsContainer) this.renderPosts(POSTS);
+	this.renderPosts(POSTS);
 };
 
 const postManager = new PostManager();
