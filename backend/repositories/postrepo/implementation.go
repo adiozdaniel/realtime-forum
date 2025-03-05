@@ -303,19 +303,25 @@ func (r *PostRepository) DisLike(dislike *Like, entityType string) error {
 func (r *PostRepository) HasUserLiked(entityID, userID, entityType string) (string, error) {
 	var query string
 	var likeID string
+	var err error
 
 	switch entityType {
 	case "Post":
 		query = `SELECT like_id FROM likes WHERE post_id = ? AND user_id = ? AND (comment_id IS NULL OR comment_id = '') AND (reply_id IS NULL OR reply_id = '')`
+		err = r.DB.QueryRow(query, entityID, userID).Scan(&likeID)
+
 	case "Comment":
-		query = `SELECT like_id FROM likes WHERE post_id = ? AND user_id = ? AND comment_id = ? AND (reply_id IS NULL OR reply_id = '')`
+		query = `SELECT like_id FROM likes WHERE comment_id = ? AND user_id = ? AND (reply_id IS NULL OR reply_id = '')`
+		err = r.DB.QueryRow(query, entityID, userID).Scan(&likeID)
+
 	case "Reply":
-		query = `SELECT like_id FROM likes WHERE post_id = ? AND user_id = ? AND comment_id = ? AND reply_id = ?`
+		query = `SELECT like_id FROM likes WHERE reply_id = ? AND user_id = ?`
+		err = r.DB.QueryRow(query, entityID, userID).Scan(&likeID)
+
 	default:
 		return "", errors.New("invalid entity type")
 	}
 
-	err := r.DB.QueryRow(query, entityID, userID).Scan(&likeID)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
 			return "", nil // No like found, return empty string
@@ -329,27 +335,34 @@ func (r *PostRepository) HasUserLiked(entityID, userID, entityType string) (stri
 // HasUserDisliked checks if a user has disliked a specific post, comment, or reply and returns the dislike ID if it exists
 func (r *PostRepository) HasUserDisliked(entityID, userID, entityType string) (string, error) {
 	var query string
-	var likeID string
+	var dislikeID string
+	var err error
 
 	switch entityType {
 	case "Post":
 		query = `SELECT like_id FROM dislikes WHERE post_id = ? AND user_id = ? AND (comment_id IS NULL OR comment_id = '') AND (reply_id IS NULL OR reply_id = '')`
+		err = r.DB.QueryRow(query, entityID, userID).Scan(&dislikeID)
+
 	case "Comment":
-		query = `SELECT like_id FROM dislikes WHERE post_id = ? AND user_id = ? AND comment_id = ? AND (reply_id IS NULL OR reply_id = '')`
+		query = `SELECT like_id FROM dislikes WHERE comment_id = ? AND user_id = ? AND (reply_id IS NULL OR reply_id = '')`
+		err = r.DB.QueryRow(query, entityID, userID).Scan(&dislikeID)
+
 	case "Reply":
-		query = `SELECT like_id FROM dislikes WHERE post_id = ? AND user_id = ? AND comment_id = ? AND reply_id = ?`
+		query = `SELECT like_id FROM dislikes WHERE reply_id = ? AND user_id = ?`
+		err = r.DB.QueryRow(query, entityID, userID).Scan(&dislikeID)
+
+	default:
 		return "", errors.New("invalid entity type")
 	}
 
-	err := r.DB.QueryRow(query, entityID, userID).Scan(&likeID)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
-			return "", nil // No like found, return empty string
+			return "", nil // No dislike found, return empty string
 		}
 		return "", err
 	}
 
-	return likeID, nil
+	return dislikeID, nil
 }
 
 // Comments
