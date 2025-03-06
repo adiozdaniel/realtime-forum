@@ -202,8 +202,8 @@ PostManager.prototype.renderPosts = function (posts) {
 
 		const postDeleteBtn = container.querySelector("#postDeleteBtn");
 		const postEditBtn = container.querySelector("#postEditBtn");
-		postDeleteBtn?.addEventListener("click", (e) => console.log(e));
-		postEditBtn?.addEventListener("click", (e) => console.log(e));
+		postDeleteBtn?.addEventListener("click", (e) => this.handlePostDelete(e));
+		postEditBtn?.addEventListener("click", (e) => this.handlePostEdit(e));
 	});
 
 	this.attachPostEventListeners();
