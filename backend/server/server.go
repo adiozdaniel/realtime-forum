@@ -70,6 +70,6 @@ func (s *Server) Start(ctx context.Context) {
 	if err := s.server.Shutdown(clsCtx); err != nil {
 		log.Printf("Error shutting down server: %v\n", err)
 	} else {
-		log.Println("Server successuly shutdown!")
+		log.Println("Server successfully shutdown!")
 	}
 }
