@@ -7,6 +7,7 @@ import (
 	"net"
 	"os"
 	"strconv"
+	"strings"
 )
 
 // ServerCommands listens for user input and handles commands.
@@ -14,7 +15,7 @@ func (s *Server) ServerCommands(cancel context.CancelFunc) {
 	cmd := bufio.NewScanner(os.Stdin)
 
 	for cmd.Scan() {
-		switch cmd.Text() {
+		switch strings.TrimSpace(cmd.Text()) {
 		case "exit":
 			cancel()
 			return
