@@ -9,7 +9,7 @@ class PostModalManager {
 		this.createPostBtn = document.getElementById("createPostBtn");
 		this.cancelBtn = document.getElementById("cancelPost");
 		this.form = document.getElementById("createPostForm");
-		this.imageUpload = document.getElementById("imageUpload");
+		this.imageUpload = document.getElementById("postImageUpload");
 		this.imagePreviewContainer = document.getElementById(
 			"imagePreviewContainer"
 		);
@@ -36,10 +36,10 @@ PostModalManager.prototype.init = function () {
 	this.modal.addEventListener("click", (e) => {
 		if (e.target === this.modal) this.closeModal();
 	});
-	this.imageUpload.addEventListener(
-		"change",
-		this.handleImageUpload.bind(this)
-	);
+	// this.imageUpload.addEventListener(
+	// 	"change",
+	// 	this.handleImageUpload.bind(this)
+	// );
 	this.videoLink.addEventListener("input", this.handleVideoLink.bind(this));
 	this.removeImage.addEventListener(
 		"click",
@@ -94,59 +94,61 @@ PostModalManager.prototype.closeModal = function () {
 };
 
 // Handle image upload
-PostModalManager.prototype.handleImageUpload = async function (e) {
-	const file = e.target.files[0];
-	this.uploadError.textContent = "";
-	this.uploadError.classList.add("hidden");
+// PostModalManager.prototype.handleImageUpload = async function (e) {
+// 	const file = e.target.files[0];
+// 	this.uploadError.textContent = "";
+// 	this.uploadError.classList.add("hidden");
 
-	if (!file) return;
+// 	console.log("uploading image")
 
-	if (!this.ALLOWED_TYPES.includes(file.type)) {
-		this.showUploadError(
-			"Invalid file type. Please upload a JPEG, PNG, or GIF image."
-		);
-		this.imageUpload.value = "";
-		return;
-	}
+// 	if (!file) return;
 
-	if (file.size > this.MAX_FILE_SIZE) {
-		this.showUploadError("File size exceeds 20MB limit.");
-		this.imageUpload.value = "";
-		return;
-	}
+// 	if (!this.ALLOWED_TYPES.includes(file.type)) {
+// 		this.showUploadError(
+// 			"Invalid file type. Please upload a JPEG, PNG, or GIF image."
+// 		);
+// 		this.imageUpload.value = "";
+// 		return;
+// 	}
 
-	const reader = new FileReader();
-	reader.onload = (e) => {
-		this.imagePreview.src = e.target.result;
-		this.imagePreviewContainer.classList.remove("hidden");
-		this.mediaPreview.classList.remove("hidden");
-		this.videoLink.value = "";
-		this.videoPreviewContainer.classList.add("hidden");
-	};
-	reader.onerror = () => {
-		this.showUploadError("Error reading file. Please try again.");
-		this.imageUpload.value = "";
-	};
-	reader.readAsDataURL(file);
+// 	if (file.size > this.MAX_FILE_SIZE) {
+// 		this.showUploadError("File size exceeds 20MB limit.");
+// 		this.imageUpload.value = "";
+// 		return;
+// 	}
 
-	recyclebinState.TEMP_DATA = null;
-	const formData = new FormData();
-	formData.append("image", file);
+// 	const reader = new FileReader();
+// 	reader.onload = (e) => {
+// 		this.imagePreview.src = e.target.result;
+// 		this.imagePreviewContainer.classList.remove("hidden");
+// 		this.mediaPreview.classList.remove("hidden");
+// 		this.videoLink.value = "";
+// 		this.videoPreviewContainer.classList.add("hidden");
+// 	};
+// 	reader.onerror = () => {
+// 		this.showUploadError("Error reading file. Please try again.");
+// 		this.imageUpload.value = "";
+// 	};
+// 	reader.readAsDataURL(file);
 
-	const imgRes = await this.postService.uploadPostImg(formData);
+// 	recyclebinState.TEMP_DATA = null;
+// 	const formData = new FormData();
+// 	formData.append("image", file);
 
-	if (imgRes.error) {
-		toast.createToast("error", imgRes.message);
-		this.showUploadError(imgRes.message);
-		this.imageUpload.value = "";
-		recyclebinState.TEMP_DATA = null;
-		return;
-	}
+// 	const imgRes = await this.postService.uploadPostImg(formData);
 
-	if (imgRes.data) {
-		recyclebinState.TEMP_DATA = imgRes.data;
-	}
-};
+// 	if (imgRes.error) {
+// 		toast.createToast("error", imgRes.message);
+// 		this.showUploadError(imgRes.message);
+// 		this.imageUpload.value = "";
+// 		recyclebinState.TEMP_DATA = null;
+// 		return;
+// 	}
+
+// 	if (imgRes.data) {
+// 		recyclebinState.TEMP_DATA = imgRes.data;
+// 	}
+// };
 
 PostModalManager.prototype.handleVideoLink = function (e) {
 	const url = e.target.value.trim();

@@ -292,6 +292,60 @@ PostManager.prototype.handleSubmit = async function (e) {
 	}
 };
 
+PostManager.prototype.handleImageUpload = async function (e) {
+	const file = e.target.files[0];
+	this.postModalManager.uploadError.textContent = "";
+	this.postModalManager.uploadError.classList.add("hidden");
+
+	if (!file) return;
+
+	if (!this.postModalManager.ALLOWED_TYPES.includes(file.type)) {
+		this.postModalManager.showUploadError(
+			"Invalid file type. Please upload a JPEG, PNG, or GIF image."
+		);
+		this.postModalManager.imageUpload.value = "";
+		return;
+	}
+
+	if (file.size > this.MAX_FILE_SIZE) {
+		this.postModalManager.showUploadError("File size exceeds 20MB limit.");
+		this.postModalManager.imageUpload.value = "";
+		return;
+	}
+
+	const reader = new FileReader();
+	reader.onload = (e) => {
+		this.postModalManager.imagePreview.src = e.target.result;
+		this.postModalManager.imagePreviewContainer.classList.remove("hidden");
+		this.postModalManager.mediaPreview.classList.remove("hidden");
+		this.postModalManager.videoLink.value = "";
+		this.postModalManager.videoPreviewContainer.classList.add("hidden");
+	};
+	reader.onerror = () => {
+		this.postModalManager.showUploadError("Error reading file. Please try again.");
+		this.postModalManager.imageUpload.value = "";
+	};
+	reader.readAsDataURL(file);
+
+	recyclebinState.TEMP_DATA = null;
+	const formData = new FormData();
+	formData.append("image", file);
+
+	const imgRes = await this.postService.uploadPostImg(formData);
+
+	if (imgRes.error) {
+		toast.createToast("error", imgRes.message);
+		this.postModalManager.showUploadError(imgRes.message);
+		this.postModalManager.imageUpload.value = "";
+		recyclebinState.TEMP_DATA = null;
+		return;
+	}
+
+	if (imgRes.data) {
+		recyclebinState.TEMP_DATA = imgRes.data;
+	}
+};
+
 PostManager.prototype.attachPostEventListeners = function () {
 	lucide.createIcons();
 
@@ -319,6 +373,8 @@ PostManager.prototype.attachPostEventListeners = function () {
 	postEditBtn?.forEach((editBtn) => 
 		editBtn.addEventListener("click", (e) => this.handlePostEdit(e))
 	);
+
+	document.getElementById("postImageUpload")?.addEventListener("change", this.handleImageUpload.bind(this));
 };
 
 PostManager.prototype.handlePostLikes = async function (e) {
