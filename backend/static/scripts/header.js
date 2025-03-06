@@ -1,4 +1,4 @@
-import { API_ENDPOINTS, POSTS, TEMP_DATA } from "./data.js";
+import { API_ENDPOINTS } from "./data.js";
 import { PostManager } from "./postmanager.js";
 import { getUserData } from "./authmiddleware.js";
 import { sidebar } from "./sidebar.js";
@@ -225,42 +225,6 @@ Header.prototype.handleNotifications = function (e) {
 		this.notificationDropdown.style.display === "none" ? "block" : "none";
 };
 
-Header.prototype.handlePostUpdate = async function (e) {
-	e.preventDefault();
-	e.stopPropagation();
-
-	const formData = {
-		PostID: document.getElementById("postId").value,
-		CreatedAt: document.getElementById("createdAt").value,
-		PostTitle: document.getElementById("postTitle").value,
-		PostCategory: Array.from(
-			document.querySelectorAll('input[name="postCategory"]:checked')
-		)
-			.map((checkbox) => checkbox.value)
-			.join(" "),
-		PostContent: document.getElementById("postContent").value,
-	};
-
-	if (TEMP_DATA !== null) {
-		formData.PostImage = TEMP_DATA.img;
-		formData.PostID = TEMP_DATA.post_id;
-	}
-
-	const res = await this.postService.createPost(formData);
-	if (res.error) {
-		toast.createToast("error", res.message);
-		this.postManager.postModalManager.showUploadError(
-			"Error creating post. Please try again."
-		);
-	}
-
-	if (res.data) {
-		this.postManager.postModalManager.closeModal();
-		POSTS.unshift(res.data);
-		this.postManager.renderPosts(POSTS);
-	}
-};
-
 // Initialize function
 Header.prototype.init = async function () {
 	if (window.location.pathname === "/dashboard") {
@@ -294,9 +258,6 @@ Header.prototype.init = async function () {
 	);
 
 	this.cancelBtn?.addEventListener("click", (e) => this.handleClose(e));
-	this.modalSubmitBtn?.addEventListener("click", (e) => {
-		if (window.location.pathname === "/dashboard") this.handlePostUpdate(e);
-	});
 
 	// Check for saved dark mode preference
 	const savedDarkMode = localStorage.getItem("darkMode") === "true";
