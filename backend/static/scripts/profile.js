@@ -1,7 +1,7 @@
 import { AuthService } from "./authservice.js";
 import { CommentService } from "./commentservice.js";
-import { STATE } from "./data.js";
-import { postManager } from "./postmanager.js";
+import { STATE, recyclebinState } from "./data.js";
+import { PostManager } from "./postmanager.js";
 import { formatTimeAgo } from "./timestamps.js";
 import { toast } from "./toast.js";
 
@@ -13,6 +13,7 @@ class ProfileDashboard {
 	constructor() {
 		this.authService = new AuthService();
 		this.commentService = new CommentService();
+		this.postManager = new PostManager();
 		this.state = STATE;
 		this.userData = null;
 	}
@@ -191,7 +192,7 @@ ProfileDashboard.prototype.cacheElements = function () {
 		sections: {
 			overview: document.getElementById("overviewSection"),
 			posts: document.getElementById("postsSection"),
-			likedPosts : document.getElementById("likedPostsSection"),
+			likedPosts: document.getElementById("likedPostsSection"),
 			comments: document.getElementById("commentsSection"),
 			settings: document.getElementById("settingsSection"),
 		},
@@ -218,15 +219,16 @@ ProfileDashboard.prototype.setupEventListeners = function () {
 		"click",
 		this.editBio.bind(this)
 	);
-	this.elements.sidebarItems.forEach((item) =>{
-		item.addEventListener("click", () => this.switchView(item.dataset.view))
-		
+	this.elements.sidebarItems.forEach((item) => {
+		item.addEventListener("click", () => this.switchView(item.dataset.view));
+
 		const data = item.getAttribute("data-view");
 
-		if (data === "likedPosts") item.addEventListener("click", this.renderLikedPosts.bind(this));
-		if (data === "posts") item.addEventListener("click", this.renderMyPosts.bind(this));
-	}
-	);
+		if (data === "likedPosts")
+			item.addEventListener("click", this.renderLikedPosts.bind(this));
+		if (data === "posts")
+			item.addEventListener("click", this.renderMyPosts.bind(this));
+	});
 };
 
 ProfileDashboard.prototype.switchView = function (view) {
@@ -236,7 +238,7 @@ ProfileDashboard.prototype.switchView = function (view) {
 
 ProfileDashboard.prototype.updateActiveSection = function () {
 	// Hide all sections
-	Object.values(this.elements.sections).forEach((section) => 
+	Object.values(this.elements.sections).forEach((section) =>
 		section.classList.add("hidden")
 	);
 
@@ -250,16 +252,18 @@ ProfileDashboard.prototype.updateActiveSection = function () {
 };
 
 ProfileDashboard.prototype.renderMyPosts = function (e) {
-	e.stopPropagation();
 	e.preventDefault();
-	postManager.renderPosts(this.state.posts);
-}
+
+	recyclebinState.RECYCLEBIN = null;
+	this.postManager.renderPosts(this.state.posts);
+};
 
 ProfileDashboard.prototype.renderLikedPosts = function (e) {
-	e.stopPropagation();
 	e.preventDefault();
-	postManager.renderPosts(this.state.likedPosts);
-}
+
+	recyclebinState.RECYCLEBIN = "items";
+	this.postManager.renderPosts(this.state.likedPosts);
+};
 
 ProfileDashboard.prototype.toggleDarkMode = function () {
 	this.state.darkMode = !this.state.darkMode;
