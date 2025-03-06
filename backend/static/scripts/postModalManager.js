@@ -33,7 +33,7 @@ PostModalManager.prototype.init = function () {
 	this.modal.addEventListener("click", (e) => {
 		if (e.target === this.modal) this.closeModal();
 	});
-	
+
 	this.videoLink.addEventListener("input", this.handleVideoLink.bind(this));
 	this.removeImage.addEventListener(
 		"click",
@@ -144,5 +144,19 @@ PostModalManager.prototype.getEmbedUrl = function (url) {
 	if (match) return `https://player.vimeo.com/video/${match[1]}`;
 	return null;
 };
+
+document.addEventListener("DOMContentLoaded", function () {
+	const fileInput = document.querySelector("#postImageUpload");
+	const fileLabel = document.querySelector('label[for="postImageUpload"]');
+	const allowedRoutes = ["/"];
+
+	if (!allowedRoutes.includes(window.location.pathname)) {
+		if (fileInput) fileInput.disabled = true;
+		if (fileLabel) {
+			fileLabel.style.pointerEvents = "none";
+			fileLabel.style.opacity = "0.5";
+		}
+	}
+});
 
 export { PostModalManager };
