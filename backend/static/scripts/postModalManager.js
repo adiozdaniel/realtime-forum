@@ -1,7 +1,5 @@
 import { recyclebinState } from "./data.js";
-import { PostService } from "./postsservice.js";
 import { getUserData } from "./authmiddleware.js";
-import { toast } from "./toast.js";
 
 class PostModalManager {
 	constructor() {
@@ -25,7 +23,6 @@ class PostModalManager {
 		this.uploadError = document.getElementById("uploadError");
 		this.MAX_FILE_SIZE = 20 * 1024 * 1024;
 		this.ALLOWED_TYPES = ["image/jpeg", "image/png", "image/gif"];
-		this.postService = new PostService();
 	}
 }
 
@@ -36,10 +33,7 @@ PostModalManager.prototype.init = function () {
 	this.modal.addEventListener("click", (e) => {
 		if (e.target === this.modal) this.closeModal();
 	});
-	// this.imageUpload.addEventListener(
-	// 	"change",
-	// 	this.handleImageUpload.bind(this)
-	// );
+	
 	this.videoLink.addEventListener("input", this.handleVideoLink.bind(this));
 	this.removeImage.addEventListener(
 		"click",
@@ -49,7 +43,6 @@ PostModalManager.prototype.init = function () {
 		"click",
 		this.removeVideoPreview.bind(this)
 	);
-	// this.form.addEventListener("submit", (e) => this.handleSubmit(e));
 };
 
 PostModalManager.prototype.openModal = async function (post) {
@@ -92,63 +85,6 @@ PostModalManager.prototype.closeModal = function () {
 	this.uploadError.classList.add("hidden");
 	this.uploadError.textContent = "";
 };
-
-// Handle image upload
-// PostModalManager.prototype.handleImageUpload = async function (e) {
-// 	const file = e.target.files[0];
-// 	this.uploadError.textContent = "";
-// 	this.uploadError.classList.add("hidden");
-
-// 	console.log("uploading image")
-
-// 	if (!file) return;
-
-// 	if (!this.ALLOWED_TYPES.includes(file.type)) {
-// 		this.showUploadError(
-// 			"Invalid file type. Please upload a JPEG, PNG, or GIF image."
-// 		);
-// 		this.imageUpload.value = "";
-// 		return;
-// 	}
-
-// 	if (file.size > this.MAX_FILE_SIZE) {
-// 		this.showUploadError("File size exceeds 20MB limit.");
-// 		this.imageUpload.value = "";
-// 		return;
-// 	}
-
-// 	const reader = new FileReader();
-// 	reader.onload = (e) => {
-// 		this.imagePreview.src = e.target.result;
-// 		this.imagePreviewContainer.classList.remove("hidden");
-// 		this.mediaPreview.classList.remove("hidden");
-// 		this.videoLink.value = "";
-// 		this.videoPreviewContainer.classList.add("hidden");
-// 	};
-// 	reader.onerror = () => {
-// 		this.showUploadError("Error reading file. Please try again.");
-// 		this.imageUpload.value = "";
-// 	};
-// 	reader.readAsDataURL(file);
-
-// 	recyclebinState.TEMP_DATA = null;
-// 	const formData = new FormData();
-// 	formData.append("image", file);
-
-// 	const imgRes = await this.postService.uploadPostImg(formData);
-
-// 	if (imgRes.error) {
-// 		toast.createToast("error", imgRes.message);
-// 		this.showUploadError(imgRes.message);
-// 		this.imageUpload.value = "";
-// 		recyclebinState.TEMP_DATA = null;
-// 		return;
-// 	}
-
-// 	if (imgRes.data) {
-// 		recyclebinState.TEMP_DATA = imgRes.data;
-// 	}
-// };
 
 PostModalManager.prototype.handleVideoLink = function (e) {
 	const url = e.target.value.trim();
