@@ -196,14 +196,8 @@ PostManager.prototype.renderPosts = function (posts) {
 
 	const postsHTML = posts.map((post) => this.createPostHTML(post)).join("");
 	postsContainers.forEach((container) => {
-		if (!container.classList.contains("hidden")) {
+		if (!container.classList.contains("hidden"))
 			container.innerHTML = postsHTML;
-		}
-
-		const postDeleteBtn = container.querySelector("#postDeleteBtn");
-		const postEditBtn = container.querySelector("#postEditBtn");
-		postDeleteBtn?.addEventListener("click", (e) => this.handlePostDelete(e));
-		postEditBtn?.addEventListener("click", (e) => this.handlePostEdit(e));
 	});
 
 	this.attachPostEventListeners();
@@ -300,18 +294,31 @@ PostManager.prototype.handleSubmit = async function (e) {
 
 PostManager.prototype.attachPostEventListeners = function () {
 	lucide.createIcons();
+
 	document.querySelectorAll(".like-button").forEach((button) => {
 		button.addEventListener("click", (e) => this.handlePostLikes(e));
 	});
+
 	document.querySelectorAll(".dislike-button").forEach((button) => {
 		button.addEventListener("click", (e) => this.handlePostDisLikes(e));
 	});
+
 	document.querySelectorAll(".comment-toggle").forEach((button) => {
 		button.addEventListener("click", (e) => this.toggleComments(e));
 	});
-	document
-		.getElementById("createPostForm")
-		?.addEventListener("submit", (e) => this.handleSubmit(e));
+
+	document.getElementById("createPostForm")?.addEventListener("submit", (e) => this.handleSubmit(e));
+
+	const postDeleteBtn = document.querySelectorAll("#postDeleteBtn");
+	const postEditBtn = document.querySelectorAll("#postEditBtn");
+	
+	postDeleteBtn?.forEach((deleteBtn) => 
+		deleteBtn.addEventListener("click", (e) => this.handlePostDelete(e))
+	);
+
+	postEditBtn?.forEach((editBtn) => 
+		editBtn.addEventListener("click", (e) => this.handlePostEdit(e))
+	);
 };
 
 PostManager.prototype.handlePostLikes = async function (e) {
