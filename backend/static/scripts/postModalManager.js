@@ -1,5 +1,4 @@
-import { POSTS, TEMP_DATA } from "./data.js";
-import { postManager } from "./postmanager.js";
+import { POSTS } from "./data.js";
 import { PostService } from "./postsservice.js";
 import { getUserData } from "./authmiddleware.js";
 import { toast } from "./toast.js";
@@ -27,7 +26,6 @@ class PostModalManager {
 		this.MAX_FILE_SIZE = 20 * 1024 * 1024;
 		this.ALLOWED_TYPES = ["image/jpeg", "image/png", "image/gif"];
 		this.postService = new PostService();
-		this.posts = postManager;
 		this.tempData = null;
 	}
 }
@@ -52,7 +50,7 @@ PostModalManager.prototype.init = function () {
 		"click",
 		this.removeVideoPreview.bind(this)
 	);
-	this.form.addEventListener("submit", ((e) => this.handleSubmit(e)));
+	this.form.addEventListener("submit", (e) => this.handleSubmit(e));
 };
 
 PostModalManager.prototype.openModal = async function (post) {
@@ -139,12 +137,12 @@ PostModalManager.prototype.handleImageUpload = async function (e) {
 	const imgRes = await this.postService.uploadPostImg(formData);
 
 	if (imgRes.error) {
-		toast.createToast("error", imgRes.message)
+		toast.createToast("error", imgRes.message);
 		this.showUploadError(imgRes.message);
 		this.imageUpload.value = "";
 		this.tempData = null;
 		return;
-	};
+	}
 
 	if (imgRes.data) {
 		this.tempData = imgRes.data;
@@ -201,8 +199,8 @@ PostModalManager.prototype.handleSubmit = async function (e) {
 			PostContent: document.getElementById("postContent").value,
 			PostVideo: this.videoLink.value || null,
 			PostImage: this.tempData.img || null,
-			PostID: this.tempData.post_id || null
-		}
+			PostID: this.tempData.post_id || null,
+		};
 	} else {
 		formData = {
 			PostTitle: document.getElementById("postTitle").value,
@@ -213,19 +211,19 @@ PostModalManager.prototype.handleSubmit = async function (e) {
 				.join(" "),
 			PostContent: document.getElementById("postContent").value,
 			PostVideo: this.videoLink.value || null,
-		}
+		};
 	}
 
 	const res = await this.postService.createPost(formData);
 	if (res.error) {
-		toast.createToast("error", res.message)
-		return
+		toast.createToast("error", res.message);
+		return;
 	}
 
 	if (res.data) {
 		this.closeModal();
 		POSTS.unshift(res.data);
-		this.posts.renderPosts(POSTS);
+		// this.posts.renderPosts(POSTS);
 	}
 };
 
