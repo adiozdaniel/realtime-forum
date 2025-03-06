@@ -1,9 +1,15 @@
 import { PostService } from "./postsservice.js";
 import { formatTimeAgo } from "./timestamps.js";
 import { CommentManager } from "./comment.js";
-import { postLikeState, postDislikeState, POSTS, COMMENTS, recyclebinState } from "./data.js";
+import {
+	postLikeState,
+	postDislikeState,
+	POSTS,
+	COMMENTS,
+	recyclebinState,
+} from "./data.js";
 import { getUserData } from "./authmiddleware.js";
-import { PostModalManager } from "./createposts.js";
+import { PostModalManager } from "./postModalManager.js";
 
 const postsContainers = document.querySelectorAll("#postsContainer");
 
@@ -14,6 +20,7 @@ class PostManager {
 		this.likeState = postLikeState;
 		this.dislikeState = postDislikeState;
 		this.postService = new PostService();
+		this.postModalManager = new PostModalManager();
 	}
 }
 
@@ -31,7 +38,6 @@ PostManager.prototype.createPostHTML = function (post) {
 	// Determine if the delete and edit buttons should be shown
 	const showPostActions = isDashboard && !recyclebinState.RECYCLEBIN;
 
-
 	return `
       <article class="post-card" data-post-id="${post.post_id}">
 	  	${
@@ -45,7 +51,7 @@ PostManager.prototype.createPostHTML = function (post) {
 			</div>
 
 			${
-				showPostActions 
+				showPostActions
 					? `
 						<div class="post-user-actions">
 							<button class="edit-button" id="postEditBtn" data-post-id="${post.post_id}">
@@ -74,8 +80,8 @@ PostManager.prototype.createPostHTML = function (post) {
             <p class="post-excerpt">${post.post_content}</p>
         <div class="post-footer">
 		${
-			isDashboard?
-			`<div class="post-actions">
+			isDashboard
+				? `<div class="post-actions">
             <div>
               <i data-lucide="thumbs-up"></i>
               <span class="likes-count">${
@@ -92,8 +98,8 @@ PostManager.prototype.createPostHTML = function (post) {
               <i data-lucide="message-square"></i>
               <span class="comments-count">${post.post_comments}</span>
             </div>
-          </div>`:
-		  `<div class="post-actions">
+          </div>`
+				: `<div class="post-actions">
             <button class="post-action-button like-button ${
 							isLiked ? "liked text-blue-600" : ""
 						}" data-post-id="${post.post_id}">
@@ -121,7 +127,9 @@ PostManager.prototype.createPostHTML = function (post) {
           
           <div class="post-meta">
 		   <div class="profile-image">
-		  		<img src=${post.author_img} onerror="this.onerror=null;this.src='/static/profiles/avatar.jpg';"/>
+		  		<img src=${
+						post.author_img
+					} onerror="this.onerror=null;this.src='/static/profiles/avatar.jpg';"/>
 			</div>
             <span>by ${post.post_author}</span>
             <span>•</span>
@@ -186,9 +194,55 @@ PostManager.prototype.renderPosts = function (posts) {
 		if (!container.classList.contains("hidden")) {
 			container.innerHTML = postsHTML;
 		}
+
+		const postDeleteBtn = container.querySelector("#postDeleteBtn");
+		const postEditBtn = container.querySelector("#postEditBtn");
+		postDeleteBtn?.addEventListener("click", (e) => console.log(e));
+		postEditBtn?.addEventListener("click", (e) => console.log(e));
 	});
 
 	this.attachPostEventListeners();
+};
+
+PostManager.prototype.handlePostEdit = function (e) {
+	e.stopPropagation();
+
+	const button = e.currentTarget.closest("#postEditBtn");
+	if (!button) return;
+	const postId = button.getAttribute("data-post-id");
+
+	const post = POSTS.find((post) => post.post_id === postId);
+
+	this.postModalManager.openModal(post);
+};
+
+PostManager.prototype.handlePostDelete = async function (e) {
+	e.preventDefault();
+	e.stopPropagation();
+
+	const button = e.currentTarget.closest("#postDeleteBtn");
+	if (!button) return;
+	const postId = button.getAttribute("data-post-id");
+
+	const deletePost = confirm("Delete this post?");
+	if (!deletePost) return;
+
+	const postData = {
+		post_id: postId,
+	};
+
+	const res = await this.postService.deletePost(postData);
+	if (res.error) {
+		toast.createToast("error", res.message);
+		return;
+	}
+
+	const postIndex = POSTS.findIndex((post) => post.post_id === postId);
+	if (postIndex !== -1) {
+		POSTS.splice(postIndex, 1);
+	}
+
+	toast.createToast("success", "Post deleted successfully!");
 };
 
 PostManager.prototype.attachPostEventListeners = function () {
@@ -336,12 +390,11 @@ PostManager.prototype.init = async function () {
 	this.renderPosts(POSTS);
 };
 
-const postManager = new PostManager();
 document.addEventListener("DOMContentLoaded", () => {
+	const postManager = new PostManager();
 	postManager.init();
-
-	const postModal = new PostModalManager();
-	postModal.init();
+	// postModal.init();
+	postManager.postModalManager.init();
 });
 
-export { postManager };
+export { PostManager };
