@@ -24,7 +24,6 @@ class PostManager {
 		this.postModalManager = new PostModalManager();
 
 		// DOM Elements
-		this.form = document.getElementById("createPostForm");
 		this.videoLink = document.getElementById("videoLink");
 	}
 }
@@ -244,8 +243,47 @@ PostManager.prototype.handlePostDelete = async function (e) {
 	toast.createToast("success", "Post deleted successfully!");
 };
 
+PostManager.prototype.handlePostUpdate = async function (e) {
+	e.preventDefault();
+	e.stopPropagation();
+
+	const formData = {
+		PostID: document.getElementById("postId").value,
+		CreatedAt: document.getElementById("createdAt").value,
+		PostTitle: document.getElementById("postTitle").value,
+		PostCategory: Array.from(
+			document.querySelectorAll('input[name="postCategory"]:checked')
+		)
+			.map((checkbox) => checkbox.value)
+			.join(" "),
+		PostContent: document.getElementById("postContent").value,
+	};
+
+	if (recyclebinState.TEMP_DATA !== null) {
+		formData.PostImage = recyclebinState.TEMP_DATA.img;
+		formData.PostID = recyclebinState.TEMP_DATA.post_id;
+	}
+
+	const res = await this.postService.createPost(formData);
+	if (res.error) {
+		toast.createToast("error", res.message);
+		this.postModalManager.showUploadError(
+			"Error creating post. Please try again."
+		);
+	}
+
+	if (res.data) {
+		this.postModalManager.closeModal();
+		POSTS.unshift(res.data);
+		// this.postManager.renderPosts(POSTS);
+	}
+};
+
 PostManager.prototype.handleSubmit = async function (e) {
 	e.preventDefault();
+	e.stopPropagation();
+
+	console.log(e);
 
 	let formData = {};
 
@@ -262,6 +300,7 @@ PostManager.prototype.handleSubmit = async function (e) {
 			PostImage: recyclebinState.TEMP_DATA.img || null,
 			PostID: recyclebinState.TEMP_DATA.post_id || null,
 		};
+
 	} else {
 		formData = {
 			PostTitle: document.getElementById("postTitle").value,
@@ -281,6 +320,8 @@ PostManager.prototype.handleSubmit = async function (e) {
 		return;
 	}
 
+	console.log(res);
+
 	if (res.data) {
 		toast.createToast(
 			"success",
@@ -288,8 +329,10 @@ PostManager.prototype.handleSubmit = async function (e) {
 		);
 		this.postModalManager.closeModal();
 		POSTS.unshift(res.data);
-		this.renderPosts(POSTS);
 	}
+
+	if (window.location.pathname === "/")
+		this.renderPosts(POSTS);
 };
 
 PostManager.prototype.handleImageUpload = async function (e) {
@@ -361,7 +404,13 @@ PostManager.prototype.attachPostEventListeners = function () {
 		button.addEventListener("click", (e) => this.toggleComments(e));
 	});
 
-	document.getElementById("createPostForm")?.addEventListener("submit", (e) => this.handleSubmit(e));
+	document.getElementById("modalSubmitBtn")?.addEventListener("click",(e) => {
+		if (window.location.pathname === "/"){
+			this.handleSubmit(e);
+		} else {
+			this.handlePostUpdate(e);
+		}	
+	});
 
 	const postDeleteBtn = document.querySelectorAll("#postDeleteBtn");
 	const postEditBtn = document.querySelectorAll("#postEditBtn");
