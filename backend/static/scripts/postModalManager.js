@@ -1,4 +1,4 @@
-import { POSTS } from "./data.js";
+import { recyclebinState } from "./data.js";
 import { PostService } from "./postsservice.js";
 import { getUserData } from "./authmiddleware.js";
 import { toast } from "./toast.js";
@@ -26,7 +26,6 @@ class PostModalManager {
 		this.MAX_FILE_SIZE = 20 * 1024 * 1024;
 		this.ALLOWED_TYPES = ["image/jpeg", "image/png", "image/gif"];
 		this.postService = new PostService();
-		this.tempData = null;
 	}
 }
 
@@ -50,7 +49,7 @@ PostModalManager.prototype.init = function () {
 		"click",
 		this.removeVideoPreview.bind(this)
 	);
-	this.form.addEventListener("submit", (e) => this.handleSubmit(e));
+	// this.form.addEventListener("submit", (e) => this.handleSubmit(e));
 };
 
 PostModalManager.prototype.openModal = async function (post) {
@@ -130,7 +129,7 @@ PostModalManager.prototype.handleImageUpload = async function (e) {
 	};
 	reader.readAsDataURL(file);
 
-	this.tempData = null;
+	recyclebinState.TEMP_DATA = null;
 	const formData = new FormData();
 	formData.append("image", file);
 
@@ -140,12 +139,12 @@ PostModalManager.prototype.handleImageUpload = async function (e) {
 		toast.createToast("error", imgRes.message);
 		this.showUploadError(imgRes.message);
 		this.imageUpload.value = "";
-		this.tempData = null;
+		recyclebinState.TEMP_DATA = null;
 		return;
 	}
 
 	if (imgRes.data) {
-		this.tempData = imgRes.data;
+		recyclebinState.TEMP_DATA = imgRes.data;
 	}
 };
 
@@ -172,7 +171,7 @@ PostModalManager.prototype.removeImagePreview = function () {
 	if (this.videoPreviewContainer.classList.contains("hidden")) {
 		this.mediaPreview.classList.add("hidden");
 	}
-	this.tempData = null;
+	recyclebinState.TEMP_DATA = null;
 };
 
 PostModalManager.prototype.removeVideoPreview = function () {
@@ -180,50 +179,6 @@ PostModalManager.prototype.removeVideoPreview = function () {
 	this.videoPreviewContainer.classList.add("hidden");
 	if (this.imagePreviewContainer.classList.contains("hidden")) {
 		this.mediaPreview.classList.add("hidden");
-	}
-};
-
-PostModalManager.prototype.handleSubmit = async function (e) {
-	e.preventDefault();
-
-	let formData = {};
-
-	if (this.tempData) {
-		formData = {
-			PostTitle: document.getElementById("postTitle").value,
-			PostCategory: Array.from(
-				document.querySelectorAll('input[name="postCategory"]:checked')
-			)
-				.map((checkbox) => checkbox.value)
-				.join(" "),
-			PostContent: document.getElementById("postContent").value,
-			PostVideo: this.videoLink.value || null,
-			PostImage: this.tempData.img || null,
-			PostID: this.tempData.post_id || null,
-		};
-	} else {
-		formData = {
-			PostTitle: document.getElementById("postTitle").value,
-			PostCategory: Array.from(
-				document.querySelectorAll('input[name="postCategory"]:checked')
-			)
-				.map((checkbox) => checkbox.value)
-				.join(" "),
-			PostContent: document.getElementById("postContent").value,
-			PostVideo: this.videoLink.value || null,
-		};
-	}
-
-	const res = await this.postService.createPost(formData);
-	if (res.error) {
-		toast.createToast("error", res.message);
-		return;
-	}
-
-	if (res.data) {
-		this.closeModal();
-		POSTS.unshift(res.data);
-		// this.posts.renderPosts(POSTS);
 	}
 };
 

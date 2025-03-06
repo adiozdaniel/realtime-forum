@@ -10,6 +10,7 @@ import {
 } from "./data.js";
 import { getUserData } from "./authmiddleware.js";
 import { PostModalManager } from "./postModalManager.js";
+import { toast } from "./toast.js";
 
 const postsContainers = document.querySelectorAll("#postsContainer");
 
@@ -21,6 +22,10 @@ class PostManager {
 		this.dislikeState = postDislikeState;
 		this.postService = new PostService();
 		this.postModalManager = new PostModalManager();
+
+		// DOM Elements
+		this.form = document.getElementById("createPostForm");
+		this.videoLink = document.getElementById("videoLink");
 	}
 }
 
@@ -245,6 +250,54 @@ PostManager.prototype.handlePostDelete = async function (e) {
 	toast.createToast("success", "Post deleted successfully!");
 };
 
+PostManager.prototype.handleSubmit = async function (e) {
+	e.preventDefault();
+
+	let formData = {};
+
+	if (recyclebinState.TEMP_DATA !== null) {
+		formData = {
+			PostTitle: document.getElementById("postTitle").value,
+			PostCategory: Array.from(
+				document.querySelectorAll('input[name="postCategory"]:checked')
+			)
+				.map((checkbox) => checkbox.value)
+				.join(" "),
+			PostContent: document.getElementById("postContent").value,
+			PostVideo: this.videoLink.value || null,
+			PostImage: recyclebinState.TEMP_DATA.img || null,
+			PostID: recyclebinState.TEMP_DATA.post_id || null,
+		};
+	} else {
+		formData = {
+			PostTitle: document.getElementById("postTitle").value,
+			PostCategory: Array.from(
+				document.querySelectorAll('input[name="postCategory"]:checked')
+			)
+				.map((checkbox) => checkbox.value)
+				.join(" "),
+			PostContent: document.getElementById("postContent").value,
+			PostVideo: this.videoLink.value || null,
+		};
+	}
+
+	const res = await this.postService.createPost(formData);
+	if (res.error) {
+		toast.createToast("error", res.message);
+		return;
+	}
+
+	if (res.data) {
+		toast.createToast(
+			"success",
+			res.data.post_title + " created successfully!"
+		);
+		this.postModalManager.closeModal();
+		POSTS.unshift(res.data);
+		this.renderPosts(POSTS);
+	}
+};
+
 PostManager.prototype.attachPostEventListeners = function () {
 	lucide.createIcons();
 	document.querySelectorAll(".like-button").forEach((button) => {
@@ -256,6 +309,9 @@ PostManager.prototype.attachPostEventListeners = function () {
 	document.querySelectorAll(".comment-toggle").forEach((button) => {
 		button.addEventListener("click", (e) => this.toggleComments(e));
 	});
+	document
+		.getElementById("createPostForm")
+		?.addEventListener("submit", (e) => this.handleSubmit(e));
 };
 
 PostManager.prototype.handlePostLikes = async function (e) {
