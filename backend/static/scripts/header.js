@@ -1,21 +1,19 @@
-import { API_ENDPOINTS, POSTS, TEMP_DATA, recyclebinState } from "./data.js";
-import { postManager } from "./postmanager.js";
+import { API_ENDPOINTS, POSTS, TEMP_DATA } from "./data.js";
+import { PostManager } from "./postmanager.js";
 import { getUserData } from "./authmiddleware.js";
 import { sidebar } from "./sidebar.js";
 import { PostService } from "./postsservice.js";
-import { PostModalManager } from "./createposts.js";
 import { toast } from "./toast.js";
 
 class Header {
 	constructor() {
 		this.endpoints = API_ENDPOINTS;
 		this.postService = new PostService();
-		this.postModalManager = new PostModalManager();
+		this.postManager = new PostManager();
 		this.unreadNotifications = null;
 		this.newUnread = null;
 		this.noticationsCount = 0;
 		this.enableNotifications = false;
-		this.postModal = new PostModalManager();
 
 		// DOM Elements
 		this.menuToggleBtn = document.querySelector("#menuToggle");
@@ -26,6 +24,7 @@ class Header {
 		this.notificationButton = document.querySelector("#notificationButton");
 		this.notificationDropdown = document.querySelector("#notificationDropdown");
 		this.postDeleteBtn = document.querySelector("#postDeleteBtn");
+		this.postEditBtn = document.querySelector("#postEditBtn");
 		this.cancelBtn = document.querySelector("#cancelPost");
 		this.modalSubmitBtn = document.getElementById("modalSubmitBtn");
 		this.videoLink = document.getElementById("videoLink");
@@ -53,7 +52,7 @@ Header.prototype.handleResize = function () {
 // Search functionality
 Header.prototype.handleSearch = (e) => {
 	const searchTerm = e.target.value.toLowerCase();
-	postManager.searchPosts(searchTerm, []);
+	this.postManager.searchPosts(searchTerm, []);
 };
 
 // Toggle dark mode
@@ -173,16 +172,21 @@ Header.prototype.updateNots = function (nots) {
 		notifItem.textContent = n.message;
 		this.notificationDropdown.appendChild(notifItem);
 
-		notifItem.addEventListener("click", this.handleNotificationReading.bind(this));
+		notifItem.addEventListener(
+			"click",
+			this.handleNotificationReading.bind(this)
+		);
 	});
-}
+};
 
 // Handle notification click
 Header.prototype.handleNotificationReading = function (e) {
 	const notificationId = e.currentTarget.dataset.notificationId;
 	console.log("Reading notification:", notificationId);
 
-	const notification = this.newUnread.find((not) => not.notification_id === notificationId);
+	const notification = this.newUnread.find(
+		(not) => not.notification_id === notificationId
+	);
 
 	this.markNotificationAsRead(notification);
 };
@@ -195,12 +199,14 @@ Header.prototype.markNotificationAsRead = async function (not) {
 
 	if (res.error) {
 		toast.createToast("error", res.message);
-		return
+		return;
 	}
 
-	toast.createToast("success", `Marked: ${not.message}, as read`)
+	toast.createToast("success", `Marked: ${not.message}, as read`);
 
-	this.newUnread = this.newUnread.filter(n => n.notification_id !== not.notification_id);
+	this.newUnread = this.newUnread.filter(
+		(n) => n.notification_id !== not.notification_id
+	);
 	this.newUnreadIds = new Set(this.newUnread?.map((n) => n.notification_id));
 	console.log(this.newUnread);
 	this.updateNots(this.newUnread);
@@ -243,15 +249,15 @@ Header.prototype.handlePostUpdate = async function (e) {
 	const res = await this.postService.createPost(formData);
 	if (res.error) {
 		toast.createToast("error", res.message);
-		this.postModalManager.showUploadError(
+		this.postManager.postModalManager.showUploadError(
 			"Error creating post. Please try again."
 		);
 	}
 
 	if (res.data) {
-		this.postModalManager.closeModal();
+		this.postManager.postModalManager.closeModal();
 		POSTS.unshift(res.data);
-		postManager.renderPosts(POSTS);
+		this.postManager.renderPosts(POSTS);
 	}
 };
 
@@ -287,25 +293,9 @@ Header.prototype.init = async function () {
 		this.handleNotifications.bind(this)
 	);
 
-	document.querySelectorAll("#postEditBtn").forEach((btn) => {
-		btn.addEventListener("click", (e) => this.handlePostEdit(e));
-	});
-
-	document.querySelectorAll("#postDeleteBtn").forEach((btn) => {
-		btn.addEventListener("click", (e) => this.handlePostDelete(e));
-	});
-
 	this.cancelBtn?.addEventListener("click", (e) => this.handleClose(e));
 	this.modalSubmitBtn?.addEventListener("click", (e) => {
-	 if (window.location.pathname === "/dashboard")	this.handlePostUpdate(e)
-	});
-
-	document.querySelectorAll(".sidebar-item").forEach((item) => {
-		const data = item.getAttribute("data-view");
-		if (data === "posts") 
-			item.addEventListener("click", this.addRecyleBin.bind(this));
-		
-		if (data === "likedPosts") item.addEventListener("click", this.removeRecyleBin.bind(this));
+		if (window.location.pathname === "/dashboard") this.handlePostUpdate(e);
 	});
 
 	// Check for saved dark mode preference
@@ -325,65 +315,10 @@ Header.prototype.init = async function () {
 	this.watchNotifications();
 };
 
-Header.prototype.removeRecyleBin = function (e) {
-	e.preventDefault();
-	e.stopPropagation();
-
-	recyclebinState.RECYCLEBIN = null;
-}
-
-Header.prototype.addRecyleBin = function (e) {
-	e.preventDefault();
-	e.stopPropagation();
-
-	recyclebinState.RECYCLEBIN = "items";
-}
-
-Header.prototype.handlePostEdit = function (e) {
-	e.stopPropagation();
-
-	const button = e.currentTarget.closest("#postEditBtn");
-	if (!button) return;
-	const postId = button.getAttribute("data-post-id");
-
-	const post = POSTS.find((post) => post.post_id === postId);
-
-	this.postModalManager.openModal(post);
-};
-
-Header.prototype.handlePostDelete = async function (e) {
-	e.preventDefault();
-	e.stopPropagation();
-
-	const button = e.currentTarget.closest("#postDeleteBtn");
-	if (!button) return;
-	const postId = button.getAttribute("data-post-id");
-
-	const deletePost = confirm("Delete this post?");
-	if (!deletePost) return;
-
-	const postData = {
-		post_id: postId,
-	};
-
-	const res = await this.postService.deletePost(postData);
-	if (res.error) {
-		toast.createToast("error", res.message);
-		return;
-	}
-
-	const postIndex = POSTS.findIndex((post) => post.post_id === postId);
-	if (postIndex !== -1) {
-		POSTS.splice(postIndex, 1);
-	}
-
-	toast.createToast("success", "Post deleted successfully!");
-};
-
 Header.prototype.handleClose = function (e) {
 	e.stopPropagation();
 
-	this.postModalManager.closeModal();
+	this.postManager.postModalManager.closeModal();
 };
 
 // Start the application
