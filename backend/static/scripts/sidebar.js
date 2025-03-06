@@ -1,11 +1,13 @@
-import { postManager } from "./postmanager.js";
+import { PostManager } from "./postmanager.js";
 
 const sidebar = document.querySelector("#sidebar");
 const allCategoriesBtn = document.querySelector("#allCategories");
 const categoryDropdown = document.querySelector("#categoryDropdown");
 const profileBtn = document.querySelector("#profile");
 class Sidebar {
-	constructor() {}
+	constructor() {
+		this.postManager = new PostManager();
+	}
 }
 
 Sidebar.prototype.createCategoryDropdown = function () {
@@ -30,16 +32,18 @@ Sidebar.prototype.createCategoryDropdown = function () {
 	allCategoriesButton.textContent = "All Posts";
 
 	// Ensure "All Posts" appears at the top
-	categoryDropdown.insertBefore(allCategoriesButton, categoryDropdown.firstChild);
+	categoryDropdown.insertBefore(
+		allCategoriesButton,
+		categoryDropdown.firstChild
+	);
 };
 
 Sidebar.prototype.filterPosts = function (selectedCategory) {
 	// Convert single category to array for compatibility with existing code
-	const selectedCategories = selectedCategory === "all" 
-	    ? ["all"] 
-	    : [selectedCategory];
+	const selectedCategories =
+		selectedCategory === "all" ? ["all"] : [selectedCategory];
 
-	postManager.searchPosts("", selectedCategories);
+	this.postManager.searchPosts("", selectedCategories);
 };
 
 Sidebar.prototype.init = function () {
@@ -64,13 +68,13 @@ Sidebar.prototype.init = function () {
 			// Handle pill button clicks
 			if (e.target.classList.contains("category-pill")) {
 				const pillButtons = document.querySelectorAll(".category-pill");
-				
+
 				// Remove active class from all buttons
-				pillButtons.forEach(pill => pill.classList.remove("active"));
-				
+				pillButtons.forEach((pill) => pill.classList.remove("active"));
+
 				// Add active class to clicked button
 				e.target.classList.add("active");
-				
+
 				// Get selected category and filter posts
 				const selectedCategory = e.target.dataset.category;
 				this.filterPosts(selectedCategory);
@@ -95,4 +99,4 @@ document.addEventListener("DOMContentLoaded", function () {
 	sideBar.init();
 });
 
-export {sidebar};
+export { sidebar };
