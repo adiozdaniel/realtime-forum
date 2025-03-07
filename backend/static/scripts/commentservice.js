@@ -141,8 +141,11 @@ CommentService.prototype.dislikeComment = async function (commentData) {
 
 		return await response.json();
 	} catch (error) {
-		console.error("Error disliking comment:", error);
-		return null;
+		return {
+			error: true,
+			data: null,
+			message: error,
+		};
 	}
 };
 
