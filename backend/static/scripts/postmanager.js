@@ -6,6 +6,8 @@ import {
 	postDislikeState,
 	POSTS,
 	COMMENTS,
+	USER_STATE,
+	sortPostsByDate,
 	recyclebinState,
 } from "./data.js";
 import { getUserData } from "./authmiddleware.js";
@@ -160,7 +162,9 @@ PostManager.prototype.toggleComments = function (e) {
 	commentsSection.classList.toggle("hidden");
 };
 
-PostManager.prototype.renderPosts = function (posts) {
+PostManager.prototype.renderPosts = function (recievedposts) {
+	const posts = sortPostsByDate(recievedposts);
+	
 	if (posts.length === 0) {
 		postsContainers.forEach((container) => {
 			if (!container.classList.contains("hidden")) {
