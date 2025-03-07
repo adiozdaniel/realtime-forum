@@ -569,7 +569,12 @@ document.addEventListener("DOMContentLoaded", () => {
 
 	postManager.postModalManager.init();
 
-	document.getElementById("modalSubmitBtn")?.addEventListener("click", (e) => {
+	postManager.postModalManager.imageUpload.addEventListener(
+		"change",
+		postManager.handleImageUpload.bind(postManager)
+	);
+
+	postManager.postModalManager.form.addEventListener("submit", (e) => {
 		if (window.location.pathname === "/") {
 			postManager.handleSubmit(e);
 		} else {
