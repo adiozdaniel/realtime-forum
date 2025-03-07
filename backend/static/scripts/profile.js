@@ -341,23 +341,19 @@ ProfileDashboard.prototype.handleImageUpload = async function (e) {
 	const formData = new FormData();
 	formData.append("image", file);
 
-	try {
-		const user = await this.authService.uploadProfilePic(formData);
-		console.log(user.data);
+	const user = await this.authService.uploadProfilePic(formData);
 
-		if (user.error) {
-			alert(user.message);
-		} else if (user.data !== null) {
-			// Update the profile picture URL with the server's response
-			USER_STATE.profilePic = user.data.image;
-			this.elements.profileImage.src =
-				user.data.image || "/static/profiles/avatar.jpg";
-			this.elements.headerImage.src = user.data.image;
-			alert("Profile picture updated successfully!");
-		}
-	} catch (error) {
-		console.error("Error uploading image:", error);
-		alert("Failed to upload image. Please try again.");
+	if (user.error) {
+		toast.createToast("error", user.message);
+		return;
+	}
+	
+	if (user.data !== null) {
+		USER_STATE.profilePic = user.data.image;
+		this.elements.profileImage.src =
+			user.data.image || "/static/profiles/avatar.jpg";
+		this.elements.headerImage.src = user.data.image;
+		toast.createToast("success", "Profile picture updated successfully!");
 	}
 };
 

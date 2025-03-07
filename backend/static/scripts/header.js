@@ -72,11 +72,11 @@ Header.prototype.signOutUser = async function () {
 		});
 
 		if (response.error) {
-			console.log();
+			toast.createToast("error", response.message);
+			return;
 		}
 
 		if (response.ok) {
-			console.log("User signed out successfully.");
 			this.authButton.textContent = "Sign In";
 		}
 
@@ -182,7 +182,6 @@ Header.prototype.updateNots = function (nots) {
 // Handle notification click
 Header.prototype.handleNotificationReading = function (e) {
 	const notificationId = e.currentTarget.dataset.notificationId;
-	console.log("Reading notification:", notificationId);
 
 	const notification = this.newUnread.find(
 		(not) => not.notification_id === notificationId
@@ -208,7 +207,6 @@ Header.prototype.markNotificationAsRead = async function (not) {
 		(n) => n.notification_id !== not.notification_id
 	);
 	this.newUnreadIds = new Set(this.newUnread?.map((n) => n.notification_id));
-	console.log(this.newUnread);
 	this.updateNots(this.newUnread);
 };
 

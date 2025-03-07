@@ -290,8 +290,6 @@ PostManager.prototype.handleSubmit = async function (e) {
 	e.preventDefault();
 	e.stopPropagation();
 
-	console.log(e);
-
 	let formData = {};
 
 	if (recyclebinState.TEMP_DATA !== null) {
@@ -326,8 +324,6 @@ PostManager.prototype.handleSubmit = async function (e) {
 		toast.createToast("error", res.message);
 		return;
 	}
-
-	console.log(res);
 
 	if (res.data) {
 		toast.createToast(
