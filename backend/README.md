@@ -3,6 +3,7 @@
 ## Objectives
 
 This project is a web forum with the following functionality:
+
 - **Communication between users**: Users can interact by creating posts and comments.
 - **Image Upload**: Users can also interact by uploading images to the posts they are trying to make.
 - **Categorization of posts**: Posts can be associated with one or more categories.
@@ -20,12 +21,12 @@ SQLite is used to store the forum's data (e.g., users, posts, likes, dislikes, c
 SQLite enables creating and controlling a database using queries. To learn more about SQLite, visit the [SQLite documentation](https://sqlite.org/).
 
 ---
+
 ### Traditional Authentication:
 
 - **Registration**:
   - Users can register with a unique username and email.
   - A password is required during registration, and it is encrypted before storing.
-  
 - **Login**:
   - Users can log in using their email and password.
   - If the credentials are incorrect, an error response is returned.
@@ -41,7 +42,6 @@ To facilitate communication among users:
 - **Registered users**:
   - Can create posts and comments.
   - Posts can be associated with one or more categories (you decide the categories).
-  
 - **Non-registered users**:
   - Can only view posts and comments.
 
@@ -135,9 +135,10 @@ docker run -d -p 4000:4000 --name forumcontainer forum
 ## Troubleshooting
 
 If you experience any issues while using the application, try the following
-  - Refresh your page.
-  - If that doesn't work, clear your browser cache and try refreshing the page.
-  - If the issue persists, [report it](mailto:josephineopondo05@gmail.com)
+
+- Refresh your page. This issue has been reported on comments and our team are working round the clock to resolve it.
+- If that doesn't work, clear your browser cache and try refreshing the page.
+- If the issue persists, [report it](mailto:josephineopondo05@gmail.com)
 
 ## Authors
 
