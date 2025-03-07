@@ -1,4 +1,3 @@
-
 # Forum
 
 ## Objectives
@@ -67,6 +66,8 @@ The forum includes a filtering mechanism to:
 
 The forum allows registered users to upload images to their respective posts. The image should not exceed 20 MB in size. Formats allowed are JPEG, SVG, PNG, and GIF.
 
+Registered users can also upload profile images and/or edit their profile images.
+
 ### Notes:
 
 - The "created posts" and "liked posts" filters are only available to registered users.
@@ -130,6 +131,13 @@ docker run -d -p 4000:4000 --name forumcontainer forum
    ```
    go test ./...
    ```
+
+## Troubleshooting
+
+If you experience any issues while using the application, try the following
+  - Refresh your page.
+  - If that doesn't work, clear your browser cache and try refreshing the page.
+  - If the issue persists, [report it](mailto:josephineopondo05@gmail.com)
 
 ## Authors
 
