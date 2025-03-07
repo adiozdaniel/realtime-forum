@@ -41,8 +41,6 @@ ProfileDashboard.prototype.init = async function () {
 		this.state.username = userData.data.user_info?.user_name;
 
 		this.userData = userData.data.user_info;
-
-		console.log(userData.data);
 	}
 
 	this.cacheElements();
