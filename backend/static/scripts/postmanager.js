@@ -247,22 +247,22 @@ PostManager.prototype.handlePostUpdate = async function (e) {
 	e.preventDefault();
 	e.stopPropagation();
 
-	const formData = {
-		PostID: document.getElementById("postId").value,
-		CreatedAt: document.getElementById("createdAt").value,
-		PostTitle: document.getElementById("postTitle").value,
-		PostCategory: Array.from(
-			document.querySelectorAll('input[name="postCategory"]:checked')
-		)
-			.map((checkbox) => checkbox.value)
-			.join(" "),
-		PostContent: document.getElementById("postContent").value,
-	};
+	const postId = document.getElementById("postId").value;
+	const createAt = document.getElementById("createdAt").value;
+	const postTitle = document.getElementById("postTitle").value;
+	const postCategory = Array.from(document.querySelectorAll('input[name="postCategory"]:checked')).map((checkbox) => checkbox.value).join(" ");
+	const postContent = document.getElementById("postContent").value;
 
-	if (recyclebinState.TEMP_DATA !== null) {
-		formData.PostImage = recyclebinState.TEMP_DATA.img;
-		formData.PostID = recyclebinState.TEMP_DATA.post_id;
-	}
+	const post = POSTS.find((post) => post.post_id === postId);
+
+	const formData = {
+		PostID: postId,
+		CreatedAt: createAt,
+		PostTitle: postTitle,
+		PostCategory: postCategory,
+		PostContent: postContent,
+		PostImage: post.post_image,
+	};
 
 	const res = await this.postService.createPost(formData);
 	if (res.error) {
@@ -274,7 +274,6 @@ PostManager.prototype.handlePostUpdate = async function (e) {
 
 	if (res.data) {
 		this.postModalManager.closeModal();
-		POSTS.unshift(res.data);
 		// this.postManager.renderPosts(POSTS);
 	}
 };
