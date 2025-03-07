@@ -6,7 +6,7 @@ import { formatTimeAgo } from "./timestamps.js";
 import { toast } from "./toast.js";
 
 function toTitleCase(str) {
-	return str.replace(/\b\w/g, (char) => char.toUpperCase());
+	return str?.replace(/\b\w/g, (char) => char.toUpperCase());
 }
 
 class ProfileDashboard {
