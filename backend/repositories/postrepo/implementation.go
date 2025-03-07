@@ -131,7 +131,7 @@ func (r *PostRepository) GetLikesByPostID(postID string) ([]*Like, error) {
 
 // GetDislikesByPostID retrieves all dislikes for a post by its ID
 func (r *PostRepository) GetDislikesByPostID(postID string) ([]*Like, error) {
-	query := `SELECT like_id, user_id FROM dislikes WHERE post_id = ?`
+	query := `SELECT like_id, user_id, post_id, comment_id, reply_id FROM dislikes WHERE post_id = ?`
 	rows, err := r.DB.Query(query, postID)
 	if err != nil {
 		return nil, err
@@ -434,29 +434,29 @@ func (r *PostRepository) GetPostsByUserID(userID string) ([]*Post, error) {
 
 // GetLikedPostsByUserID retrieves all posts liked by a user
 func (r *PostRepository) GetLikedPostsByUserID(userID string) ([]*Post, error) {
-    likes, err := r.GetLikesByUserID(userID)
-    if err != nil {
-        return nil, err
-    }
+	likes, err := r.GetLikesByUserID(userID)
+	if err != nil {
+		return nil, err
+	}
 
-    var posts []*Post
+	var posts []*Post
 
-    for _, like := range likes {
-        if like.CommentID == "" && like.ReplyID == "" {
-            post, err := r.GetPostByLikeID(like.LikeID, userID)
-            if post == nil || err != nil {
-                continue
-            }
+	for _, like := range likes {
+		if like.CommentID == "" && like.ReplyID == "" {
+			post, err := r.GetPostByLikeID(like.LikeID, userID)
+			if post == nil || err != nil {
+				continue
+			}
 
-            post.Likes, _ = r.GetLikesByPostID(post.PostID)
-            post.Dislikes, _ = r.GetDislikesByPostID(post.PostID)
-            post.Comments, _ = r.GetCommentsByPostID(post.PostID)
+			post.Likes, _ = r.GetLikesByPostID(post.PostID)
+			post.Dislikes, _ = r.GetDislikesByPostID(post.PostID)
+			post.Comments, _ = r.GetCommentsByPostID(post.PostID)
 
-            posts = append(posts, post)
-        }
-    }
+			posts = append(posts, post)
+		}
+	}
 
-    return posts, nil
+	return posts, nil
 }
 
 // GetCommentsByUserID retrieves all comments created by a specific user
