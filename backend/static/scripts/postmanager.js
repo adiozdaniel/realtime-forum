@@ -239,7 +239,9 @@ PostManager.prototype.handlePostDelete = async function (e) {
 		return;
 	}
 
-	const postIndex = USER_STATE.posts.findIndex((post) => post.post_id === postId);
+	const postIndex = USER_STATE.posts.findIndex(
+		(post) => post.post_id === postId
+	);
 	if (postIndex !== -1) {
 		USER_STATE.posts.splice(postIndex, 1);
 	}
@@ -256,7 +258,11 @@ PostManager.prototype.handlePostUpdate = async function (e) {
 	const postId = document.getElementById("postId").value;
 	const createAt = document.getElementById("createdAt").value;
 	const postTitle = document.getElementById("postTitle").value;
-	const postCategory = Array.from(document.querySelectorAll('input[name="postCategory"]:checked')).map((checkbox) => checkbox.value).join(" ");
+	const postCategory = Array.from(
+		document.querySelectorAll('input[name="postCategory"]:checked')
+	)
+		.map((checkbox) => checkbox.value)
+		.join(" ");
 	const postContent = document.getElementById("postContent").value;
 
 	const post = POSTS.find((post) => post.post_id === postId);
@@ -279,9 +285,11 @@ PostManager.prototype.handlePostUpdate = async function (e) {
 	}
 
 	if (res.data) {
-		this.postModalManager.closeModal();		
-		const index = USER_STATE.posts.findIndex(post => post.post_id === res.data.post_id);
-		if (index !== -1) USER_STATE.posts[index] = res.data;	
+		this.postModalManager.closeModal();
+		const index = USER_STATE.posts.findIndex(
+			(post) => post.post_id === res.data.post_id
+		);
+		if (index !== -1) USER_STATE.posts[index] = res.data;
 		this.renderPosts(USER_STATE.posts);
 	}
 };
@@ -305,7 +313,6 @@ PostManager.prototype.handleSubmit = async function (e) {
 			PostImage: recyclebinState.TEMP_DATA.img || null,
 			PostID: recyclebinState.TEMP_DATA.post_id || null,
 		};
-
 	} else {
 		formData = {
 			PostTitle: document.getElementById("postTitle").value,
@@ -334,8 +341,7 @@ PostManager.prototype.handleSubmit = async function (e) {
 		POSTS.unshift(res.data);
 	}
 
-	if (window.location.pathname === "/")
-		this.renderPosts(POSTS);
+	if (window.location.pathname === "/") this.renderPosts(POSTS);
 };
 
 PostManager.prototype.handleImageUpload = async function (e) {
@@ -368,7 +374,9 @@ PostManager.prototype.handleImageUpload = async function (e) {
 		this.postModalManager.videoPreviewContainer.classList.add("hidden");
 	};
 	reader.onerror = () => {
-		this.postModalManager.showUploadError("Error reading file. Please try again.");
+		this.postModalManager.showUploadError(
+			"Error reading file. Please try again."
+		);
 		this.postModalManager.imageUpload.value = "";
 	};
 	reader.readAsDataURL(file);
@@ -407,26 +415,20 @@ PostManager.prototype.attachPostEventListeners = function () {
 		button.addEventListener("click", (e) => this.toggleComments(e));
 	});
 
-	document.getElementById("modalSubmitBtn")?.addEventListener("click",(e) => {
-		if (window.location.pathname === "/"){
-			this.handleSubmit(e);
-		} else {
-			this.handlePostUpdate(e);
-		}	
-	});
-
 	const postDeleteBtn = document.querySelectorAll("#postDeleteBtn");
 	const postEditBtn = document.querySelectorAll("#postEditBtn");
-	
-	postDeleteBtn?.forEach((deleteBtn) => 
+
+	postDeleteBtn?.forEach((deleteBtn) =>
 		deleteBtn.addEventListener("click", (e) => this.handlePostDelete(e))
 	);
 
-	postEditBtn?.forEach((editBtn) => 
+	postEditBtn?.forEach((editBtn) =>
 		editBtn.addEventListener("click", (e) => this.handlePostEdit(e))
 	);
 
-	document.getElementById("postImageUpload")?.addEventListener("change", this.handleImageUpload.bind(this));
+	document
+		.getElementById("postImageUpload")
+		?.addEventListener("change", this.handleImageUpload.bind(this));
 };
 
 PostManager.prototype.handlePostLikes = async function (e) {
@@ -564,8 +566,16 @@ PostManager.prototype.init = async function () {
 document.addEventListener("DOMContentLoaded", () => {
 	const postManager = new PostManager();
 	postManager.init();
-	// postModal.init();
+
 	postManager.postModalManager.init();
+
+	document.getElementById("modalSubmitBtn")?.addEventListener("click", (e) => {
+		if (window.location.pathname === "/") {
+			postManager.handleSubmit(e);
+		} else {
+			postManager.handlePostUpdate(e);
+		}
+	});
 });
 
 export { PostManager };
