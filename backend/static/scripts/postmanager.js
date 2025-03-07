@@ -164,7 +164,7 @@ PostManager.prototype.toggleComments = function (e) {
 
 PostManager.prototype.renderPosts = function (recievedposts) {
 	const posts = sortPostsByDate(recievedposts);
-	
+
 	if (posts.length === 0) {
 		postsContainers.forEach((container) => {
 			if (!container.classList.contains("hidden")) {
@@ -239,10 +239,12 @@ PostManager.prototype.handlePostDelete = async function (e) {
 		return;
 	}
 
-	const postIndex = POSTS.findIndex((post) => post.post_id === postId);
+	const postIndex = USER_STATE.posts.findIndex((post) => post.post_id === postId);
 	if (postIndex !== -1) {
-		POSTS.splice(postIndex, 1);
+		USER_STATE.posts.splice(postIndex, 1);
 	}
+
+	this.renderPosts(USER_STATE.posts);
 
 	toast.createToast("success", "Post deleted successfully!");
 };
@@ -277,8 +279,10 @@ PostManager.prototype.handlePostUpdate = async function (e) {
 	}
 
 	if (res.data) {
-		this.postModalManager.closeModal();
-		// this.postManager.renderPosts(POSTS);
+		this.postModalManager.closeModal();		
+		const index = USER_STATE.posts.findIndex(post => post.post_id === res.data.post_id);
+		if (index !== -1) USER_STATE.posts[index] = res.data;	
+		this.renderPosts(USER_STATE.posts);
 	}
 };
 
