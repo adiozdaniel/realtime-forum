@@ -434,25 +434,29 @@ func (r *PostRepository) GetPostsByUserID(userID string) ([]*Post, error) {
 
 // GetLikedPostsByUserID retrieves all posts liked by a user
 func (r *PostRepository) GetLikedPostsByUserID(userID string) ([]*Post, error) {
-	likes, err := r.GetLikesByUserID(userID)
-	if err != nil {
-		return nil, err
-	}
+    likes, err := r.GetLikesByUserID(userID)
+    if err != nil {
+        return nil, err
+    }
 
-	var posts []*Post
-	for _, like := range likes {
-		if like.CommentID == "" && like.ReplyID == "" {
-			post, _ := r.GetPostByLikeID(like.LikeID, userID)
-			
-			post.Likes, _ = r.GetLikesByPostID(post.PostID)
-			post.Dislikes, _ = r.GetDislikesByPostID(post.PostID)
-			post.Comments, _ = r.GetCommentsByPostID(post.PostID)
+    var posts []*Post
 
-			posts = append(posts, post)
-		}
-	}
+    for _, like := range likes {
+        if like.CommentID == "" && like.ReplyID == "" {
+            post, err := r.GetPostByLikeID(like.LikeID, userID)
+            if post == nil || err != nil {
+                continue
+            }
 
-	return posts, nil
+            post.Likes, _ = r.GetLikesByPostID(post.PostID)
+            post.Dislikes, _ = r.GetDislikesByPostID(post.PostID)
+            post.Comments, _ = r.GetCommentsByPostID(post.PostID)
+
+            posts = append(posts, post)
+        }
+    }
+
+    return posts, nil
 }
 
 // GetCommentsByUserID retrieves all comments created by a specific user
