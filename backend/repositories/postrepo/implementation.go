@@ -138,16 +138,30 @@ func (r *PostRepository) GetDislikesByPostID(postID string) ([]*Like, error) {
 	}
 	defer rows.Close()
 
-	var dislikes []*Like
+	var disLikes []*Like
 	for rows.Next() {
 		like := &Like{}
-		err := rows.Scan(&like.LikeID, &like.UserID)
+		var commentID, replyID sql.NullString
+
+		err := rows.Scan(&like.LikeID, &like.UserID, &like.PostID, &commentID, &replyID)
 		if err != nil {
 			return nil, err
 		}
-		dislikes = append(dislikes, like)
+
+		// Convert NULL values to empty strings
+		like.CommentID = commentID.String
+		like.ReplyID = replyID.String
+
+		if like.CommentID == "" && like.ReplyID == "" {
+			disLikes = append(disLikes, like)
+		}
 	}
-	return dislikes, nil
+
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+
+	return disLikes, nil
 }
 
 // GetCommentsByPostID retrieves all comments for a post by its ID
