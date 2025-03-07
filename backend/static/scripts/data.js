@@ -53,7 +53,7 @@ const COMMENTS = {};
 const REPLIES = {};
 
 // User Data
-const STATE = {
+const USER_STATE = {
 	currentView: "overview",
 	darkMode: "",
 	profilePic: "",
@@ -91,7 +91,7 @@ export {
 	API_ENDPOINTS,
 	POSTS,
 	CONSTANTS,
-	STATE,
+	USER_STATE,
 	commentLikeState,
 	commentDisLikeState,
 	postLikeState,

@@ -1,6 +1,6 @@
 import { AuthService } from "./authservice.js";
 import { CommentService } from "./commentservice.js";
-import { STATE, recyclebinState, sortPostsByDate } from "./data.js";
+import { USER_STATE, recyclebinState, sortPostsByDate } from "./data.js";
 import { PostManager } from "./postmanager.js";
 import { formatTimeAgo } from "./timestamps.js";
 import { toast } from "./toast.js";
@@ -14,7 +14,6 @@ class ProfileDashboard {
 		this.authService = new AuthService();
 		this.commentService = new CommentService();
 		this.postManager = new PostManager();
-		this.state = STATE;
 		this.userData = null;
 	}
 }
@@ -29,16 +28,17 @@ ProfileDashboard.prototype.init = async function () {
 	}
 
 	if (userData.data) {
-		this.state.profilePic = userData.data.user_info?.image;
-		this.state.posts = userData.data.posts || [];
-		this.state.likedPosts = userData.data.liked_posts || [];
-		this.state.userComments = userData.data.comments || [];
-		this.state.activities = userData.data.activities || [];
-		this.state.likes = userData.data.likes;
-		this.state.dislikes = userData.data.dislikes;
-		this.state.replies = userData.data.replies;
-		this.state.bio = userData.data.user_info?.bio;
-		this.state.username = userData.data.user_info?.user_name;
+
+		USER_STATE.profilePic = userData.data.user_info?.image;
+		USER_STATE.posts = userData.data.posts || [];
+		USER_STATE.likedPosts = userData.data.liked_posts || [];
+		USER_STATE.userComments = userData.data.comments || [];
+		USER_STATE.activities = userData.data.activities || [];
+		USER_STATE.likes = userData.data.likes;
+		USER_STATE.dislikes = userData.data.dislikes;
+		USER_STATE.replies = userData.data.replies;
+		USER_STATE.bio = userData.data.user_info?.bio;
+		USER_STATE.username = userData.data.user_info?.user_name;
 
 		this.userData = userData.data.user_info;
 	}
@@ -119,7 +119,7 @@ ProfileDashboard.prototype.renderComments = function () {
 
 	let comments = ``;
 
-	this.state.userComments?.forEach((comment) => {
+	USER_STATE.userComments?.forEach((comment) => {
 		comments += this.createCommentHTML(comment);
 	});
 
@@ -140,7 +140,7 @@ ProfileDashboard.prototype.editComment = async function (e) {
 	if (!button) return;
 	const commentId = button.getAttribute("data-comment-id");
 
-	const comment = this.state.userComments?.find(
+	const comment = USER_STATE.userComments?.find(
 		(comment) => comment.comment_id === commentId
 	);
 
@@ -165,7 +165,7 @@ ProfileDashboard.prototype.deleteComment = async function (e) {
 	if (!button) return;
 	const commentId = button.getAttribute("data-comment-id");
 
-	const comment = this.state.userComments?.find(
+	const comment = USER_STATE.userComments?.find(
 		(comment) => comment.comment_id === commentId
 	);
 
@@ -197,11 +197,11 @@ ProfileDashboard.prototype.cacheElements = function () {
 		sidebarItems: document.querySelectorAll(".sidebar-item"),
 	};
 	this.elements.bioText.textContent =
-		this.state.bio || "Hey there! I'm on forum.";
+		USER_STATE.bio || "Hey there! I'm on forum.";
 	this.elements.profileImage.src =
-		this.state.profilePic ||
+		USER_STATE.profilePic ||
 		"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%239ca3af'%3E%3Cpath d='M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm0 14.2c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08 1.99 0 5.97 1.09 6 3.08-1.29 1.94-3.5 3.22-6 3.22z'/%3E%3C/svg%3E";
-	this.elements.userName.textContent = toTitleCase(this.state.username);
+	this.elements.userName.textContent = toTitleCase(USER_STATE.username);
 };
 
 ProfileDashboard.prototype.setupEventListeners = function () {
@@ -230,7 +230,7 @@ ProfileDashboard.prototype.setupEventListeners = function () {
 };
 
 ProfileDashboard.prototype.switchView = function (view) {
-	this.state.currentView = view;
+	USER_STATE.currentView = view;
 	this.updateActiveSection();
 };
 
@@ -240,11 +240,11 @@ ProfileDashboard.prototype.updateActiveSection = function () {
 		section.classList.add("hidden")
 	);
 
-	this.elements.sections[this.state.currentView].classList.remove("hidden");
+	this.elements.sections[USER_STATE.currentView].classList.remove("hidden");
 	this.elements.sidebarItems.forEach((item) => item.classList.remove("active"));
 
 	const activeItem = Array.from(this.elements.sidebarItems).find(
-		(item) => item.dataset.view === this.state.currentView
+		(item) => item.dataset.view === USER_STATE.currentView
 	);
 	if (activeItem) activeItem.classList.add("active");
 };
@@ -254,7 +254,7 @@ ProfileDashboard.prototype.renderMyPosts = function (e) {
 
 	recyclebinState.RECYCLEBIN = null;
 	this.postManager.renderPosts(
-		sortPostsByDate(this.state.posts)
+		sortPostsByDate(USER_STATE.posts)
 	);
 };
 
@@ -263,29 +263,29 @@ ProfileDashboard.prototype.renderLikedPosts = function (e) {
 
 	recyclebinState.RECYCLEBIN = "items";
 	this.postManager.renderPosts(
-		sortPostsByDate(this.state.likedPosts)
+		sortPostsByDate(USER_STATE.likedPosts)
 	);
 };
 
 ProfileDashboard.prototype.toggleDarkMode = function () {
-	this.state.darkMode = !this.state.darkMode;
-	localStorage.setItem("darkMode", this.state.darkMode);
+	USER_STATE.darkMode = !USER_STATE.darkMode;
+	localStorage.setItem("darkMode", USER_STATE.darkMode);
 	this.updateTheme();
 };
 
 ProfileDashboard.prototype.updateTheme = function () {
 	document.body.setAttribute(
 		"data-theme",
-		this.state.darkMode ? "dark" : "light"
+		USER_STATE.darkMode ? "dark" : "light"
 	);
 	this.elements.darkModeToggle.innerHTML = `<i data-lucide="${
-		this.state.darkMode ? "sun" : "moon"
+		USER_STATE.darkMode ? "sun" : "moon"
 	}"></i>`;
 	lucide.createIcons();
 };
 
 ProfileDashboard.prototype.editBio = async function () {
-	const newBio = prompt("Edit your bio:", this.state.bio);
+	const newBio = prompt("Edit your bio:", USER_STATE.bio);
 	if (newBio) {
 		const formData = {
 			user_id: this.userData.user_id,
@@ -301,7 +301,7 @@ ProfileDashboard.prototype.editBio = async function () {
 
 		if (res.data) {
 			toast.createToast("success", res.message || "Bio updated!");
-			this.state.bio = res.data.bio;
+			USER_STATE.bio = res.data.bio;
 			this.elements.bioText.textContent = res.data.bio;
 		}
 	}
@@ -336,7 +336,7 @@ ProfileDashboard.prototype.handleImageUpload = async function (e) {
 	const reader = new FileReader();
 	reader.onloadend = () => {
 		// Update the profile picture immediately
-		this.state.profilePic = reader.result;
+		USER_STATE.profilePic = reader.result;
 		this.elements.profileImage.src = reader.result;
 	};
 	reader.readAsDataURL(file);
@@ -353,7 +353,7 @@ ProfileDashboard.prototype.handleImageUpload = async function (e) {
 			alert(user.message);
 		} else if (user.data !== null) {
 			// Update the profile picture URL with the server's response
-			this.state.profilePic = user.data.image;
+			USER_STATE.profilePic = user.data.image;
 			this.elements.profileImage.src =
 				user.data.image || "/static/profiles/avatar.jpg";
 			this.elements.headerImage.src = user.data.image;
@@ -367,19 +367,19 @@ ProfileDashboard.prototype.handleImageUpload = async function (e) {
 
 ProfileDashboard.prototype.updateStats = function () {
 	document.getElementById("postsCount").textContent =
-		this.state.posts?.length || 0;
+		USER_STATE.posts?.length || 0;
 	document.getElementById("commentsCount").textContent =
-		this.state.userComments?.length || 0;
+		USER_STATE.userComments?.length || 0;
 	document.getElementById("likesCount").textContent =
-		this.state.likes?.length || 0;
+		USER_STATE.likes?.length || 0;
 	document.getElementById("dislikeCount").textContent =
-		this.state.dislikes?.length || 0;
+		USER_STATE.dislikes?.length || 0;
 	document.getElementById("repliesCount").textContent =
-		this.state.replies?.length || 0;
+		USER_STATE.replies?.length || 0;
 };
 
 ProfileDashboard.prototype.renderActivities = function () {
-	document.getElementById("activityList").innerHTML = this.state.activities
+	document.getElementById("activityList").innerHTML = USER_STATE.activities
 		?.sort((a, b) => new Date(b.created_at) - new Date(a.created_at))
 		.slice(0, 6)
 		.map(
