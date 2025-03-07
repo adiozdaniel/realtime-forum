@@ -1,6 +1,6 @@
 import { AuthService } from "./authservice.js";
 import { CommentService } from "./commentservice.js";
-import { STATE, recyclebinState } from "./data.js";
+import { STATE, recyclebinState, sortPostsByDate } from "./data.js";
 import { PostManager } from "./postmanager.js";
 import { formatTimeAgo } from "./timestamps.js";
 import { toast } from "./toast.js";
@@ -253,14 +253,18 @@ ProfileDashboard.prototype.renderMyPosts = function (e) {
 	e.preventDefault();
 
 	recyclebinState.RECYCLEBIN = null;
-	this.postManager.renderPosts(this.state.posts);
+	this.postManager.renderPosts(
+		sortPostsByDate(this.state.posts)
+	);
 };
 
 ProfileDashboard.prototype.renderLikedPosts = function (e) {
 	e.preventDefault();
 
 	recyclebinState.RECYCLEBIN = "items";
-	this.postManager.renderPosts(this.state.likedPosts);
+	this.postManager.renderPosts(
+		sortPostsByDate(this.state.likedPosts)
+	);
 };
 
 ProfileDashboard.prototype.toggleDarkMode = function () {

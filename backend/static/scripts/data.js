@@ -82,6 +82,11 @@ const postDislikeState = {
 	comments: {},
 };
 
+// helper functions
+const sortPostsByDate = (posts) => 
+    posts.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+
+
 export {
 	API_ENDPOINTS,
 	POSTS,
@@ -94,5 +99,6 @@ export {
 	COMMENTS,
 	REPLIES,
 	TEMP_DATA,
-	recyclebinState
+	recyclebinState,
+	sortPostsByDate
 };
