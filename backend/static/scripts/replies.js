@@ -2,17 +2,17 @@ import { formatTimeAgo } from "./timestamps.js";
 import { getUserData } from "./authmiddleware.js";
 import { commentLikeState, REPLIES } from "./data.js";
 import { CommentService } from "./commentservice.js";
+import { toast } from "./toast.js";
 
 class ReplyManager {
 	constructor() {
-		this.likeState = commentLikeState;
 		this.commentService = new CommentService();
 		this.replyCall = 0;
 	}
 }
 
 ReplyManager.prototype.createReplyHTML = function (reply) {
-	const replyState = (this.likeState.comments[reply.id] ??= {
+	const replyState = (commentLikeState.replies[reply.reply_id] ??= {
 		count: 0,
 		likedBy: new Set(),
 	});
@@ -30,10 +30,12 @@ ReplyManager.prototype.createReplyHTML = function (reply) {
             </div>
           </div>
           <div class="comment-footer">
-            <div class="comment-actions">
-              <button class="comment-action-button like-button ${
+            <div class="reply-actions">
+              <button class="reply-action-button like-button ${
 								isLiked ? "liked text-blue-600" : ""
-							}" data-comment-id="${reply.id}">
+							}" data-comment-id="${reply.comment_id}" data-reply-id="${
+		reply.reply_id
+	}">
                 <i data-lucide="thumbs-up"></i>
                 <span class="likes-count">${replyState.count}</span>
               </button>
@@ -61,7 +63,8 @@ ReplyManager.prototype.showReplyForm = async function (e) {
 
 	const userData = await getUserData();
 	if (!userData) {
-		alert("Please login to comment");
+		toast.createToast("error", "Please login to reply");
+		alert("Please login to reply");
 		window.location.href = "/auth";
 		return;
 	}
@@ -90,7 +93,8 @@ ReplyManager.prototype.handleReplySubmit = async function (e) {
 	e.preventDefault();
 	const userData = await getUserData();
 	if (!userData) {
-		alert("Please login to comment");
+		toast.createToast("error", "Please login to reply");
+		alert("Please login to reply");
 		window.location.href = "/auth";
 		return;
 	}
@@ -98,11 +102,11 @@ ReplyManager.prototype.handleReplySubmit = async function (e) {
 	const form = e.target.closest(".reply-form");
 	if (!form) return;
 
-	const postId = form.getAttribute("data-post-id");
 	const commentId = form.getAttribute("data-comment-id");
 	const replyText = form.querySelector(".reply-input").value.trim();
 
 	if (!replyText) {
+		toast.createToast("warning", "Reply cannot be empty!");
 		alert("Reply cannot be empty!");
 		return;
 	}
@@ -116,7 +120,7 @@ ReplyManager.prototype.handleReplySubmit = async function (e) {
 
 	const res = await this.commentService.createReply(replyData);
 	if (res.error) {
-		alert(res.message);
+		toast.createToast("error", res.message);
 		return;
 	}
 
@@ -140,6 +144,63 @@ ReplyManager.prototype.handleReplySubmit = async function (e) {
 
 	form.remove();
 	lucide.createIcons();
+};
+
+ReplyManager.prototype.handleReplyLikes = async function (e) {
+	e.preventDefault();
+
+	const currentUser = await getUserData();
+	if (!currentUser?.user_id) {
+		alert("Please log in to like comments.");
+		window.location.href = "/auth";
+		return;
+	}
+
+	const likeButton = e.target.closest(".like-button");
+	if (!likeButton) return;
+
+	const replyId = likeButton.dataset.replyId;
+	const commentId = likeButton.dataset.commentId;
+
+	if (!commentId || !replyId) return;
+
+	const likeData = (commentLikeState.replies[replyId] ??= {
+		count: 0,
+		likedBy: new Set(),
+	});
+
+	const replyLikeData = {
+		reply_id: replyId,
+		user_id: currentUser.user_id,
+		comment_id: commentId,
+	};
+
+	// Send request to backend
+	const res = await this.commentService.likeReply(replyLikeData);
+
+	if (res.error) {
+		alert(res.message);
+		return;
+	}
+
+	console.log(res);
+
+	if (res.data) {
+		likeData.count++;
+		likeData.likedBy.add(currentUser.user_id);
+		likeButton.classList.add("liked", "text-blue-600");
+	} else if (res.data === null) {
+		likeData.count = Math.max(0, likeData.count - 1);
+		likeData.likedBy.delete(currentUser.user_id);
+		likeButton.classList.remove("liked", "text-blue-600");
+	}
+
+	const likesCount = likeButton.querySelector(".likes-count");
+
+	if (likesCount) likesCount.textContent = likeData.count;
+
+	likeButton.classList.add("like-animation");
+	setTimeout(() => likeButton.classList.remove("like-animation"), 300);
 };
 
 export { ReplyManager };
