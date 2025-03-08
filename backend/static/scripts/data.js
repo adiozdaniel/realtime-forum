@@ -27,6 +27,7 @@ const API_ENDPOINTS = {
 
 	// reply ENDPOINTS
 	createReply: "/api/comments/reply/create",
+	likeReply: "/api/comments/reply/like",
 
 	// notification ENDPOINTS
 	checkNotifications: "/api/notifications/check",
@@ -43,9 +44,9 @@ const CONSTANTS = {
 let TEMP_DATA = null;
 
 const recyclebinState = {
-	TEMP_DATA : null,
-	RECYCLEBIN : null
-}
+	TEMP_DATA: null,
+	RECYCLEBIN: null,
+};
 
 // Posts Data
 const POSTS = [];
@@ -66,6 +67,7 @@ const USER_STATE = {
 
 const commentLikeState = {
 	comments: {},
+	replies: {},
 };
 
 const commentDisLikeState = {
@@ -83,9 +85,8 @@ const postDislikeState = {
 };
 
 // helper functions
-const sortPostsByDate = (posts) => 
-    posts.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
-
+const sortPostsByDate = (posts) =>
+	posts.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
 
 export {
 	API_ENDPOINTS,
@@ -100,5 +101,5 @@ export {
 	REPLIES,
 	TEMP_DATA,
 	recyclebinState,
-	sortPostsByDate
+	sortPostsByDate,
 };

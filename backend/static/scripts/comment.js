@@ -11,7 +11,6 @@ import { ReplyManager } from "./replies.js";
 
 class CommentManager {
 	constructor() {
-		this.likeState = commentLikeState;
 		this.disLikeState = commentDisLikeState;
 		this.commentService = new CommentService();
 		this.replyManager = new ReplyManager();
@@ -20,7 +19,7 @@ class CommentManager {
 
 CommentManager.prototype.createCommentHTML = function (comment, postId) {
 	const isLiked =
-		this.likeState.comments[comment.comment_id]?.likedBy.has("current-user");
+		commentLikeState.comments[comment.comment_id]?.likedBy.has("current-user");
 
 	const isDisliked =
 		this.disLikeState.comments[comment.comment_id]?.disLikedBy.has(
@@ -53,8 +52,8 @@ CommentManager.prototype.createCommentHTML = function (comment, postId) {
 	}"> 
                         <i data-lucide="thumbs-up"></i> 
                         <span class="likes-count">${
-													this.likeState.comments[comment.comment_id]?.count ||
-													0
+													commentLikeState.comments[comment.comment_id]
+														?.count || 0
 												}</span> 
                     </button>
                     <button class="comment-action-button dislike-button ${
@@ -96,7 +95,16 @@ CommentManager.prototype.loadComments = function (postId) {
 	// Fetch comments including replies
 	const comments = COMMENTS[postId] || [];
 	const commentsHTML = comments
-		.map((comment) => this.createCommentHTML(comment, postId))
+		.map((comment) => {
+			comment.replies?.forEach((reply) => {
+				commentLikeState.replies[reply.reply_id] = {
+					count: reply.likes?.length || 0,
+					likedBy: new Set(),
+				};
+			});
+
+			return this.createCommentHTML(comment, postId);
+		})
 		.join("");
 
 	// Ensure only one comment form per post
@@ -127,8 +135,17 @@ CommentManager.prototype.loadComments = function (postId) {
 		if (disLikeButton && disLikeButton.dataset.commentId)
 			this.handleCommentDisLikes(event);
 
-		if (replyButton && replyButton.dataset.commentId)
+		if (replyButton && replyButton.dataset.commentId) {
 			this.replyManager.showReplyForm(event);
+		}
+	});
+
+	this.likeState = commentLikeState;
+	document.querySelectorAll(".reply-action-button").forEach((button) => {
+		button.addEventListener(
+			"click",
+			this.replyManager.handleReplyLikes.bind(this)
+		);
 	});
 
 	lucide.createIcons();
@@ -143,7 +160,7 @@ CommentManager.prototype.handleCommentSubmit = async function (e) {
 
 	const userData = await getUserData();
 	if (!userData) {
-		alert("Please login to comment");
+		alert("Please login to participate in the discussion.");
 		window.location.href = "/auth";
 		return;
 	}
@@ -176,7 +193,7 @@ CommentManager.prototype.handleCommentLikes = async function (event) {
 
 	if (!commentId || !postId) return;
 
-	const likeData = (this.likeState.comments[commentId] ??= {
+	const likeData = (commentLikeState.comments[commentId] ??= {
 		count: 0,
 		likedBy: new Set(),
 	});
@@ -291,7 +308,7 @@ CommentManager.prototype.initLikeState = function (comments) {
 
 	Object.keys(comments).forEach((post_id) => {
 		comments[post_id]?.forEach((comment) => {
-			this.likeState.comments[comment.comment_id] = {
+			commentLikeState.comments[comment.comment_id] = {
 				count: comment.likes?.length || 0,
 				likedBy: new Set(),
 			};
