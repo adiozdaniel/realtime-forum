@@ -222,6 +222,21 @@ func (r *PostRepository) GetRepliesByCommentID(commentID string) ([]*Reply, erro
 	return replies, nil
 }
 
+// GetReplyByID retrieves a replt by its ID
+func (r *PostRepository) GetReplyByID(id string) (*Reply, error) {
+	query := `SELECT reply_id, comment_id, user_id, user_name, author_img, parent_reply_id, content, created_at, updated_at 
+	          FROM replies 
+	          WHERE reply_id = ?`
+	var reply Reply
+	err := r.DB.QueryRow(query, id).Scan(
+		&reply.ReplyID, &reply.CommentID, &reply.UserID, &reply.Author, &reply.AuthorImg, &reply.ParentReplyID, &reply.Content, &reply.CreatedAt, &reply.UpdatedAt,
+	)
+	if err != nil {
+		return nil, err
+	}
+	return &reply, nil
+}
+
 // GetLikesByCommentID retrieves all likes for a comment by its ID
 func (r *PostRepository) GetLikesByCommentID(commentID string) ([]*Like, error) {
 	query := `SELECT like_id, user_id FROM likes WHERE comment_id = ?`
@@ -296,7 +311,7 @@ func (r *PostRepository) PostDislike(dislike *Like) (*Like, error) {
 // AddLike adds a like to a post
 func (r *PostRepository) AddLike(postlike *Like) (*Like, error) {
 	query := `INSERT INTO likes (like_id, user_id, post_id, comment_id, reply_id, created_at)
-	          VALUES (?, ?, ?, NULLIF(?, ''), NULLIF(?, ''), ?)`
+	          VALUES (?, ?, NULLIF(?, ''), NULLIF(?, ''), NULLIF(?, ''), ?)`
 	_, err := r.DB.Exec(query, postlike.LikeID, postlike.UserID, postlike.PostID, postlike.CommentID, postlike.ReplyID, postlike.CreatedAt)
 	return postlike, err
 }

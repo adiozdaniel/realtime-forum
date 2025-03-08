@@ -425,6 +425,50 @@ func (p *PostService) CreateCommentReply(reply *Reply) (*Reply, error) {
 	return p.post.CreateReply(reply)
 }
 
+func (p *PostService) ReplyAddLike(like *Like) (*Like, error) {
+	if like.UserID == "" {
+		return nil, errors.New("user ID cannot be empty")
+	}
+
+	reply, err := p.post.GetReplyByID(like.ReplyID)
+	if err != nil {
+		return nil, errors.New("bad request")
+	}
+
+	msg := "removed a replt like"
+
+	haslike, _ := p.post.HasUserLiked(like.ReplyID, like.UserID, "Reply")
+	if haslike != "" {
+		like.LikeID = haslike
+
+		go p.RecordActivity(like.UserID, msg, msg+" on: "+reply.Content)
+		return nil, p.DeleteLike(like, "likes")
+	}
+
+	like.LikeID, _ = p.shared.GenerateUUID()
+	like.CreatedAt = time.Now()
+
+	msg = "liked a reply: "
+	go p.RecordActivity(like.UserID, msg, msg+reply.Content)
+
+	nId, _ := p.shared.GenerateUUID()
+	_, err = p.CreateNotification(&Notification{
+		NotificationID:   nId,
+		UserId:           reply.UserID,
+		SenderID:         like.UserID,
+		CommentID:        p.shared.ToNullString(reply.CommentID),
+		NotificationType: "success",
+		Message:          "liked: " + reply.Content,
+		IsRead:           false,
+		CreatedAt:        time.Now(),
+	})
+	if err != nil {
+		log.Println(err)
+	}
+
+	return p.post.AddLike(like)
+}
+
 // GetPostsByUserID retrieves all posts created by a specific user
 func (p *PostService) GetPostsByUserID(userID string) ([]*Post, error) {
 	if userID == "" {

@@ -37,6 +37,7 @@ type PostRepo interface {
 
 	// Replies
 	CreateReply(post *Reply) (*Reply, error)
+	GetReplyByID(id string) (*Reply, error)
 
 	// Notifications
 	CreateNotification(n *Notification) (*Notification, error)
