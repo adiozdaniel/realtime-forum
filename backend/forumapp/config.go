@@ -36,6 +36,7 @@ func ForumInit() (*ForumApp, error) {
 	})
 
 	instance.AllowedRoutes = map[string]bool{
+		"/api/comments/reply/like":   true,
 		"/api/posts/create":          true,
 		"/api/posts/delete":          true,
 		"/api/posts/like":            true,

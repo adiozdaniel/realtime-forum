@@ -329,6 +329,34 @@ func (p *PostsRepo) CreatePostReply(w http.ResponseWriter, r *http.Request) {
 	p.res.WriteJSON(w, *p.res, http.StatusOK)
 }
 
+// LikeReply creates a new reply
+func (p *PostsRepo) LikeReply(w http.ResponseWriter, r *http.Request) {
+	// Ensure the request method is POST
+	if r.Method != http.MethodPost {
+		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+		return
+	}
+
+	// Decode the request body into a PostLike struct
+	var req Like
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		p.res.SetError(w, fmt.Errorf("invalid request payload: %v", err), http.StatusBadRequest)
+		return
+	}
+
+	replyLike, err := p.post.ReplyAddLike(&req)
+	if err != nil {
+		p.res.SetError(w, fmt.Errorf("failed to add like to post: %v", err), http.StatusBadRequest)
+		return
+	}
+
+	// Prepare and send the success response
+	p.res.Err = false
+	p.res.Message = "Success"
+	p.res.Data = replyLike
+	p.res.WriteJSON(w, *p.res, http.StatusOK)
+}
+
 // CheckNotifications checks for new notifications
 func (p *PostsRepo) CheckNotifications(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodGet {

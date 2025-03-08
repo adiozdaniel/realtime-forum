@@ -156,12 +156,39 @@ CommentService.prototype.createReply = async function (replyData) {
 	if (!userData) {
 		return {
 			error: true,
-			message: "You need to login to post a comment!",
+			message: "You need to login to reply to this comment!",
 		};
 	}
 
 	try {
 		const response = await fetch(this.apiEndpoints.createReply, {
+			method: "POST",
+			body: JSON.stringify(replyData),
+			headers: { "Content-Type": "application/json" },
+		});
+
+		return await response.json();
+	} catch (error) {
+		return {
+			error: true,
+			message: "Failed to create reply. Please try again.",
+		};
+	}
+};
+
+// Method to like a reply
+CommentService.prototype.likeReply = async function (replyData) {
+	const userData = await getUserData();
+
+	if (!userData) {
+		return {
+			error: true,
+			message: "You need to login to like this reply!",
+		};
+	}
+
+	try {
+		const response = await fetch(this.apiEndpoints.likeReply, {
 			method: "POST",
 			body: JSON.stringify(replyData),
 			headers: { "Content-Type": "application/json" },
