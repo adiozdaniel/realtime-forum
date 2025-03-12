@@ -8,3 +8,5 @@ clean:
 
 test:
 	go test ./...
+docker:
+	docker build -t forum . && docker run -d -p 4000:4000 --name forumcontainer forum

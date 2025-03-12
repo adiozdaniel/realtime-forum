@@ -1,6 +1,6 @@
 FROM golang:bullseye AS build1
 # ENV CGO_ENABLED=1 GCC_GO="gccgo" CC="gcc"
-WORKDIR /backend
+WORKDIR /forum
 COPY . .
 RUN go mod download
 RUN go build -o ./forum-dockerize .
