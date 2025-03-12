@@ -87,6 +87,9 @@ Then to run the built image:
 `docker run -d -p 4000:4000 --name forumcontainer forum`
 
 ---
+Alternatively using the makefile use the command:
+
+   `make docker`
 
 ## How to run the application
 
