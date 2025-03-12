@@ -1,10 +1,10 @@
 .PHONY: run build clean
 
 run:
-	cd backend && go run main.go
-
-build:
-	go build -o myprogram
+	go build -o forum && ./forum
 
 clean:
-	rm -f myprogram
+	rm -f forum
+
+test:
+	go test ./...

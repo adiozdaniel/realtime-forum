@@ -80,15 +80,11 @@ Registered users can also upload profile images and/or edit their profile images
 
 To build the image:
 
-```
-docker build -t forum .
-```
+`docker build -t forum .`
 
 Then to run the built image:
 
-```
-docker run -d -p 4000:4000 --name forumcontainer forum
-```
+`docker run -d -p 4000:4000 --name forumcontainer forum`
 
 ---
 
@@ -96,41 +92,19 @@ docker run -d -p 4000:4000 --name forumcontainer forum
 
 1. Clone the Repository:
 
-   ```
-   git clone https://learn.zone01kisumu.ke/git/josie-opondo/forum
-
-   cd forum-authentication
-   ```
+   `git clone https://learn.zone01kisumu.ke/git/adaniel/forum.git &&  cd forum`
 
 2. Run the following command:
 
-   ```
-   make
-   ```
-
-   or
-
-   ```
-   go run ./cmd
-   ```
+   `make`
 
 3. On your Web Browser:
 
-   ```
-   localhost:4000
-   ```
+   [forum](http://localhost:4000)
 
 4. To run tests:
 
-   ```
-   make test
-   ```
-
-   or
-
-   ```
-   go test ./...
-   ```
+   `make test`
 
 ## Troubleshooting
 
