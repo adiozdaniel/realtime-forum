@@ -1,1 +1,8 @@
+# Ignore node modules
 node_modules
+
+# Ignore application binary
+forum
+
+# Ignore test database
+test.db
