@@ -78,18 +78,24 @@ Registered users can also upload profile images and/or edit their profile images
 
 **Docker** has been used to allow packaging the application and its dependencies into a container, ensuring consistent behavior across environments.
 
-To build the image:
+### Building and running docker container
 
-`docker build -t forum .`
-
-Then to run the built image:
-
-`docker run -d -p 4000:4000 --name forumcontainer forum`
-
----
-Alternatively using the makefile use the command:
+Run the following command:
 
    `make docker`
+
+- Builds a Docker image and runs it in detached mode. The Command running behind the scene is `docker build -t forum . && docker run -d -p 4000:4000 --name forumcontainer forum`
+
+### Stop the container
+
+Run the following command: `make docker-clean`.
+
+- This stops and removes the container. The command running behind the scene is:
+
+```bash
+   docker stop forumcontainer || true
+   docker rm forumcontainer || true
+```
 
 ## How to run the application
 
