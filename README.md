@@ -117,7 +117,7 @@ Run the following command: `make docker-clean`.
 
 ## Troubleshooting
 
-If you experience any issues while using the application, try the following
+If you experience any issues while using the application, try the following:
 
 - Refresh your page. This issue has been reported on comments and our team are working round the clock to resolve it.
 - If that doesn't work, clear your browser cache and try refreshing the page.
