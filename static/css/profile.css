@@ -1,0 +1,370 @@
+[data-theme="dark"] {
+    --primary-bg: #111827;
+    --sidebar-bg: #1f2937;
+    --card-bg: #1f2937;
+    --text-primary: #f9fafb;
+    --text-secondary: #d1d5db;
+    --text-tertiary: #9ca3af;
+    --border-color: #374151;
+    --hover-bg: #374151;
+    --blue-50: #1e3a8a;
+}
+
+.sidebar-content {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.sidebar-item {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.5rem 0.75rem;
+    border: none;
+    background: transparent;
+    border-radius: 0.5rem;
+    cursor: pointer;
+    transition: var(--transition);
+    color: var(--gray-600);
+}
+
+.sidebar-item.active {
+    background-color: #f0f0f0; /* Change this to match your design */
+    font-weight: bold;
+}
+
+.dark-mode .sidebar-item {
+    color: #ffffff;
+}
+
+.dark-mode .sidebar-item.active {
+    background-color: var(--hover-bg);
+    font-weight: bold;
+}
+.profileContent {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.profile-card {
+    background: var(--background-light);
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: var(--shadow);
+}
+
+.profile-header {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.profile-image-container {
+    position: relative;  /* This is already correct */
+    margin-bottom: 1rem;
+    border: 2px solid var(--border-color);
+    border-radius: 50%;
+    width: 8rem;
+    height: 8rem;
+    background-color: var(--card-bg);
+    overflow: visible;  /* Change from hidden to visible */
+}
+
+.profile-image-container img {
+    position: relative;  /* Add this */
+    z-index: 1;  /* Add this */
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    object-fit: cover;
+    background-color: var(--card-bg);
+    z-index : 1;
+}
+
+.upload-button {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    background: var(--primary-color);
+    border-radius: 50%;
+    padding: 0.5rem;
+    cursor: pointer;
+    color: var(--white);
+    z-index: 2;  /* Increase this value */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 2rem;
+    height: 2rem;
+    transition: background-color 0.2s ease;
+}
+
+.upload-button:hover {
+    background-color: var(--primary-hover);
+}
+
+.upload-button i {
+    width: 1.2rem;
+    height: 1.2rem;
+}
+
+.profile-info h1 {
+    font-size: 22px;
+    margin-bottom: 5px;
+}
+
+.bio-container {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.stats-container {
+    display: flex;
+    gap: 15px;
+    margin-top: 10px;
+}
+
+.stat {
+    text-align: center;
+}
+
+.stat-value {
+    font-size: 18px;
+    font-weight: bold;
+}
+
+.stat-label {
+    font-size: 14px;
+    color: var(--text-light);
+}
+
+.activity-list {
+    margin-top: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.posts-list {
+    margin-top: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.comments-list {
+    margin-top: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+
+.activity-card {
+    background-color: var(--card-bg);
+    border-radius: 0.5rem;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    padding: 1.5rem;
+}
+
+.posts-section-hidden {
+    background-color: var(--card-bg);
+    border-radius: 0.5rem;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    padding: 1.5rem;
+}
+
+.settings-section-hidden {
+    background-color: var(--card-bg);
+    border-radius: 0.5rem;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    padding: 1.5rem;
+}
+
+.comments-section-hidden {
+    background-color: var(--card-bg);
+    border-radius: 0.5rem;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    padding: 1.5rem; 
+}
+
+.activity-item {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    font-size: 0.875rem;
+    color: var(--text-secondary);
+    margin-bottom: 0.75rem;
+}
+
+.comment-item {
+    background-color: transparent;
+    border: 1px solid var(--gray-200);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    border-radius: 0.5rem;
+    padding: 1rem;
+    margin-bottom: 1rem;
+    position: relative;
+    transition: box-shadow 0.2s;
+}
+
+.comment-user-actions {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    gap: 1rem;
+    opacity: 0;
+    transition: opacity 0.2s ease-in-out;
+    display: flex;
+}
+
+.comment-item:hover {
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.486);
+}
+
+.comment-item:hover .comment-user-actions {
+    opacity: 1;
+}
+
+.comment-user-actions button {
+    background: none;
+    border: none;
+    cursor: pointer;
+}
+
+.settings-options {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.setting-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.theme-toggle {
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    color: var(--primary-color);
+}
+
+@media (max-width: 600px) {
+    .profile-header {
+        flex-direction: column;
+        align-items: center;
+    }
+    .profile-info {
+        text-align: center;
+    }
+}
+
+.change-password-button {
+    text-decoration: none;
+    margin-left: 0.5rem;
+    padding: 0.5rem 1rem;
+    background-color: var(--primary-color);
+    color: var(--white);
+    border: none;
+    border-radius: 0.5rem;
+    cursor: pointer;
+    transition: var(--transition);
+}
+
+.change-password-button:hover {
+    background-color: var(--primary-hover);
+}
+
+@media (max-width: 768px) {
+    .profileContent {
+        padding: 10px;
+    }
+
+    .profile-card {
+        padding: 15px;
+    }
+
+    .profile-header {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+    }
+
+    .profile-info {
+        text-align: center;
+    }
+
+    .stats-container {
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .activity-card,
+    .posts-section-hidden,
+    .comments-section-hidden,
+    .settings-section-hidden {
+        padding: 1rem;
+    }
+
+    .activity-item,
+    .post-item,
+    .comment-item {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .delete-button {
+        top: 0.5rem;
+        right: 0.5rem;
+    }
+
+    .settings-options {
+        gap: 10px;
+    }
+
+    .change-password-button {
+        width: 100%;
+        text-align: center;
+    }
+}
+
+@media (max-width: 480px) {
+    .profile-image-container {
+        width: 6rem;
+        height: 6rem;
+    }
+
+    .upload-button {
+        width: 1.5rem;
+        height: 1.5rem;
+    }
+
+    .profile-info h1 {
+        font-size: 18px;
+    }
+
+    .stat-value {
+        font-size: 16px;
+    }
+
+    .stat-label {
+        font-size: 12px;
+    }
+
+    .activity-card,
+    .posts-section-hidden,
+    .comments-section-hidden,
+    .settings-section-hidden {
+        padding: 0.75rem;
+    }
+}

@@ -1,0 +1,23 @@
+{{template "base" .}} {{define "content"}} {{ template "postModal" .}}
+<div id="message"></div>
+<div class="btn-discussions">
+	<h2 class="section-title">Recent Discussions</h2>
+	<button
+		id="createPostBtn"
+		class="create-post-btn"
+	>
+		<i data-lucide="plus-circle"></i>
+		Create Post
+	</button>
+</div>
+<div
+	class="posts-container"
+	id="postsContainer"
+>
+	<!-- Posts will be inserted here by JavaScript -->
+</div>
+<script
+	type="module"
+	src="/static/scripts/postmanager.js"
+></script>
+{{end}}

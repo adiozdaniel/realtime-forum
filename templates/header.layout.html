@@ -1,0 +1,61 @@
+{{define "header"}}
+<header class="header">
+	<div class="header-container">
+		<div class="header-left">
+			<button
+				class="menu-button"
+				id="menuToggle"
+				data-menu-toggle
+			>
+				<i data-lucide="menu"></i>
+			</button>
+			<h1 class="logo">Forum</h1>
+			<div
+				class="search-container"
+				id="searchInput"
+			>
+				<i data-lucide="search"></i>
+				<input
+					type="text"
+					placeholder="Search discussions..."
+				/>
+			</div>
+		</div>
+		<div class="profile-image">
+			<img
+				id="userProfileImage"
+				src=""
+				alt=""
+			/>
+		</div>
+		<div class="header-right">
+			<button
+				class="icon-button"
+				id="darkModeToggle"
+			>
+				<i data-lucide="moon"></i>
+			</button>
+			<button
+				class="icon-button"
+				id="notificationButton"
+			>
+				<i data-lucide="bell"></i>
+			</button>
+			<div
+				class="notification-dropdown"
+				id="notificationDropdown"
+			></div>
+			<div
+				href="/auth"
+				class="sign-in-button"
+			>
+				Sign In
+			</div>
+		</div>
+	</div>
+</header>
+<script
+	type="module"
+	src="/static/scripts/header.js"
+></script>
+{{end}}

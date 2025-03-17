@@ -1,0 +1,126 @@
+{{template "base" .}} 
+
+{{define "adminsidebar"}}
+            <aside class="sidebar">
+                <nav>
+                    <ul class="category-list">
+                        <li><button class="category-button" onclick="switchSection('dashboard')">
+                            <i data-lucide="layout-dashboard"></i>
+                            <span>Dashboard</span>
+                        </button></li>
+                        <li><button class="category-button" onclick="switchSection('moderation')">
+                            <i data-lucide="shield"></i>
+                            <span>Moderation</span>
+                        </button></li>
+                        <li><button class="category-button" onclick="switchSection('users')">
+                            <i data-lucide="users"></i>
+                            <span>Users</span>
+                        </button></li>
+                        <li><button class="category-button" onclick="switchSection('categories')">
+                            <i data-lucide="folder"></i>
+                            <span>Categories</span>
+                        </button></li>
+                    </ul>
+                </nav>
+            </aside>
+{{end}}
+
+{{define "admincontent"}}
+                <div id="dashboard-section" class="section">
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <div class="stat-icon">
+                                <i data-lucide="users"></i>
+                            </div>
+                            <div class="stat-info">
+                                <h3>Active Users</h3>
+                                <p>3,235</p>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon">
+                                <i data-lucide="message-square"></i>
+                            </div>
+                            <div class="stat-info">
+                                <h3>Posts</h3>
+                                <p>1,234</p>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon">
+                                <i data-lucide="thumbs-up"></i>
+                            </div>
+                            <div class="stat-info">
+                                <h3>Comments</h3>
+                                <p>1,234</p>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon">
+                                <i data-lucide="shield"></i>
+                            </div>
+                            <div class="stat-info">
+                                <h3>Moderators</h3>
+                                <p>12</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="recent-discussions">
+                        <h2 class="section-title">Recent Discussions</h2>
+                        <div id="recentDiscussionsContainer"></div>
+                    </div>
+                </div>
+
+                <div id="moderation-section" class="section hidden">
+                    <h2 class="section-title">Reports</h2>
+                    <div id="reports-container">
+                        <!-- Reports will be inserted here by JavaScript -->
+                    </div>
+                    <button class="category-btn">View all reports</button>
+                </div>
+
+                <div id="users-section" class="section hidden">
+                    <h2 class="section-title">Users</h2>
+                    <div class="user-search-container">
+                        <input type="text" id="user-search-input" placeholder="Search users">
+                    </div>
+                    <div class="table-container">
+                        <table class="user-table">
+                            <thead>
+                                <tr>
+                                    <th>User</th>
+                                    <th>Joined</th>
+                                    <th>Last Active</th>
+                                    <th>Posts</th>
+                                    <th>Likes</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="user-list">
+                                <!-- Users will be inserted here by JavaScript -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div id="categories-section" class="section hidden">
+                    <h2 class="section-title">Categories</h2>
+                    <div id="categories-container">
+                        <!-- Categories will be inserted here by JavaScript -->
+                    </div>
+                    <div class="category-input-container">
+                        <div class="search-container">
+                            <input type="text" id="new-category-input" placeholder="New category name">
+                        </div>
+                        <button class="category-btn" id="add-category-btn">
+                            Add category
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script src="/static/scripts/admin-dashboard-js.js"></script>
+    {{end}}

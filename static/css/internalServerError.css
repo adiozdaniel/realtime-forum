@@ -1,0 +1,21 @@
+.error505-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    min-height: 80vh;
+    text-align: center;
+    padding: 20px;
+}
+
+.error505-container h1 {
+    font-size: 3rem;
+    color: #d9534f;
+    margin: 20px 0;
+}
+
+.error505-container p {
+    font-size: 1.2rem;
+    color: #666;
+    margin: 10px 0 30px;
+}

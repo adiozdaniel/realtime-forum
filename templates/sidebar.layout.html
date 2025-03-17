@@ -1,0 +1,69 @@
+{{ define "sidebar" }}
+<aside
+	class="sidebar"
+	id="sidebar"
+	data-sidebar
+>
+	<nav>
+		<ul class="category-list">
+			<li>
+				<div class="category-filter">
+					<button
+						class="category-button"
+						id="allCategories"
+					>
+						<i data-lucide="hash"></i>
+						<span>All Posts</span>
+					</button>
+					<div
+						id="categoryDropdown"
+						class="category-dropdown hidden"
+					>
+						<!-- Categories will be dynamically inserted here -->
+					</div>
+				</div>
+			</li>
+			<li>
+				<button class="category-button">
+					<i data-lucide="newspaper"></i>
+					<span>Latest</span>
+				</button>
+			</li>
+			<li>
+				<button class="category-button">
+					<i data-lucide="star"></i>
+					<span>Popular</span>
+				</button>
+			</li>
+			<li>
+				<button class="category-button">
+					<i data-lucide="users"></i>
+					<span>Communities</span>
+				</button>
+			</li>
+			<li>
+				<button class="category-button">
+					<i data-lucide="message-square"></i>
+					<span>Discussions</span>
+				</button>
+			</li>
+			<li>
+				<button class="category-button">
+					<i data-lucide="bookmark"></i>
+					<span>Bookmarks</span>
+				</button>
+			</li>
+			<li>
+				<a
+					href="/dashboard"
+					class="category-button"
+					id="profile"
+				>
+					<i data-lucide="user"></i>
+					<span>Profile</span>
+				</a>
+			</li>
+		</ul>
+	</nav>
+</aside>
+{{ end }}
