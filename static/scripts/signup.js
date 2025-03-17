@@ -36,7 +36,6 @@ document.addEventListener("DOMContentLoaded", function () {
 			confirmPasswordInput.value &&
 			passwordInput.value !== confirmPasswordInput.value
 		) {
-			toast.createToast("error", "Passwords do not match");
 			showError(confirmPasswordInput, "Passwords do not match");
 			return false;
 		} else {
@@ -128,7 +127,6 @@ document.addEventListener("DOMContentLoaded", function () {
 		// Validate email
 		if (!validateEmail(emailInput.value)) {
 			showError(emailInput, "Please enter a valid email address");
-			toast.createToast("error", "Please enter a valid email address");
 			isValid = false;
 		}
 
@@ -136,7 +134,6 @@ document.addEventListener("DOMContentLoaded", function () {
 		const passwordStrength = checkPasswordStrength(passwordInput.value);
 		if (passwordStrength < 3) {
 			showError(passwordInput, "Password is too weak");
-			toast.createToast("error", "Password is too weak");
 			isValid = false;
 		}
 
@@ -149,7 +146,6 @@ document.addEventListener("DOMContentLoaded", function () {
 		// Validate terms
 		if (!termsCheckbox.checked) {
 			showError(termsCheckbox, "You must accept the terms and conditions");
-			toast.createToast("error", "You must accept the terms and conditions");
 			isValid = false;
 		}
 
