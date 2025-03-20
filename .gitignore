@@ -6,3 +6,6 @@ forum
 
 # Ignore test database
 test.db
+
+# Ignore logs
+tmp/
