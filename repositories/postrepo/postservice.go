@@ -20,17 +20,7 @@ func NewPostService(post PostRepo) *PostService {
 	return &PostService{post, shared}
 }
 
-func (p *PostService) CreatePost(recievedPost *Post) (*Post, error) {
-	sanitized, err := p.shared.SanitizeInput(recievedPost)
-	if err != nil {
-		return nil, err
-	}
-
-	post, ok := sanitized.(*Post)
-	if !ok {
-		return nil, errors.New("bad request")
-	}
-
+func (p *PostService) CreatePost(post *Post) (*Post, error) {
 	if post.UserID == "" {
 		return nil, errors.New("user ID cannot be empty")
 	}
