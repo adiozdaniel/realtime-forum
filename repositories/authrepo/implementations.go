@@ -3,7 +3,6 @@ package authrepo
 import (
 	"database/sql"
 	"errors"
-	"fmt"
 )
 
 // UserRepository implements UserRepo
@@ -20,8 +19,9 @@ func (r *UserRepository) CreateUser(user *User) error {
 	query := `INSERT INTO users (user_id, email, password, user_name, image, role, bio, created_at, updated_at)
 	          VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`
 	_, err := r.DB.Exec(query, user.UserID, user.Email, user.Password, user.UserName, user.Image, user.Role, user.Bio, user.CreatedAt, user.UpdatedAt)
+
 	if err != nil {
-		return fmt.Errorf("oops, we could managing creating the account. please try again later")
+		return errors.New("failed to create user, please try again later")
 	}
 	return nil
 }
@@ -33,17 +33,19 @@ func (r *UserRepository) GetUserByEmail(email string) (*User, error) {
 	user := &User{}
 	err := row.Scan(&user.UserID, &user.Email, &user.Password, &user.UserName, &user.Image, &user.Role, &user.Bio, &user.CreatedAt, &user.UpdatedAt)
 	if err != nil {
-		return nil, errors.New("oops, something went wrong")
+		if errors.Is(err, sql.ErrNoRows) {
+			return nil, errors.New("no user found with the given email")
+		}
+		return nil, errors.New("failed to retrieve user, please try again later")
 	}
 	return user, nil
 }
 
-// Ensure UserRepository implements all methods of UserRepo
 func (r *UserRepository) DeleteUser(id string) error {
 	query := `DELETE FROM users WHERE user_id = ?`
 	_, err := r.DB.Exec(query, id)
 	if err != nil {
-		return fmt.Errorf("oops, we could managing deleting the account. please try again later")
+		return errors.New("failed to delete user, please try again later")
 	}
 	return nil
 }
@@ -54,7 +56,10 @@ func (r *UserRepository) GetUserByID(user *User) (*User, error) {
 
 	err := row.Scan(&user.UserID, &user.Email, &user.Password, &user.UserName, &user.Image, &user.Role, &user.Bio, &user.CreatedAt, &user.UpdatedAt)
 	if err != nil {
-		return nil, fmt.Errorf("oops, something went wrong looking for %s. please try again.", user.UserName)
+		if errors.Is(err, sql.ErrNoRows) {
+			return nil, errors.New("user does not exist")
+		}
+		return nil, errors.New("failed to retrieve user, please try again later")
 	}
 	return user, nil
 }
@@ -63,10 +68,9 @@ func (r *UserRepository) UpdateUser(user *User) (*User, error) {
 	query := `UPDATE users SET email = ?, password = ?, user_name = ?, image = ?, role = ?, bio = ?, updated_at = ? WHERE user_id = ?`
 	_, err := r.DB.Exec(query, user.Email, user.Password, user.UserName, user.Image, user.Role, user.Bio, user.UpdatedAt, user.UserID)
 	if err != nil {
-		return nil, fmt.Errorf("oops, something went wrong while updating %s. please refresh page and try again.", user.UserName)
+		return nil, errors.New("failed to update user, please try again later")
 	}
-
-	return user, err
+	return user, nil
 }
 
 // UsernameExists checks if a given username already exists in the database.
@@ -76,10 +80,7 @@ func (r *UserRepository) UsernameExists(username string) (bool, error) {
 
 	err := r.DB.QueryRow(query, username).Scan(&exists)
 	if err != nil {
-		if errors.Is(err, sql.ErrNoRows) {
-			return false, nil
-		}
-		return false, errors.New("oops, something went wrong. please try again")
+		return false, errors.New("failed to check username availability, please try again later")
 	}
 
 	return exists, nil
