@@ -180,10 +180,12 @@ document.addEventListener("DOMContentLoaded", function () {
 				"Registration failed:",
 				res.message || "server misbehaving"
 			);
-			showError(
-				emailInput,
-				res.message || "Failed to create account. Please try again."
-			);
+
+			if (res.message.toLowerCase().includes("email")) {
+				showError(emailInput, res.message);
+			} else if (res.message.toLowerCase().includes("username")) {
+				showError(usernameInput, res.message);
+			}
 		}
 
 		// Reset button state
