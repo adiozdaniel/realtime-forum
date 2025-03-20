@@ -41,3 +41,12 @@ func (s *SharedConfig) SaveImage(r *http.Request, fileName string) (string, erro
 
 	return imagePath[1:], nil
 }
+
+// DeletePostImage removes the image associated with a post.
+func (s *SharedConfig) DeletePostImage(image string) error {
+	if err := os.Remove("./static/profiles/" + image); err != nil {
+		return errors.New("failed to delete post image")
+	}
+
+	return nil
+}
