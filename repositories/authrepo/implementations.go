@@ -2,6 +2,7 @@ package authrepo
 
 import (
 	"database/sql"
+	"errors"
 )
 
 // UserRepository implements UserRepo
@@ -55,4 +56,20 @@ func (r *UserRepository) UpdateUser(user *User) (*User, error) {
 	query := `UPDATE users SET email = ?, password = ?, user_name = ?, image = ?, role = ?, bio = ?, updated_at = ? WHERE user_id = ?`
 	_, err := r.DB.Exec(query, user.Email, user.Password, user.UserName, user.Image, user.Role, user.Bio, user.UpdatedAt, user.UserID)
 	return user, err
+}
+
+// UsernameExists checks if a given username already exists in the database.
+func (r *UserRepository) UsernameExists(username string) (bool, error) {
+	var exists bool
+	query := "SELECT EXISTS(SELECT 1 FROM users WHERE user_name = ? LIMIT 1)"
+
+	err := r.DB.QueryRow(query, username).Scan(&exists)
+	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return false, nil
+		}
+		return false, err
+	}
+
+	return exists, nil
 }

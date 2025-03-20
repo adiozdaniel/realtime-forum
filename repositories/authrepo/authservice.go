@@ -2,6 +2,7 @@ package authrepo
 
 import (
 	"errors"
+	"fmt"
 
 	"forum/repositories/postrepo"
 	"forum/repositories/shared"
@@ -41,6 +42,11 @@ func (u *UserService) Register(user *User) error {
 	existingUser, _ := u.user.GetUserByEmail(user.Email)
 	if existingUser != nil {
 		return errors.New("this email is already in use")
+	}
+
+	userName, _ := u.user.UsernameExists(user.UserName)
+	if userName {
+		return fmt.Errorf("%s username is already in use", user.UserName)
 	}
 
 	// Hash the password
