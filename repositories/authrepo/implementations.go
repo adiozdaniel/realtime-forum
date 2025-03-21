@@ -3,6 +3,7 @@ package authrepo
 import (
 	"database/sql"
 	"errors"
+	"fmt"
 )
 
 // UserRepository implements UserRepo
@@ -19,7 +20,10 @@ func (r *UserRepository) CreateUser(user *User) error {
 	query := `INSERT INTO users (user_id, email, password, user_name, image, role, bio, created_at, updated_at)
 	          VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`
 	_, err := r.DB.Exec(query, user.UserID, user.Email, user.Password, user.UserName, user.Image, user.Role, user.Bio, user.CreatedAt, user.UpdatedAt)
-	return err
+	if err != nil {
+		return fmt.Errorf("oops, we could managing creating the account. please try again later")
+	}
+	return nil
 }
 
 func (r *UserRepository) GetUserByEmail(email string) (*User, error) {
@@ -29,7 +33,7 @@ func (r *UserRepository) GetUserByEmail(email string) (*User, error) {
 	user := &User{}
 	err := row.Scan(&user.UserID, &user.Email, &user.Password, &user.UserName, &user.Image, &user.Role, &user.Bio, &user.CreatedAt, &user.UpdatedAt)
 	if err != nil {
-		return nil, err
+		return nil, errors.New("oops, something went wrong")
 	}
 	return user, nil
 }
@@ -38,7 +42,10 @@ func (r *UserRepository) GetUserByEmail(email string) (*User, error) {
 func (r *UserRepository) DeleteUser(id string) error {
 	query := `DELETE FROM users WHERE user_id = ?`
 	_, err := r.DB.Exec(query, id)
-	return err
+	if err != nil {
+		return fmt.Errorf("oops, we could managing deleting the account. please try again later")
+	}
+	return nil
 }
 
 func (r *UserRepository) GetUserByID(user *User) (*User, error) {
@@ -47,7 +54,7 @@ func (r *UserRepository) GetUserByID(user *User) (*User, error) {
 
 	err := row.Scan(&user.UserID, &user.Email, &user.Password, &user.UserName, &user.Image, &user.Role, &user.Bio, &user.CreatedAt, &user.UpdatedAt)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("oops, something went wrong looking for %s. please try again.", user.UserName)
 	}
 	return user, nil
 }
@@ -55,6 +62,10 @@ func (r *UserRepository) GetUserByID(user *User) (*User, error) {
 func (r *UserRepository) UpdateUser(user *User) (*User, error) {
 	query := `UPDATE users SET email = ?, password = ?, user_name = ?, image = ?, role = ?, bio = ?, updated_at = ? WHERE user_id = ?`
 	_, err := r.DB.Exec(query, user.Email, user.Password, user.UserName, user.Image, user.Role, user.Bio, user.UpdatedAt, user.UserID)
+	if err != nil {
+		return nil, fmt.Errorf("oops, something went wrong while updating %s. please refresh page and try again.", user.UserName)
+	}
+
 	return user, err
 }
 
@@ -68,7 +79,7 @@ func (r *UserRepository) UsernameExists(username string) (bool, error) {
 		if errors.Is(err, sql.ErrNoRows) {
 			return false, nil
 		}
-		return false, err
+		return false, errors.New("oops, something went wrong. please try again")
 	}
 
 	return exists, nil

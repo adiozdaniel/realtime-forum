@@ -25,6 +25,10 @@ func (r *PostRepository) CreatePost(post *Post) (*Post, error) {
 	query := `INSERT INTO posts (post_id, user_id, post_author, author_img, post_title, post_content, post_image, post_video, post_category, post_hasComments, created_at, updated_at)
 	          VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
 	_, err := r.DB.Exec(query, post.PostID, post.UserID, post.PostAuthor, post.AuthorImg, post.PostTitle, post.PostContent, post.PostImage, post.PostVideo, post.PostCategory, post.HasComments, post.CreatedAt, post.UpdatedAt)
+	if err != nil {
+		return nil, fmt.Errorf("oops, we couldn't create %s. please try again later", post.PostTitle)
+	}
+
 	return post, err
 }
 
@@ -39,7 +43,7 @@ func (r *PostRepository) GetPostByID(id string) (*Post, error) {
 		if errors.Is(err, sql.ErrNoRows) {
 			return nil, errors.New("post not found")
 		}
-		return nil, err
+		return nil, errors.New("oops, something went wrong")
 	}
 
 	return post, nil
@@ -49,6 +53,10 @@ func (r *PostRepository) GetPostByID(id string) (*Post, error) {
 func (r *PostRepository) UpdatePost(post *Post) (*Post, error) {
 	query := `UPDATE posts SET post_title = ?, post_content = ?, post_image = ?, post_video = ?, post_category = ?, post_hasComments = ?, updated_at = ? WHERE post_id = ?`
 	_, err := r.DB.Exec(query, post.PostTitle, post.PostContent, post.PostImage, post.PostVideo, post.PostCategory, post.HasComments, post.UpdatedAt, post.PostID)
+	if err != nil {
+		return nil, fmt.Errorf("oops, we couldn't update %s. please try again later", post.PostTitle)
+	}
+
 	return post, err
 }
 
@@ -57,7 +65,7 @@ func (r *PostRepository) DeletePost(id string) error {
 	query := "DELETE FROM posts WHERE post_id = ?"
 	_, err := r.DB.Exec(query, id)
 	if err != nil {
-		return errors.New("failed to delete post: " + err.Error())
+		return errors.New("oops, failed to delete post")
 	}
 	return nil
 }
@@ -74,7 +82,7 @@ func (repo *PostRepository) ListPosts() ([]*Post, error) {
 	for rows.Next() {
 		post := &Post{}
 		if err := rows.Scan(&post.PostID, &post.UserID, &post.PostAuthor, &post.AuthorImg, &post.PostTitle, &post.PostContent, &post.PostImage, &post.PostVideo, &post.PostCategory, &post.HasComments, &post.CreatedAt, &post.UpdatedAt); err != nil {
-			return nil, err
+			return nil, fmt.Errorf("oops, something went wrong. please try again later")
 		}
 
 		// Fetch likes
@@ -110,7 +118,7 @@ func (r *PostRepository) GetLikesByPostID(postID string) ([]*Like, error) {
 
 		err := rows.Scan(&like.LikeID, &like.UserID, &like.PostID, &commentID, &replyID)
 		if err != nil {
-			return nil, err
+			return nil, errors.New("oops, something went wrong. try again later")
 		}
 
 		// Convert NULL values to empty strings
@@ -123,7 +131,7 @@ func (r *PostRepository) GetLikesByPostID(postID string) ([]*Like, error) {
 	}
 
 	if err := rows.Err(); err != nil {
-		return nil, err
+		return nil, errors.New("oops, something went wrong. try again later")
 	}
 
 	return likes, nil
@@ -134,7 +142,7 @@ func (r *PostRepository) GetDislikesByPostID(postID string) ([]*Like, error) {
 	query := `SELECT like_id, user_id, post_id, comment_id, reply_id FROM dislikes WHERE post_id = ?`
 	rows, err := r.DB.Query(query, postID)
 	if err != nil {
-		return nil, err
+		return nil, errors.New("oops, something went wrong. try again later")
 	}
 	defer rows.Close()
 
@@ -145,7 +153,7 @@ func (r *PostRepository) GetDislikesByPostID(postID string) ([]*Like, error) {
 
 		err := rows.Scan(&like.LikeID, &like.UserID, &like.PostID, &commentID, &replyID)
 		if err != nil {
-			return nil, err
+			return nil, errors.New("oops, something went wrong. try again later")
 		}
 
 		// Convert NULL values to empty strings
@@ -158,7 +166,7 @@ func (r *PostRepository) GetDislikesByPostID(postID string) ([]*Like, error) {
 	}
 
 	if err := rows.Err(); err != nil {
-		return nil, err
+		return nil, errors.New("oops, something went wrong. try again later")
 	}
 
 	return disLikes, nil
@@ -169,7 +177,7 @@ func (r *PostRepository) GetCommentsByPostID(postID string) ([]*Comment, error) 
 	query := `SELECT comment_id, post_id, post_title, post_author, post_author_img, user_id, user_name, author_img, parent_comment_id, comment, created_at, updated_at FROM comments WHERE post_id = ?`
 	rows, err := r.DB.Query(query, postID)
 	if err != nil {
-		return nil, err
+		return nil, errors.New("oops, something went wrong. try again later")
 	}
 	defer rows.Close()
 
@@ -178,8 +186,7 @@ func (r *PostRepository) GetCommentsByPostID(postID string) ([]*Comment, error) 
 		comment := &Comment{}
 		err := rows.Scan(&comment.CommentID, &comment.PostID, &comment.PostTitle, &comment.PostAuthor, &comment.PostAuthorImg, &comment.UserID, &comment.Author, &comment.AuthorImg, &comment.ParentCommentID, &comment.Content, &comment.CreatedAt, &comment.UpdatedAt)
 		if err != nil {
-			fmt.Printf("Error scanning row: %v\n", err)
-			return nil, err
+			return nil, errors.New("oops, something went wrong. try again later")
 		}
 
 		// Fetch likes for this comment
@@ -202,7 +209,7 @@ func (r *PostRepository) GetRepliesByCommentID(commentID string) ([]*Reply, erro
 	query := `SELECT reply_id, comment_id, user_id, user_name, author_img, parent_reply_id, content, created_at, updated_at FROM replies WHERE comment_id = ?`
 	rows, err := r.DB.Query(query, commentID)
 	if err != nil {
-		return nil, err
+		return nil, errors.New("oops, something went wrong. try again later")
 	}
 	defer rows.Close()
 
@@ -211,7 +218,7 @@ func (r *PostRepository) GetRepliesByCommentID(commentID string) ([]*Reply, erro
 		reply := &Reply{}
 		err := rows.Scan(&reply.ReplyID, &reply.CommentID, &reply.UserID, &reply.Author, &reply.AuthorImg, &reply.ParentReplyID, &reply.Content, &reply.CreatedAt, &reply.UpdatedAt)
 		if err != nil {
-			return nil, err
+			return nil, errors.New("oops, something went wrong. try again later")
 		}
 
 		// Fetch likes for this reply
@@ -232,7 +239,7 @@ func (r *PostRepository) GetReplyByID(id string) (*Reply, error) {
 		&reply.ReplyID, &reply.CommentID, &reply.UserID, &reply.Author, &reply.AuthorImg, &reply.ParentReplyID, &reply.Content, &reply.CreatedAt, &reply.UpdatedAt,
 	)
 	if err != nil {
-		return nil, err
+		return nil, errors.New("oops, something went wrong. try again later")
 	}
 	return &reply, nil
 }
@@ -242,7 +249,7 @@ func (r *PostRepository) GetLikesByCommentID(commentID string) ([]*Like, error) 
 	query := `SELECT like_id, user_id FROM likes WHERE comment_id = ?`
 	rows, err := r.DB.Query(query, commentID)
 	if err != nil {
-		return nil, err
+		return nil, errors.New("oops, something went wrong. try again later")
 	}
 	defer rows.Close()
 
@@ -251,7 +258,7 @@ func (r *PostRepository) GetLikesByCommentID(commentID string) ([]*Like, error) 
 		like := &Like{}
 		err := rows.Scan(&like.LikeID, &like.UserID)
 		if err != nil {
-			return nil, err
+			return nil, errors.New("oops, something went wrong. try again later")
 		}
 		likes = append(likes, like)
 	}
@@ -263,7 +270,7 @@ func (r *PostRepository) GetDislikesByCommentID(commentID string) ([]*Like, erro
 	query := `SELECT like_id, user_id FROM dislikes WHERE comment_id = ?`
 	rows, err := r.DB.Query(query, commentID)
 	if err != nil {
-		return nil, err
+		return nil, errors.New("oops, something went wrong. try again later")
 	}
 	defer rows.Close()
 
@@ -272,7 +279,7 @@ func (r *PostRepository) GetDislikesByCommentID(commentID string) ([]*Like, erro
 		like := &Like{}
 		err := rows.Scan(&like.LikeID, &like.UserID)
 		if err != nil {
-			return nil, err
+			return nil, errors.New("oops, something went wrong. try again later")
 		}
 		likes = append(likes, like)
 	}
@@ -284,7 +291,7 @@ func (r *PostRepository) GetLikesByReplyID(replyID string) ([]*Like, error) {
 	query := `SELECT like_id, user_id FROM likes WHERE reply_id = ?`
 	rows, err := r.DB.Query(query, replyID)
 	if err != nil {
-		return nil, err
+		return nil, errors.New("oops, something went wrong. try again later")
 	}
 	defer rows.Close()
 
@@ -293,7 +300,7 @@ func (r *PostRepository) GetLikesByReplyID(replyID string) ([]*Like, error) {
 		like := &Like{}
 		err := rows.Scan(&like.LikeID, &like.UserID)
 		if err != nil {
-			return nil, err
+			return nil, errors.New("oops, something went wrong. try again later")
 		}
 		likes = append(likes, like)
 	}
@@ -305,6 +312,10 @@ func (r *PostRepository) PostDislike(dislike *Like) (*Like, error) {
 	query := `INSERT INTO dislikes (like_id, user_id, post_id, comment_id, reply_id, created_at)
 	          VALUES (?, ?, NULLIF(?, ''), NULLIF(?, ''), NULLIF(?, ''), ?)`
 	_, err := r.DB.Exec(query, dislike.LikeID, dislike.UserID, dislike.PostID, dislike.CommentID, dislike.ReplyID, dislike.CreatedAt)
+	if err != nil {
+		return nil, fmt.Errorf("oops, we couldn't dislike. please try again later")
+	}
+
 	return dislike, err
 }
 
@@ -313,6 +324,10 @@ func (r *PostRepository) AddLike(postlike *Like) (*Like, error) {
 	query := `INSERT INTO likes (like_id, user_id, post_id, comment_id, reply_id, created_at)
 	          VALUES (?, ?, NULLIF(?, ''), NULLIF(?, ''), NULLIF(?, ''), ?)`
 	_, err := r.DB.Exec(query, postlike.LikeID, postlike.UserID, postlike.PostID, postlike.CommentID, postlike.ReplyID, postlike.CreatedAt)
+	if err != nil {
+		return nil, fmt.Errorf("oops, we couldn't like. please try again later")
+	}
+
 	return postlike, err
 }
 
@@ -334,9 +349,11 @@ func (r *PostRepository) DisLike(dislike *Like, entityType string) error {
 		if errors.Is(err, sql.ErrNoRows) {
 			return nil
 		}
-		return err
 	}
-	return err
+	if err != nil {
+		return fmt.Errorf("oops, we couldn't dislike. please try again later")
+	}
+	return nil
 }
 
 // HasUserLiked checks if a user has liked a specific post, comment, or reply and returns the like ID if it exists
@@ -366,7 +383,7 @@ func (r *PostRepository) HasUserLiked(entityID, userID, entityType string) (stri
 		if errors.Is(err, sql.ErrNoRows) {
 			return "", nil // No like found, return empty string
 		}
-		return "", err
+		return "", errors.New("oops, something went wrong. try again later")
 	}
 
 	return likeID, nil
@@ -399,7 +416,7 @@ func (r *PostRepository) HasUserDisliked(entityID, userID, entityType string) (s
 		if errors.Is(err, sql.ErrNoRows) {
 			return "", nil // No dislike found, return empty string
 		}
-		return "", err
+		return "", errors.New("oops, something went wrong. try again later")
 	}
 
 	return dislikeID, nil
@@ -411,6 +428,10 @@ func (r *PostRepository) CreateComment(comment *Comment) (*Comment, error) {
 	query := `INSERT INTO comments (comment_id, post_id, post_title, post_author, post_author_img, user_id, user_name, author_img, parent_comment_id, comment, created_at, updated_at)
 	          VALUES (?, ?, ?, ?, ?, ?, ?, ?, NULLIF(?, ''), ?, ?, ?)`
 	_, err := r.DB.Exec(query, comment.CommentID, comment.PostID, comment.PostTitle, comment.PostAuthor, comment.PostAuthorImg, comment.UserID, comment.Author, comment.AuthorImg, comment.ParentCommentID, comment.Content, comment.CreatedAt, comment.UpdatedAt)
+	if err != nil {
+		return nil, fmt.Errorf("oops, we couldn't create %s. please try again later", comment.Content)
+	}
+
 	return comment, err
 }
 
@@ -418,6 +439,10 @@ func (r *PostRepository) CreateComment(comment *Comment) (*Comment, error) {
 func (r *PostRepository) UpdateComment(comment *Comment) (*Comment, error) {
 	query := `UPDATE comments SET post_title = ?, post_author = ?, post_author_img = ?, user_id = ?, user_name = ?, author_img = ?, parent_comment_id = ?, comment = ?, updated_at = ? WHERE comment_id = ?`
 	_, err := r.DB.Exec(query, comment.PostTitle, comment.PostAuthor, comment.PostAuthorImg, comment.UserID, comment.Author, comment.AuthorImg, comment.ParentCommentID, comment.Content, comment.UpdatedAt, comment.CommentID)
+	if err != nil {
+		return nil, fmt.Errorf("oops, we couldn't update %s. please try again later", comment.Content)
+	}
+
 	return comment, err
 }
 
@@ -425,6 +450,9 @@ func (r *PostRepository) UpdateComment(comment *Comment) (*Comment, error) {
 func (r *PostRepository) DeleteComment(id string) error {
 	query := `DELETE FROM comments WHERE comment_id = ?`
 	_, err := r.DB.Exec(query, id)
+	if err != nil {
+		return errors.New("oops, we didn't manage deleting the comment. please try again later")
+	}
 	return err
 }
 
@@ -433,6 +461,9 @@ func (r *PostRepository) CreateReply(reply *Reply) (*Reply, error) {
 	query := `INSERT INTO replies (reply_id, comment_id, user_id, user_name, author_img, parent_reply_id, content, created_at, updated_at)
 	          VALUES (?, ?, ?, ?, ?, NULLIF(?, ''), ?, ?, ?)`
 	_, err := r.DB.Exec(query, reply.ReplyID, reply.CommentID, reply.UserID, reply.Author, reply.AuthorImg, reply.ParentReplyID, reply.Content, reply.CreatedAt, reply.UpdatedAt)
+	if err != nil {
+		return nil, fmt.Errorf("oops, we couldn't create %s. please try again later", reply.Content)
+	}
 	return reply, err
 }
 
@@ -441,7 +472,7 @@ func (r *PostRepository) GetPostsByUserID(userID string) ([]*Post, error) {
 	query := `SELECT post_id, user_id, post_author, author_img, post_title, post_content, post_image, post_video, post_category, post_hasComments, created_at, updated_at FROM posts WHERE user_id = ?`
 	rows, err := r.DB.Query(query, userID)
 	if err != nil {
-		return nil, err
+		return nil, errors.New("oops, something went wrong. please try again later")
 	}
 	defer rows.Close()
 
@@ -450,7 +481,7 @@ func (r *PostRepository) GetPostsByUserID(userID string) ([]*Post, error) {
 		post := &Post{}
 		err := rows.Scan(&post.PostID, &post.UserID, &post.PostAuthor, &post.AuthorImg, &post.PostTitle, &post.PostContent, &post.PostImage, &post.PostVideo, &post.PostCategory, &post.HasComments, &post.CreatedAt, &post.UpdatedAt)
 		if err != nil {
-			return nil, err
+			return nil, errors.New("oops, something went wrong. please try again later")
 		}
 
 		post.Likes, _ = r.GetLikesByPostID(post.PostID)
@@ -465,7 +496,7 @@ func (r *PostRepository) GetPostsByUserID(userID string) ([]*Post, error) {
 func (r *PostRepository) GetLikedPostsByUserID(userID string) ([]*Post, error) {
 	likes, err := r.GetLikesByUserID(userID)
 	if err != nil {
-		return nil, err
+		return nil, errors.New("oops, something went wrong. please try again later")
 	}
 
 	var posts []*Post
@@ -493,7 +524,7 @@ func (r *PostRepository) GetCommentsByUserID(userID string) ([]*Comment, error) 
 	query := `SELECT comment_id, post_id, post_title, post_author, post_author_img, user_id, user_name, author_img, parent_comment_id, comment, created_at, updated_at FROM comments WHERE user_id = ?`
 	rows, err := r.DB.Query(query, userID)
 	if err != nil {
-		return nil, err
+		return nil, errors.New("oops, something went wrong. please try again later")
 	}
 	defer rows.Close()
 
@@ -502,7 +533,7 @@ func (r *PostRepository) GetCommentsByUserID(userID string) ([]*Comment, error) 
 		comment := &Comment{}
 		err := rows.Scan(&comment.CommentID, &comment.PostID, &comment.PostTitle, &comment.PostAuthor, &comment.PostAuthorImg, &comment.UserID, &comment.Author, &comment.AuthorImg, &comment.ParentCommentID, &comment.Content, &comment.CreatedAt, &comment.UpdatedAt)
 		if err != nil {
-			return nil, err
+			return nil, errors.New("oops, something went wrong. please try again later")
 		}
 		comments = append(comments, comment)
 	}
@@ -514,7 +545,7 @@ func (r *PostRepository) GetRepliesByUserID(userID string) ([]*Reply, error) {
 	query := `SELECT reply_id, comment_id, user_id, user_name, author_img, parent_reply_id, content, created_at, updated_at FROM replies WHERE user_id = ?`
 	rows, err := r.DB.Query(query, userID)
 	if err != nil {
-		return nil, err
+		return nil, errors.New("oops, something went wrong. please try again later")
 	}
 	defer rows.Close()
 
@@ -523,7 +554,7 @@ func (r *PostRepository) GetRepliesByUserID(userID string) ([]*Reply, error) {
 		reply := &Reply{}
 		err := rows.Scan(&reply.ReplyID, &reply.CommentID, &reply.UserID, &reply.Author, &reply.AuthorImg, &reply.ParentReplyID, &reply.Content, &reply.CreatedAt, &reply.UpdatedAt)
 		if err != nil {
-			return nil, err
+			return nil, errors.New("oops, something went wrong. please try again later")
 		}
 		replies = append(replies, reply)
 	}
@@ -535,7 +566,7 @@ func (r *PostRepository) GetLikesByUserID(userID string) ([]*Like, error) {
 	query := `SELECT like_id, user_id, post_id, comment_id, reply_id FROM likes WHERE user_id = ?`
 	rows, err := r.DB.Query(query, userID)
 	if err != nil {
-		return nil, err
+		return nil, errors.New("oops, something went wrong. please try again later")
 	}
 	defer rows.Close()
 
@@ -546,7 +577,7 @@ func (r *PostRepository) GetLikesByUserID(userID string) ([]*Like, error) {
 
 		err := rows.Scan(&like.LikeID, &like.UserID, &like.PostID, &commentID, &replyID)
 		if err != nil {
-			return nil, err
+			return nil, errors.New("oops, something went wrong. please try again later")
 		}
 
 		// Convert NULL values to empty strings
@@ -557,7 +588,7 @@ func (r *PostRepository) GetLikesByUserID(userID string) ([]*Like, error) {
 	}
 
 	if err := rows.Err(); err != nil {
-		return nil, err
+		return nil, errors.New("oops, something went wrong. please try again later")
 	}
 
 	return likes, nil
@@ -568,7 +599,7 @@ func (r *PostRepository) GetDislikesByUserID(userID string) ([]*Like, error) {
 	query := `SELECT like_id, user_id FROM dislikes WHERE user_id = ?`
 	rows, err := r.DB.Query(query, userID)
 	if err != nil {
-		return nil, err
+		return nil, errors.New("oops, something went wrong. please try again later")
 	}
 	defer rows.Close()
 
@@ -577,7 +608,7 @@ func (r *PostRepository) GetDislikesByUserID(userID string) ([]*Like, error) {
 		like := &Like{}
 		err := rows.Scan(&like.LikeID, &like.UserID)
 		if err != nil {
-			return nil, err
+			return nil, errors.New("oops, something went wrong. please try again later")
 		}
 		dislikes = append(dislikes, like)
 	}
@@ -589,6 +620,10 @@ func (r *PostRepository) AddActivity(activity *Activity) (*Activity, error) {
 	query := `INSERT INTO activities (activity_id, user_id, activity_type, activity_data, created_at)
 	           VALUES (?, ?, ?, ?, ?)`
 	_, err := r.DB.Exec(query, activity.ActivityID, activity.UserId, activity.ActivityType, activity.ActivityData, activity.CreatedAt)
+	if err != nil {
+		return nil, errors.New("oops, we couldn't create the activity. please try again later")
+	}
+
 	return activity, err
 }
 
@@ -608,7 +643,7 @@ func (r *PostRepository) GetPostByLikeID(likeID, userID string) (*Post, error) {
 		&post.PostCategory, &post.HasComments, &post.CreatedAt, &post.UpdatedAt,
 	)
 	if err != nil {
-		return nil, err
+		return nil, errors.New("oops, something went wrong. please try again later")
 	}
 
 	// Convert NULL values to empty strings
@@ -631,7 +666,7 @@ func (r *PostRepository) GetCommentByLikeID(likeID, userID string) (*Comment, er
 		&comment.Likes, &comment.CreatedAt, &comment.UpdatedAt,
 	)
 	if err != nil {
-		return nil, err
+		return nil, errors.New("oops, something went wrong. please try again later")
 	}
 	return &comment, nil
 }
@@ -643,7 +678,7 @@ func (r *PostRepository) GetActivitiesByUserID(userID string) ([]*Activity, erro
 	          WHERE user_id = ?`
 	rows, err := r.DB.Query(query, userID)
 	if err != nil {
-		return nil, err
+		return nil, errors.New("oops, something went wrong. please try again later")
 	}
 	defer rows.Close()
 
@@ -652,7 +687,7 @@ func (r *PostRepository) GetActivitiesByUserID(userID string) ([]*Activity, erro
 		activity := &Activity{}
 		err := rows.Scan(&activity.ActivityID, &activity.UserId, &activity.ActivityType, &activity.ActivityData, &activity.CreatedAt)
 		if err != nil {
-			return nil, err
+			return nil, errors.New("oops, something went wrong. please try again later")
 		}
 		activities = append(activities, activity)
 	}
@@ -670,7 +705,7 @@ func (r *PostRepository) GetCommentByID(id string) (*Comment, error) {
 		&comment.CreatedAt, &comment.UpdatedAt,
 	)
 	if err != nil {
-		return nil, err
+		return nil, errors.New("oops, something went wrong. please try again later")
 	}
 	return &comment, nil
 }
@@ -681,7 +716,7 @@ func (r *PostRepository) CreateNotification(n *Notification) (*Notification, err
 	          VALUES (?, ?, ?, NULLIF(?, ''), NULLIF(?, ''), NULLIF(?, ''), NULLIF(?, ''), NULLIF(?, ''), ?, ?, ?, ?)`
 	_, err := r.DB.Exec(query, n.NotificationID, n.UserId, n.SenderID, n.PostID, n.CommentID, n.ReplyID, n.LikeID, n.DislikeID, n.NotificationType, n.Message, n.IsRead, n.CreatedAt)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("oops, we couldn't create %s. please try again later", n.Message)
 	}
 	return n, nil
 }
@@ -693,7 +728,7 @@ func (r *PostRepository) GetNotificationsByUserID(userID string) ([]*Notificatio
 	          WHERE user_id = ?`
 	rows, err := r.DB.Query(query, userID)
 	if err != nil {
-		return nil, err
+		return nil, errors.New("oops, something went wrong. please try again later")
 	}
 	defer rows.Close()
 
@@ -702,7 +737,7 @@ func (r *PostRepository) GetNotificationsByUserID(userID string) ([]*Notificatio
 		notification := &Notification{}
 		err := rows.Scan(&notification.NotificationID, &notification.UserId, &notification.SenderID, &notification.PostID, &notification.CommentID, &notification.ReplyID, &notification.LikeID, &notification.DislikeID, &notification.NotificationType, &notification.Message, &notification.IsRead, &notification.CreatedAt)
 		if err != nil {
-			return nil, err
+			return nil, errors.New("oops, something went wrong. please try again later")
 		}
 		notifications = append(notifications, notification)
 	}
