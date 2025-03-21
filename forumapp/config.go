@@ -39,6 +39,7 @@ func ForumInit() (*ForumApp, error) {
 		"/api/comments/reply/like":   true,
 		"/api/posts/create":          true,
 		"/api/posts/delete":          true,
+		"/api/posts/deleteimage":     true,
 		"/api/posts/like":            true,
 		"/api/posts/dislike":         true,
 		"/api/posts/image":           true,

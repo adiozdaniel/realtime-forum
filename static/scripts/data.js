@@ -12,6 +12,7 @@ const API_ENDPOINTS = {
 	allposts: "/api/posts",
 	createpost: "/api/posts/create",
 	deletepost: "/api/posts/delete",
+	deletepostimage: "/api/posts/deleteimage",
 	updatepost: "/api/posts/update",
 	likepost: "/api/posts/like",
 	dislikepost: "/api/posts/dislike",

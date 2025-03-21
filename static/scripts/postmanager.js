@@ -397,6 +397,7 @@ PostManager.prototype.handleImageUpload = async function (e) {
 
 	if (imgRes.data) {
 		recyclebinState.TEMP_DATA = imgRes.data;
+		this.postModalManager.postImage = imgRes.data.post_id;
 	}
 };
 

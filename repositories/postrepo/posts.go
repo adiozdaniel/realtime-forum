@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"io"
 	"net/http"
 	"strings"
 )
@@ -85,6 +86,49 @@ func (p *PostsRepo) DeletePost(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	p.res.Err = false
+	p.res.Message = "Success"
+	p.res.Data = nil
+	p.res.WriteJSON(w, *p.res, http.StatusOK)
+}
+
+// DeletePostImage deletes a post image
+func (p *PostsRepo) DeletePostImage(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodPost {
+		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+		return
+	}
+
+	body, err := io.ReadAll(r.Body)
+	if err != nil {
+		p.res.SetError(w, err, http.StatusBadRequest)
+		return
+	}
+	defer r.Body.Close()
+
+	var req struct {
+		PostImage string `json:"PostImage"`
+	}
+
+	err = json.Unmarshal(body, &req)
+	if err != nil {
+		p.res.SetError(w, errors.New("invalid request format"), http.StatusBadRequest)
+		return
+	}
+
+	// Attempt to delete the image
+	err = p.shared.DeletePostImage(req.PostImage)
+	if err != nil {
+		if strings.Contains(err.Error(), "oops") {
+			p.res.SetError(w, err, http.StatusInternalServerError)
+			return
+		}
+
+		p.res.SetError(w, err, http.StatusBadRequest)
+		return
+	}
+
+	// Return success response
 	p.res.Err = false
 	p.res.Message = "Success"
 	p.res.Data = nil
@@ -432,7 +476,7 @@ func (p *PostsRepo) CheckNotifications(w http.ResponseWriter, r *http.Request) {
 			p.res.SetError(w, err, http.StatusInternalServerError)
 			return
 		}
-		
+
 		p.res.SetError(w, err, http.StatusBadRequest)
 		return
 	}

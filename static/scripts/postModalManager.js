@@ -1,8 +1,10 @@
 import { recyclebinState } from "./data.js";
 import { getUserData } from "./authmiddleware.js";
+import { PostService } from "./postsservice.js";
 
 class PostModalManager {
 	constructor() {
+		this.postService = new PostService();
 		this.modal = document.getElementById("createPostModal");
 		this.createPostBtn = document.getElementById("createPostBtn");
 		this.cancelBtn = document.getElementById("cancelPost");
@@ -23,13 +25,14 @@ class PostModalManager {
 		this.uploadError = document.getElementById("uploadError");
 		this.MAX_FILE_SIZE = 20 * 1024 * 1024;
 		this.ALLOWED_TYPES = ["image/jpeg", "image/png", "image/gif"];
+		this.postImage = "";
 	}
 }
 
 PostModalManager.prototype.init = function () {
 	if (!this.createPostBtn || !this.cancelBtn || !this.modal) return;
 	this.createPostBtn.addEventListener("click", this.openModal.bind(this));
-	this.cancelBtn.addEventListener("click", this.closeModal.bind(this));
+	this.cancelBtn.addEventListener("click", this.handleCancel.bind(this));
 	this.modal.addEventListener("click", (e) => {
 		if (e.target === this.modal) this.closeModal();
 	});
@@ -75,7 +78,23 @@ PostModalManager.prototype.openModal = async function (post) {
 	this.modal.classList.remove("hidden");
 };
 
-PostModalManager.prototype.closeModal = function () {
+PostModalManager.prototype.handleCancel = async function (e) {
+	e.stopPropagation();
+
+	if (this.postImage) {
+		const res = await this.postService.deletePostImage({
+			PostImage: this.postImage,
+		});
+		if (res.error) {
+			console.error("Error deleting temp image:", res.message);
+		}
+	}
+
+	this.postImage = "";
+	this.closeModal();
+};
+
+PostModalManager.prototype.closeModal = async function () {
 	this.modal.classList.add("hidden");
 	this.form.reset();
 	this.imagePreview.src = "";
@@ -109,7 +128,6 @@ PostModalManager.prototype.removeImagePreview = function () {
 	// if (this.videoPreviewContainer.classList.contains("hidden")) {
 	// 	this.mediaPreview.classList.add("hidden");
 	// }
-	recyclebinState.TEMP_DATA = null;
 };
 
 PostModalManager.prototype.removeVideoPreview = function () {

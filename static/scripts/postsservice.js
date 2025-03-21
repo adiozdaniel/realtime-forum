@@ -112,6 +112,26 @@ PostService.prototype.deletePost = async function (postData) {
 	}
 };
 
+PostService.prototype.deletePostImage = async function (postData) {
+	try {
+		const response = await fetch(this.apiEndpoints.deletepostimage, {
+			method: "POST",
+			body: JSON.stringify(postData),
+			headers: {
+				"Content-Type": "application/json",
+			},
+		});
+
+		const success = await response.json();
+		return success;
+	} catch (error) {
+		return {
+			error: true,
+			message: "Failed to delete post image. Please try again.",
+		};
+	}
+};
+
 // Method to like a post by ID
 PostService.prototype.likePost = async function (postData) {
 	if (!postData.user_id) {
@@ -196,19 +216,17 @@ PostService.prototype.checkNotifications = async function () {
 };
 
 // Method to update read notifications
-PostService.prototype.markNotificationAsRead = async function (not){
+PostService.prototype.markNotificationAsRead = async function (not) {
 	try {
 		const response = await fetch(this.apiEndpoints.readNotifications, {
 			method: "POST",
 			body: JSON.stringify(not),
 			headers: {
 				"Content-Type": "application/json",
-			}
-		})
+			},
+		});
 
 		const res = await response.json();
 		return res;
-	} catch (error) {
-
-	}
-}
+	} catch (error) {}
+};
