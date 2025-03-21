@@ -74,7 +74,7 @@ func (p *PostService) DeletePost(post *Post) error {
 	}
 
 	go p.RecordActivity(post.UserID, "deleted_post", "deleted a post: "+post.PostTitle)
-	go p.shared.DeletePostImage(post.PostImage)
+	go p.shared.DeletePostImage(post.PostID)
 
 	return p.post.DeletePost(post.PostID)
 }
