@@ -13,12 +13,12 @@ class PostModalManager {
 		);
 		this.imagePreview = document.getElementById("imagePreview");
 		this.removeImage = document.getElementById("removeImage");
-		this.videoLink = document.getElementById("videoLink");
-		this.videoPreviewContainer = document.getElementById(
-			"videoPreviewContainer"
-		);
-		this.videoPreview = document.getElementById("videoPreview");
-		this.removeVideo = document.getElementById("removeVideo");
+		// this.videoLink = document.getElementById("videoLink");
+		// this.videoPreviewContainer = document.getElementById(
+		// 	"videoPreviewContainer"
+		// );
+		// this.videoPreview = document.getElementById("videoPreview");
+		// this.removeVideo = document.getElementById("removeVideo");
 		this.mediaPreview = document.getElementById("mediaPreview");
 		this.uploadError = document.getElementById("uploadError");
 		this.MAX_FILE_SIZE = 20 * 1024 * 1024;
@@ -34,15 +34,15 @@ PostModalManager.prototype.init = function () {
 		if (e.target === this.modal) this.closeModal();
 	});
 
-	this.videoLink.addEventListener("input", this.handleVideoLink.bind(this));
+	// this.videoLink.addEventListener("input", this.handleVideoLink.bind(this));
 	this.removeImage.addEventListener(
 		"click",
 		this.removeImagePreview.bind(this)
 	);
-	this.removeVideo.addEventListener(
-		"click",
-		this.removeVideoPreview.bind(this)
-	);
+	// this.removeVideo.addEventListener(
+	// 	"click",
+	// 	this.removeVideoPreview.bind(this)
+	// );
 };
 
 PostModalManager.prototype.openModal = async function (post) {
@@ -80,7 +80,7 @@ PostModalManager.prototype.closeModal = function () {
 	this.form.reset();
 	this.imagePreview.src = "";
 	this.imagePreviewContainer.classList.add("hidden");
-	this.videoPreviewContainer.classList.add("hidden");
+	// this.videoPreviewContainer.classList.add("hidden");
 	this.mediaPreview.classList.add("hidden");
 	this.uploadError.classList.add("hidden");
 	this.uploadError.textContent = "";
@@ -91,30 +91,30 @@ PostModalManager.prototype.handleVideoLink = function (e) {
 	if (this.isValidVideoUrl(url)) {
 		const embedUrl = this.getEmbedUrl(url);
 		if (embedUrl) {
-			this.videoPreview.innerHTML = `<iframe width="100%" height="250" src="${embedUrl}" frameborder="0" allowfullscreen></iframe>`;
-			this.videoPreviewContainer.classList.remove("hidden");
+			// this.videoPreview.innerHTML = `<iframe width="100%" height="250" src="${embedUrl}" frameborder="0" allowfullscreen></iframe>`;
+			// this.videoPreviewContainer.classList.remove("hidden");
 			this.mediaPreview.classList.remove("hidden");
 			this.imageUpload.value = "";
 			this.imagePreviewContainer.classList.add("hidden");
 		}
-	} else {
+	} /* else {
 		this.videoPreviewContainer.classList.add("hidden");
-	}
+	}*/
 };
 
 PostModalManager.prototype.removeImagePreview = function () {
 	this.imageUpload.value = "";
 	this.imagePreview.src = "";
 	this.imagePreviewContainer.classList.add("hidden");
-	if (this.videoPreviewContainer.classList.contains("hidden")) {
-		this.mediaPreview.classList.add("hidden");
-	}
+	// if (this.videoPreviewContainer.classList.contains("hidden")) {
+	// 	this.mediaPreview.classList.add("hidden");
+	// }
 	recyclebinState.TEMP_DATA = null;
 };
 
 PostModalManager.prototype.removeVideoPreview = function () {
-	this.videoLink.value = "";
-	this.videoPreviewContainer.classList.add("hidden");
+	// this.videoLink.value = "";
+	// this.videoPreviewContainer.classList.add("hidden");
 	if (this.imagePreviewContainer.classList.contains("hidden")) {
 		this.mediaPreview.classList.add("hidden");
 	}
