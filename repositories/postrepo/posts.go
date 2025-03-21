@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
+	"strings"
 )
 
 // AllPosts returns a slice of all posts
@@ -43,6 +44,11 @@ func (p *PostsRepo) CreatePost(w http.ResponseWriter, r *http.Request) {
 
 	post, err := p.post.CreatePost(&req)
 	if err != nil {
+		if strings.Contains(err.Error(), "oops") {
+			p.res.SetError(w, err, http.StatusInternalServerError)
+			return
+		}
+
 		p.res.SetError(w, err, http.StatusBadRequest)
 		return
 	}
@@ -70,6 +76,11 @@ func (p *PostsRepo) DeletePost(w http.ResponseWriter, r *http.Request) {
 
 	err = p.post.DeletePost(&req)
 	if err != nil {
+		if strings.Contains(err.Error(), "oops") {
+			p.res.SetError(w, err, http.StatusInternalServerError)
+			return
+		}
+
 		p.res.SetError(w, err, http.StatusBadRequest)
 		return
 	}
@@ -98,6 +109,11 @@ func (p *PostsRepo) PostAddLike(w http.ResponseWriter, r *http.Request) {
 	// Call the AddLike method to add a like to the post
 	post, err := p.post.PostAddLike(&req)
 	if err != nil {
+		if strings.Contains(err.Error(), "oops") {
+			p.res.SetError(w, err, http.StatusInternalServerError)
+			return
+		}
+
 		p.res.SetError(w, fmt.Errorf("failed to add like to post: %v", err), http.StatusBadRequest)
 		return
 	}
@@ -127,6 +143,11 @@ func (p *PostsRepo) CommentAddLike(w http.ResponseWriter, r *http.Request) {
 	// Call the AddLike method to add a like to the post
 	commentLike, err := p.post.CommentAddLike(&req)
 	if err != nil {
+		if strings.Contains(err.Error(), "oops") {
+			p.res.SetError(w, err, http.StatusInternalServerError)
+			return
+		}
+
 		p.res.SetError(w, fmt.Errorf("failed to add like to post: %v", err), http.StatusBadRequest)
 		return
 	}
@@ -156,6 +177,11 @@ func (p *PostsRepo) CommentAddDisLike(w http.ResponseWriter, r *http.Request) {
 	// Call the AddLike method to add a like to the post
 	commentLike, err := p.post.CommentAddDisLike(&req)
 	if err != nil {
+		if strings.Contains(err.Error(), "oops") {
+			p.res.SetError(w, err, http.StatusInternalServerError)
+			return
+		}
+
 		p.res.SetError(w, fmt.Errorf("failed to add like to post: %v", err), http.StatusBadRequest)
 		return
 	}
@@ -185,6 +211,11 @@ func (p *PostsRepo) PostDislike(w http.ResponseWriter, r *http.Request) {
 	// Call the PostDisLike method to remove dislike a post
 	dislike, err := p.post.PostDisLike(&req)
 	if err != nil {
+		if strings.Contains(err.Error(), "oops") {
+			p.res.SetError(w, err, http.StatusInternalServerError)
+			return
+		}
+
 		p.res.SetError(w, fmt.Errorf("failed to dislike post: %v", err), http.StatusBadRequest)
 		return
 	}
@@ -213,6 +244,11 @@ func (p *PostsRepo) CreatePostComment(w http.ResponseWriter, r *http.Request) {
 
 	comment, err := p.post.CreatePostComment(&req)
 	if err != nil {
+		if strings.Contains(err.Error(), "oops") {
+			p.res.SetError(w, err, http.StatusInternalServerError)
+			return
+		}
+
 		p.res.SetError(w, err, http.StatusBadRequest)
 		return
 	}
@@ -240,6 +276,11 @@ func (p *PostsRepo) UpdateComment(w http.ResponseWriter, r *http.Request) {
 
 	comment, err := p.post.UpdateComment(&req)
 	if err != nil {
+		if strings.Contains(err.Error(), "oops") {
+			p.res.SetError(w, err, http.StatusInternalServerError)
+			return
+		}
+
 		p.res.SetError(w, err, http.StatusBadRequest)
 		return
 	}
@@ -267,6 +308,11 @@ func (p *PostsRepo) DeleteComment(w http.ResponseWriter, r *http.Request) {
 
 	err = p.post.DeleteComment(&req)
 	if err != nil {
+		if strings.Contains(err.Error(), "oops") {
+			p.res.SetError(w, err, http.StatusInternalServerError)
+			return
+		}
+
 		p.res.SetError(w, err, http.StatusBadRequest)
 		return
 	}
@@ -319,6 +365,11 @@ func (p *PostsRepo) CreatePostReply(w http.ResponseWriter, r *http.Request) {
 
 	post, err := p.post.CreateCommentReply(&req)
 	if err != nil {
+		if strings.Contains(err.Error(), "oops") {
+			p.res.SetError(w, err, http.StatusInternalServerError)
+			return
+		}
+
 		p.res.SetError(w, err, http.StatusBadRequest)
 		return
 	}
@@ -346,6 +397,11 @@ func (p *PostsRepo) LikeReply(w http.ResponseWriter, r *http.Request) {
 
 	replyLike, err := p.post.ReplyAddLike(&req)
 	if err != nil {
+		if strings.Contains(err.Error(), "oops") {
+			p.res.SetError(w, err, http.StatusInternalServerError)
+			return
+		}
+
 		p.res.SetError(w, fmt.Errorf("failed to add like to post: %v", err), http.StatusBadRequest)
 		return
 	}
@@ -372,6 +428,11 @@ func (p *PostsRepo) CheckNotifications(w http.ResponseWriter, r *http.Request) {
 
 	notifications, err := p.post.GetNotificationsByUserID(userID)
 	if err != nil {
+		if strings.Contains(err.Error(), "oops") {
+			p.res.SetError(w, err, http.StatusInternalServerError)
+			return
+		}
+		
 		p.res.SetError(w, err, http.StatusBadRequest)
 		return
 	}

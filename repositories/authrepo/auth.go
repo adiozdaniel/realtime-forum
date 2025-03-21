@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"errors"
 	"net/http"
+	"strings"
 
 	_ "github.com/mattn/go-sqlite3"
 )
@@ -27,6 +28,11 @@ func (h *AuthRepo) RegisterHandler(w http.ResponseWriter, r *http.Request) {
 	// Register the user
 	err = h.user.Register(&req)
 	if err != nil {
+		if strings.Contains(err.Error(), "oops") {
+			h.res.SetError(w, err, http.StatusInternalServerError)
+			return
+		}
+
 		h.res.SetError(w, err, http.StatusConflict)
 		return
 	}
@@ -62,6 +68,11 @@ func (h *AuthRepo) LoginHandler(w http.ResponseWriter, r *http.Request) {
 
 	user, err := h.user.Login(req.Email, req.Password)
 	if err != nil {
+		if strings.Contains(err.Error(), "oops") {
+			h.res.SetError(w, err, http.StatusInternalServerError)
+			return
+		}
+
 		h.res.SetError(w, err, http.StatusUnauthorized)
 		return
 	}
@@ -184,6 +195,11 @@ func (h *AuthRepo) UploadProfilePic(w http.ResponseWriter, r *http.Request) {
 
 	user, err := h.user.UpdateUser(&req)
 	if err != nil {
+		if strings.Contains(err.Error(), "oops") {
+			h.res.SetError(w, err, http.StatusInternalServerError)
+			return
+		}
+
 		h.res.SetError(w, err, http.StatusBadRequest)
 		return
 	}
@@ -213,6 +229,11 @@ func (h *AuthRepo) UserDashboard(w http.ResponseWriter, r *http.Request) {
 
 	data, err := h.user.GetUserDashboard(userID)
 	if err != nil {
+		if strings.Contains(err.Error(), "oops") {
+			h.res.SetError(w, err, http.StatusInternalServerError)
+			return
+		}
+
 		h.res.SetError(w, err, http.StatusInternalServerError)
 		return
 	}
@@ -240,7 +261,12 @@ func (h *AuthRepo) EditBio(w http.ResponseWriter, r *http.Request) {
 	// Call the EditBio method
 	user, err := h.user.EditBio(&req)
 	if err != nil {
-		h.res.SetError(w, err, http.StatusInternalServerError)
+		if strings.Contains(err.Error(), "oops") {
+			h.res.SetError(w, err, http.StatusInternalServerError)
+			return
+		}
+		
+		h.res.SetError(w, err, http.StatusBadRequest)
 		return
 	}
 
