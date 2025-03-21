@@ -26,7 +26,7 @@ class PostManager {
 		this.postModalManager = new PostModalManager();
 
 		// DOM Elements
-		this.videoLink = document.getElementById("videoLink");
+		// this.videoLink = document.getElementById("videoLink");
 	}
 }
 
@@ -309,7 +309,7 @@ PostManager.prototype.handleSubmit = async function (e) {
 				.map((checkbox) => checkbox.value)
 				.join(" "),
 			PostContent: document.getElementById("postContent").value,
-			PostVideo: this.videoLink.value || null,
+			// PostVideo: this.videoLink.value || null,
 			PostImage: recyclebinState.TEMP_DATA.img || null,
 			PostID: recyclebinState.TEMP_DATA.post_id || null,
 		};
@@ -322,7 +322,7 @@ PostManager.prototype.handleSubmit = async function (e) {
 				.map((checkbox) => checkbox.value)
 				.join(" "),
 			PostContent: document.getElementById("postContent").value,
-			PostVideo: this.videoLink.value || null,
+			// PostVideo: this.videoLink.value || null,
 		};
 	}
 
@@ -370,8 +370,8 @@ PostManager.prototype.handleImageUpload = async function (e) {
 		this.postModalManager.imagePreview.src = e.target.result;
 		this.postModalManager.imagePreviewContainer.classList.remove("hidden");
 		this.postModalManager.mediaPreview.classList.remove("hidden");
-		this.postModalManager.videoLink.value = "";
-		this.postModalManager.videoPreviewContainer.classList.add("hidden");
+		// this.postModalManager.videoLink.value = "";
+		// this.postModalManager.videoPreviewContainer.classList.add("hidden");
 	};
 	reader.onerror = () => {
 		this.postModalManager.showUploadError(
