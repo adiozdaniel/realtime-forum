@@ -15,7 +15,6 @@ import { PostModalManager } from "./postModalManager.js";
 import { toast } from "./toast.js";
 
 const postsContainers = document.querySelectorAll("#postsContainer");
-
 const commentManager = new CommentManager();
 
 class PostManager {
@@ -24,9 +23,6 @@ class PostManager {
 		this.dislikeState = postDislikeState;
 		this.postService = new PostService();
 		this.postModalManager = new PostModalManager();
-
-		// DOM Elements
-		// this.videoLink = document.getElementById("videoLink");
 	}
 }
 
@@ -345,6 +341,7 @@ PostManager.prototype.handleSubmit = async function (e) {
 };
 
 PostManager.prototype.handleImageUpload = async function (e) {
+	e.preventDefault();
 	const file = e.target.files[0];
 	this.postModalManager.uploadError.textContent = "";
 	this.postModalManager.uploadError.classList.add("hidden");
@@ -426,10 +423,6 @@ PostManager.prototype.attachPostEventListeners = function () {
 	postEditBtn?.forEach((editBtn) =>
 		editBtn.addEventListener("click", (e) => this.handlePostEdit(e))
 	);
-
-	document
-		.getElementById("postImageUpload")
-		?.addEventListener("change", this.handleImageUpload.bind(this));
 };
 
 PostManager.prototype.handlePostLikes = async function (e) {
@@ -569,6 +562,11 @@ document.addEventListener("DOMContentLoaded", () => {
 	postManager.init();
 
 	postManager.postModalManager.init();
+
+	postManager.postModalManager.imageUpload.addEventListener(
+		"change",
+		postManager.handleImageUpload.bind(postManager)
+	);
 
 	postManager.postModalManager.form?.addEventListener("submit", (e) => {
 		if (window.location.pathname === "/") {
