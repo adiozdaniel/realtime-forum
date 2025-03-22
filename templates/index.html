@@ -1,0 +1,100 @@
+{{define "homepage"}}
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta
+			name="viewport"
+			content="width=device-width, initial-scale=1.0"
+		/>
+		<title>Modern Forum</title>
+
+		<!-- Styling -->
+		<link
+			rel="stylesheet"
+			href="/static/css/index.css"
+		/>
+		<link
+			rel="stylesheet"
+			href="/static/css/header.css"
+		/>
+		<link
+			rel="stylesheet"
+			href="/static/css/footer.css"
+		/>
+		<link
+			rel="stylesheet"
+			href="/static/css/login.css"
+		/>
+		<link
+			rel="stylesheet"
+			href="/static/css/signup.css"
+		/>
+		<link
+			rel="stylesheet"
+			href="/static/css/createpost.css"
+		/>
+		<link
+			rel="stylesheet"
+			href="/static/css/moderator.css"
+		/>
+		<link
+			rel="stylesheet"
+			href="/static/css/toast.css"
+		/>
+		<link
+			rel="stylesheet"
+			href="/static/css/notification.css"
+		/>
+
+		<link
+			rel="stylesheet"
+			href="/static/css/pageNotFound.css"
+		/>
+
+		<link
+			rel="stylesheet"
+			href="/static/css/internalServerError.css"
+		/>
+
+		<link
+			rel="shortcut icon"
+			href="/static/assets/favicon.png"
+			type="image/png"
+		/>
+
+		<link
+			rel="stylesheet"
+			href="/static/css/comment.css"
+		/>
+
+		<link
+			rel="stylesheet"
+			href="/static/css/profile.css"
+		/>
+
+		<script src="static/scripts/lucide.js"></script>
+	</head>
+
+	<body>
+		<div class="app">
+			<ul class="toast-notifications">
+				<!-- li toast -->
+			</ul>
+			<!-- {{block "header" .}} {{end}} -->
+			<div class="main-container">
+				<!-- {{ block "sidebar" . }} {{ end }} -->
+				<!-- Page Content -->
+				<main class="main-content">
+					<div id="MainApp"></div>
+				</main>
+			</div>
+			<!-- {{ block "footer" .}}{{end}} -->
+		</div>
+		<script
+			type="module"
+			src="static/scripts/app.js"
+		></script>
+	</body>
+</html>
+{{end}}

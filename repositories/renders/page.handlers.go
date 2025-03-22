@@ -1,6 +1,7 @@
 package renders
 
 import (
+	"html/template"
 	"net/http"
 )
 
@@ -11,11 +12,17 @@ func (m *RendersRepo) HomePageHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	data := map[string]interface{}{
-		"Page": "home",
+	pagePath := m.app.Tmpls.GetProjectRoute("templates", "index.html")
+
+	tmpl, err := template.New("homepage").ParseFiles(pagePath)
+	if err != nil {
+		m.RenderServerError(w)
+		return
 	}
 
-	_= m.RenderTemplate(w, "home.page.html", data)
+	if err := tmpl.Execute(w, nil); err != nil {
+		m.RenderServerError(w)
+	}
 }
 
 // Login page
@@ -25,7 +32,7 @@ func (m *RendersRepo) LoginPageHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	_= m.RenderTemplate(w, "login.page.html", nil)
+	_ = m.RenderTemplate(w, "login.page.html", nil)
 }
 
 // sign-up page
@@ -35,7 +42,7 @@ func (m *RendersRepo) SignUpPageHandler(w http.ResponseWriter, r *http.Request) 
 		return
 	}
 
-	_= m.RenderTemplate(w, "signup.page.html", nil)
+	_ = m.RenderTemplate(w, "signup.page.html", nil)
 }
 
 // moderator page
@@ -49,7 +56,7 @@ func (m *RendersRepo) ModeratorPageHandler(w http.ResponseWriter, r *http.Reques
 		"Page": "moderator",
 	}
 
-	_= m.RenderTemplate(w, "moderator.page.html", data)
+	_ = m.RenderTemplate(w, "moderator.page.html", data)
 }
 
 // admin page
@@ -63,7 +70,7 @@ func (m *RendersRepo) AdminPageHandler(w http.ResponseWriter, r *http.Request) {
 		"Page": "admin",
 	}
 
-	_= m.RenderTemplate(w, "admin.page.html", data)
+	_ = m.RenderTemplate(w, "admin.page.html", data)
 }
 
 // ProfilePageHandler renders profile page
@@ -77,7 +84,7 @@ func (m *RendersRepo) ProfilePageHandler(w http.ResponseWriter, r *http.Request)
 		"Page": "profile",
 	}
 
-	_= m.RenderTemplate(w, "profile.page.html", data)
+	_ = m.RenderTemplate(w, "profile.page.html", data)
 }
 
 func (m *RendersRepo) NotFoundPageHandler(w http.ResponseWriter, r *http.Request) {
