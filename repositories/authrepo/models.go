@@ -24,7 +24,11 @@ type User struct {
 	UserID    string    `json:"user_id"`
 	Email     string    `json:"email"`
 	Password  string    `json:"password"`
+	FirstName string    `json:"first_name"`
+	LastName  string    `json:"last_name"`
 	UserName  string    `json:"user_name"`
+	Gender    string    `json:"gender"`
+	Age       int       `json:"age"`
 	Image     string    `json:"image"`
 	Role      string    `json:"role"`
 	Bio       string    `json:"bio"`

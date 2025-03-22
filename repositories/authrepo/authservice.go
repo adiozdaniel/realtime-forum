@@ -3,6 +3,7 @@ package authrepo
 import (
 	"errors"
 	"fmt"
+	"strings"
 
 	"forum/repositories/postrepo"
 	"forum/repositories/shared"
@@ -28,16 +29,9 @@ func NewUserService(user UserRepo, posts *postrepo.PostService) *UserService {
 }
 
 func (u *UserService) Register(user *User) error {
-	if user.Email == "" || user.Password == "" {
-		return errors.New("email or password cannot be empty")
+	if strings.TrimSpace(user.Email) == "" || strings.TrimSpace(user.Password) == "" || strings.TrimSpace(user.UserName) == "" || strings.TrimSpace(user.FirstName) == "" || strings.TrimSpace(user.LastName) == "" {
+		return errors.New("fill all the required fields")
 	}
-
-	name := u.shared.CleanUsername(user.UserName)
-	if name == "" {
-		return errors.New("username cannot be empty and contains only letters")
-	}
-
-	user.UserName = name
 
 	existingUser, _ := u.user.GetUserByEmail(user.Email)
 	if existingUser != nil {
@@ -46,7 +40,7 @@ func (u *UserService) Register(user *User) error {
 
 	userName, _ := u.user.UsernameExists(user.UserName)
 	if userName {
-		return fmt.Errorf("%s username is already in use", user.UserName)
+		return fmt.Errorf("%s username is already taken", user.UserName)
 	}
 
 	// Hash the password
