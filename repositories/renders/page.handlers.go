@@ -12,9 +12,12 @@ func (m *RendersRepo) HomePageHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	pagePath := m.app.Tmpls.GetProjectRoute("templates", "index.html")
-
-	tmpl, err := template.New("homepage").ParseFiles(pagePath)
+	tmpl, err := template.New("homepage").ParseFiles(
+		m.app.Tmpls.GetProjectRoute("templates", "index.html"),
+		m.app.Tmpls.GetProjectRoute("templates", "header.html"),
+		m.app.Tmpls.GetProjectRoute("templates", "sidebar.html"),
+		m.app.Tmpls.GetProjectRoute("templates", "footer.html"),
+	)
 	if err != nil {
 		m.RenderServerError(w)
 		return
