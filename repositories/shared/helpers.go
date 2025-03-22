@@ -118,3 +118,9 @@ func (s *SharedConfig) CleanUsername(name string) string {
 	re := regexp.MustCompile(`[^a-zA-Z]`)
 	return s.SanitizeString(re.ReplaceAllString(name, " "))
 }
+
+// Helper function that validates an email address
+func (s *SharedConfig) IsEmail(input string) bool {
+	emailRegex := `^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$`
+	return regexp.MustCompile(emailRegex).MatchString(input)
+}

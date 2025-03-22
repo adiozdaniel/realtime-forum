@@ -68,19 +68,27 @@ func (u *UserService) Register(user *User) error {
 	return u.user.CreateUser(user)
 }
 
-func (u *UserService) Login(email, password string) (*User, error) {
-	if email == "" || password == "" {
+func (u *UserService) Login(input, password string) (*User, error) {
+	if input == "" || password == "" {
 		return nil, errors.New("email or password cannot be empty")
 	}
 
+	var user *User
+	var err error
+
 	// Retrieve user from database
-	user, err := u.user.GetUserByEmail(email)
+	if u.shared.IsEmail(input) {
+		user, err = u.user.GetUserByEmail(input)
+	} else {
+		user, err = u.user.GetUserByUsername(input)
+	}
+
 	if err != nil {
-		return nil, errors.New("invalid email or password")
+		return nil, err
 	}
 
 	// Compare the hashed password
-	if err := bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(password)); err != nil {
+	if err = bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(password)); err != nil {
 		return nil, errors.New("did you forget your password")
 	}
 

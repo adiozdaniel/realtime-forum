@@ -41,6 +41,21 @@ func (r *UserRepository) GetUserByEmail(email string) (*User, error) {
 	return user, nil
 }
 
+func (r *UserRepository) GetUserByUsername(userName string) (*User, error) {
+	query := `SELECT user_id, email, password, user_name, image, role, bio, created_at, updated_at FROM users WHERE user_name = ?`
+	row := r.DB.QueryRow(query, userName)
+
+	user := &User{}
+	err := row.Scan(&user.UserID, &user.Email, &user.Password, &user.UserName, &user.Image, &user.Role, &user.Bio, &user.CreatedAt, &user.UpdatedAt)
+	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return nil, errors.New("no user found with the given user name")
+		}
+		return nil, errors.New("failed to retrieve user, please try again later")
+	}
+	return user, nil
+}
+
 func (r *UserRepository) DeleteUser(id string) error {
 	query := `DELETE FROM users WHERE user_id = ?`
 	_, err := r.DB.Exec(query, id)

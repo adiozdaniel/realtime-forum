@@ -39,11 +39,6 @@ AuthHandler.prototype.togglePasswordVisibility = function () {
 	}
 };
 
-// Validate email format
-AuthHandler.prototype.validateEmail = function (email) {
-	return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
-};
-
 // Display error message next to input fields
 AuthHandler.prototype.showError = function (input, message) {
 	const formGroup = input.closest(".form-group");
@@ -76,70 +71,65 @@ AuthHandler.prototype.clearErrors = function (event) {
 
 // Handle form submission for user login
 AuthHandler.prototype.handleLogin = async function (e) {
-    e.preventDefault();
-    this.removeError(this.emailInput);
-    this.removeError(this.passwordInput);
+	e.preventDefault();
+	this.removeError(this.emailInput);
+	this.removeError(this.passwordInput);
 
-    if (!this.emailInput.value.trim() && !this.passwordInput.value.trim()) {
-        toast.createToast("error", "Please fill in all fields");
-        return;
-    } else if (!this.emailInput.value.trim()) {
-        this.showError(this.emailInput, "Email is required");
-        toast.createToast("error", "Email is required");
-        return;
-    } else if (!this.passwordInput.value.trim()) {
-        this.showError(this.passwordInput, "Password is required");
-        toast.createToast("error", "Password is required");
-        return;
-    }
+	if (!this.emailInput.value.trim() && !this.passwordInput.value.trim()) {
+		toast.createToast("error", "Please fill in all fields");
+		return;
+	} else if (!this.emailInput.value.trim()) {
+		this.showError(this.emailInput, "Email is required");
+		toast.createToast("error", "Email is required");
+		return;
+	} else if (!this.passwordInput.value.trim()) {
+		this.showError(this.passwordInput, "Password is required");
+		toast.createToast("error", "Password is required");
+		return;
+	}
 
-    if (!this.validateEmail(this.emailInput.value)) {
-        this.showError(this.emailInput, "Please enter a valid email address");
-        return;
-    }
+	if (this.passwordInput.value.length < CONSTANTS.MIN_PASSWORD_LENGTH) {
+		this.showError(
+			this.passwordInput,
+			`Password must be at least ${CONSTANTS.MIN_PASSWORD_LENGTH} characters`
+		);
+		return;
+	}
 
-    if (this.passwordInput.value.length < CONSTANTS.MIN_PASSWORD_LENGTH) {
-        this.showError(
-            this.passwordInput,
-            `Password must be at least ${CONSTANTS.MIN_PASSWORD_LENGTH} characters`
-        );
-        return;
-    }
+	this.submitButton.disabled = true;
+	this.spinner.classList.remove("hidden");
+	this.submitButton.querySelector("span").textContent = "Signing in...";
 
-    this.submitButton.disabled = true;
-    this.spinner.classList.remove("hidden");
-    this.submitButton.querySelector("span").textContent = "Signing in...";
+	const formData = {
+		email: this.emailInput.value.trim(),
+		password: this.passwordInput.value.trim(),
+	};
 
-    const formData = {
-        email: this.emailInput.value.trim(),
-        password: this.passwordInput.value.trim(),
-    };
+	const response = await this.authService.login(formData);
 
-    const response = await this.authService.login(formData);
+	if (response.error) {
+		toast.createToast("error", response.message || "Login failed!");
+		this.showError(
+			this.emailInput,
+			response.message || "Invalid email or password"
+		);
+	} else if (response?.data) {
+		toast.createToast("success", response.message || "Logged in successfully!");
 
-    if (response.error) {
-        toast.createToast("error", response.message || "Login failed!");
-        this.showError(
-            this.emailInput,
-            response.message || "Invalid email or password"
-        );
-    } else if (response?.data) {
-        toast.createToast("success", response.message || "Logged in successfully!");
+		setTimeout(() => {
+			window.location.href = "/";
+		}, 500);
+	} else {
+		toast.createToast("error", response.message || "Network error");
+		this.showError(
+			this.emailInput,
+			response.message || "oops something went wrong"
+		);
+	}
 
-        setTimeout(() => {
-            window.location.href = "/";
-        }, 500);
-    } else {
-        toast.createToast("error", response.message || "Network error");
-        this.showError(
-            this.emailInput,
-            response.message || "oops something went wrong"
-        );
-    }
-
-    this.submitButton.disabled = false;
-    this.spinner.classList.add("hidden");
-    this.submitButton.querySelector("span").textContent = "Sign in";
+	this.submitButton.disabled = false;
+	this.spinner.classList.add("hidden");
+	this.submitButton.querySelector("span").textContent = "Sign in";
 };
 
 // Initialize the authentication handler on DOM load

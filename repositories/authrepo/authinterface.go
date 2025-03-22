@@ -8,4 +8,5 @@ type UserRepo interface {
 	UpdateUser(user *User) (*User, error)
 	DeleteUser(id string) error
 	UsernameExists(username string) (bool, error)
+	GetUserByUsername(userName string) (*User, error)
 }
