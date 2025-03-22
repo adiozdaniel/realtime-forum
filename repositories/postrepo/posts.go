@@ -39,7 +39,7 @@ func (p *PostsRepo) CreatePost(w http.ResponseWriter, r *http.Request) {
 
 	err := json.NewDecoder(r.Body).Decode(&req)
 	if err != nil {
-		p.res.SetError(w, err, http.StatusBadRequest)
+		p.res.SetError(w, errors.New("hacking detected, invalid request"), http.StatusBadRequest)
 		return
 	}
 
@@ -71,7 +71,7 @@ func (p *PostsRepo) DeletePost(w http.ResponseWriter, r *http.Request) {
 
 	err := json.NewDecoder(r.Body).Decode(&req)
 	if err != nil {
-		p.res.SetError(w, err, http.StatusBadRequest)
+		p.res.SetError(w, errors.New("hacking detected, invalid request"), http.StatusBadRequest)
 		return
 	}
 
@@ -101,7 +101,7 @@ func (p *PostsRepo) DeletePostImage(w http.ResponseWriter, r *http.Request) {
 
 	body, err := io.ReadAll(r.Body)
 	if err != nil {
-		p.res.SetError(w, err, http.StatusBadRequest)
+		p.res.SetError(w, errors.New("hacking detected, invalid request"), http.StatusBadRequest)
 		return
 	}
 	defer r.Body.Close()
@@ -112,7 +112,7 @@ func (p *PostsRepo) DeletePostImage(w http.ResponseWriter, r *http.Request) {
 
 	err = json.Unmarshal(body, &req)
 	if err != nil {
-		p.res.SetError(w, errors.New("invalid request format"), http.StatusBadRequest)
+		p.res.SetError(w, errors.New("hacking detected, invalid request"), http.StatusBadRequest)
 		return
 	}
 
@@ -146,7 +146,7 @@ func (p *PostsRepo) PostAddLike(w http.ResponseWriter, r *http.Request) {
 	// Decode the request body into a PostLike struct
 	var req Like
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-		p.res.SetError(w, fmt.Errorf("invalid request payload: %v", err), http.StatusBadRequest)
+		p.res.SetError(w, errors.New("hacking detected, invalid request"), http.StatusBadRequest)
 		return
 	}
 
@@ -180,7 +180,7 @@ func (p *PostsRepo) CommentAddLike(w http.ResponseWriter, r *http.Request) {
 	// Decode the request body into a PostLike struct
 	var req Like
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-		p.res.SetError(w, fmt.Errorf("invalid request payload: %v", err), http.StatusBadRequest)
+		p.res.SetError(w, errors.New("hacking detected, invalid request"), http.StatusBadRequest)
 		return
 	}
 
@@ -214,7 +214,7 @@ func (p *PostsRepo) CommentAddDisLike(w http.ResponseWriter, r *http.Request) {
 	// Decode the request body into a PostLike struct
 	var req Like
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-		p.res.SetError(w, fmt.Errorf("invalid request payload: %v", err), http.StatusBadRequest)
+		p.res.SetError(w, errors.New("hacking detected, invalid request"), http.StatusBadRequest)
 		return
 	}
 
@@ -248,7 +248,7 @@ func (p *PostsRepo) PostDislike(w http.ResponseWriter, r *http.Request) {
 	// Decode the request body into a PostLike struct
 	var req Like
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-		p.res.SetError(w, fmt.Errorf("invalid request payload: %v", err), http.StatusBadRequest)
+		p.res.SetError(w, errors.New("hacking detected, invalid request"), http.StatusBadRequest)
 		return
 	}
 
@@ -282,7 +282,7 @@ func (p *PostsRepo) CreatePostComment(w http.ResponseWriter, r *http.Request) {
 
 	err := json.NewDecoder(r.Body).Decode(&req)
 	if err != nil {
-		p.res.SetError(w, err, http.StatusBadRequest)
+		p.res.SetError(w, errors.New("hacking detected, invalid request"), http.StatusBadRequest)
 		return
 	}
 
@@ -314,7 +314,7 @@ func (p *PostsRepo) UpdateComment(w http.ResponseWriter, r *http.Request) {
 
 	err := json.NewDecoder(r.Body).Decode(&req)
 	if err != nil {
-		p.res.SetError(w, err, http.StatusBadRequest)
+		p.res.SetError(w, errors.New("hacking detected, invalid request"), http.StatusBadRequest)
 		return
 	}
 
@@ -346,7 +346,7 @@ func (p *PostsRepo) DeleteComment(w http.ResponseWriter, r *http.Request) {
 
 	err := json.NewDecoder(r.Body).Decode(&req)
 	if err != nil {
-		p.res.SetError(w, err, http.StatusBadRequest)
+		p.res.SetError(w, errors.New("hacking detected, invalid request"), http.StatusBadRequest)
 		return
 	}
 
@@ -403,7 +403,7 @@ func (p *PostsRepo) CreatePostReply(w http.ResponseWriter, r *http.Request) {
 
 	err := json.NewDecoder(r.Body).Decode(&req)
 	if err != nil {
-		p.res.SetError(w, err, http.StatusBadRequest)
+		p.res.SetError(w, errors.New("hacking detected, invalid request"), http.StatusBadRequest)
 		return
 	}
 
@@ -435,7 +435,7 @@ func (p *PostsRepo) LikeReply(w http.ResponseWriter, r *http.Request) {
 	// Decode the request body into a PostLike struct
 	var req Like
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-		p.res.SetError(w, fmt.Errorf("invalid request payload: %v", err), http.StatusBadRequest)
+		p.res.SetError(w, errors.New("hacking detected, invalid request"), http.StatusBadRequest)
 		return
 	}
 

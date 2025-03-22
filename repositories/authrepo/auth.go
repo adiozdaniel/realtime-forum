@@ -12,7 +12,7 @@ import (
 // RegisterHandler handles user registration.
 func (h *AuthRepo) RegisterHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
-		h.res.SetError(w, errors.New("method not allowed"), http.StatusMethodNotAllowed)
+		h.res.SetError(w, errors.New("hacking detected, method not allowed"), http.StatusMethodNotAllowed)
 		return
 	}
 
@@ -21,7 +21,7 @@ func (h *AuthRepo) RegisterHandler(w http.ResponseWriter, r *http.Request) {
 
 	err := json.NewDecoder(r.Body).Decode(&req)
 	if err != nil {
-		h.res.SetError(w, err, http.StatusBadRequest)
+		h.res.SetError(w, errors.New("hacking detected, invalid request"), http.StatusBadRequest)
 		return
 	}
 
@@ -55,14 +55,14 @@ func (h *AuthRepo) RegisterHandler(w http.ResponseWriter, r *http.Request) {
 // LoginHandler handles user login.
 func (h *AuthRepo) LoginHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
-		h.res.SetError(w, errors.New("method not allowed"), http.StatusMethodNotAllowed)
+		h.res.SetError(w, errors.New("hacking detected, method not allowed"), http.StatusMethodNotAllowed)
 		return
 	}
 
 	// Parse request
 	var req LoginRequest
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-		h.res.SetError(w, errors.New("invalid request body"), http.StatusBadRequest)
+		h.res.SetError(w, errors.New("hacking detected, invalid request"), http.StatusBadRequest)
 		return
 	}
 
@@ -107,7 +107,7 @@ func (h *AuthRepo) LoginHandler(w http.ResponseWriter, r *http.Request) {
 // LogoutHandler handles user logout.
 func (h *AuthRepo) LogoutHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
-		h.res.SetError(w, errors.New("method not allowed"), http.StatusMethodNotAllowed)
+		h.res.SetError(w, errors.New("hacking detected, method not allowed"), http.StatusMethodNotAllowed)
 		return
 	}
 
@@ -174,7 +174,7 @@ func (h *AuthRepo) CheckAuth(w http.ResponseWriter, r *http.Request) {
 // UploadProfilePic uploads a profile picture
 func (h *AuthRepo) UploadProfilePic(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
-		h.res.SetError(w, errors.New("method not allowed"), http.StatusMethodNotAllowed)
+		h.res.SetError(w, errors.New("hacking detected, method not allowed"), http.StatusMethodNotAllowed)
 		return
 	}
 
@@ -216,7 +216,7 @@ func (h *AuthRepo) UploadProfilePic(w http.ResponseWriter, r *http.Request) {
 // UserDashboard returns a user's dashboard
 func (h *AuthRepo) UserDashboard(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodGet {
-		h.res.SetError(w, errors.New("method not allowed"), http.StatusMethodNotAllowed)
+		h.res.SetError(w, errors.New("hacking detected, method not allowed"), http.StatusMethodNotAllowed)
 		return
 	}
 
@@ -247,14 +247,14 @@ func (h *AuthRepo) UserDashboard(w http.ResponseWriter, r *http.Request) {
 // EditBio updates a user's bio
 func (h *AuthRepo) EditBio(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
-		h.res.SetError(w, errors.New("method not allowed"), http.StatusMethodNotAllowed)
+		h.res.SetError(w, errors.New("hacking detected, method not allowed"), http.StatusMethodNotAllowed)
 		return
 	}
 
 	// Parse request
 	var req User
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-		h.res.SetError(w, errors.New("invalid request body"), http.StatusBadRequest)
+		h.res.SetError(w, errors.New("hacking detected, invalid request"), http.StatusBadRequest)
 		return
 	}
 
@@ -265,7 +265,7 @@ func (h *AuthRepo) EditBio(w http.ResponseWriter, r *http.Request) {
 			h.res.SetError(w, err, http.StatusInternalServerError)
 			return
 		}
-		
+
 		h.res.SetError(w, err, http.StatusBadRequest)
 		return
 	}
