@@ -4,6 +4,10 @@ import { toast } from "./toast.js";
 document.addEventListener("DOMContentLoaded", function () {
 	// DOM Elements
 	const form = document.getElementById("signupForm");
+	const firstNameInput = document.getElementById("firstname");
+	const lastNameInput = document.getElementById("lastname");
+	const genderInput = document.getElementById("gender");
+	const age = document.getElementById("age");
 	const usernameInput = document.getElementById("username");
 	const emailInput = document.getElementById("email");
 	const passwordInput = document.getElementById("password");
@@ -158,6 +162,10 @@ document.addEventListener("DOMContentLoaded", function () {
 
 		// Prepare form data
 		const formData = {
+			first_name: firstNameInput.value,
+			last_name: lastNameInput.value,
+			gender: genderInput.value,
+			age: age.value,
 			email: emailInput.value,
 			user_name: usernameInput.value,
 			password: passwordInput.value,
