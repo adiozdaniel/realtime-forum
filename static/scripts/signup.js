@@ -165,7 +165,7 @@ document.addEventListener("DOMContentLoaded", function () {
 			first_name: firstNameInput.value,
 			last_name: lastNameInput.value,
 			gender: genderInput.value,
-			age: age.value,
+			age: parseInt(age.value, 10),
 			email: emailInput.value,
 			user_name: usernameInput.value,
 			password: passwordInput.value,
